@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import List
 
 from time_ import TimeDelta
-from types_and_constans import RoomId, BuildingId
+from types_ import RoomId, BuildingId
 
 
 @dataclass

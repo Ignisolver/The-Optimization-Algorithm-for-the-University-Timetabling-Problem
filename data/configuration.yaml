@@ -1,0 +1,9 @@
+# Time Limits
+MAX_HOUR:
+  - HOUR: 8
+  - MINUTE: 0
+
+MIN_HOUR:
+  - HOUR: 20
+  - MINUTE: 0
+

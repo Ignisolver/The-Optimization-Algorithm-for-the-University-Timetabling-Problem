@@ -15,6 +15,7 @@ class TestHour:
     def test_add(self):
         assert Time(10, 22) + TimeDelta(-2, 5) == Time(8, 27)
         assert Time(10, 22) + TimeDelta(2, 55) == Time(13, 17)
+        assert Time(10, 22) + TimeDelta(0, 50) == Time(11, 12)
 
     def test_sub_hour(self):
         h1 = Time(10, 22)
