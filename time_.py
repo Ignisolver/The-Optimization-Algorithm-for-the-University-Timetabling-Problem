@@ -1,3 +1,6 @@
+from dataclasses import dataclass
+
+
 class TimeDelta:
     def __init__(self, hours=0, minutes=0):
         assert isinstance(minutes, int)
@@ -78,6 +81,36 @@ class Time:
 
     def __int__(self):
         return self.hour * 60 + self.minute
+
+
+@dataclass
+class TimeRange:
+    start: Time = None
+    dur: TimeDelta = None
+    end: Time = None
+
+    def __post_init__(self):
+        if self.dur is not None:
+            if self.end is None and self.start is not None:
+                self.end = self.start + self.dur
+            elif self.end is not None and self.start is None:
+                self.start = self.end - self.dur
+            elif self.end is not None and self.start is not None:
+                if self.end - self.start != self.dur:
+                    raise ValueError("Incorrect time range data passed")
+            else:
+                raise ValueError("To less information to specify TimeRange")
+
+        if self.dur is None:
+            if self.start is None or self.end is None:
+                raise ValueError("To less information to specify TimeRange")
+            else:
+                self.dur = self.end - self.start
+                if self.dur < 0:
+                    raise ValueError("Start time is grater then end time")
+
+
+
 
 
 

@@ -20,3 +20,6 @@ class RoomId(str):
 class BuildingId(str):
     pass
 
+class ClassesId(int):
+    pass
+

@@ -1,30 +1,27 @@
+from dataclasses import dataclass
 from typing import List, Tuple, Iterable, Type
 
 from group import Group
 from lecturer import Lecturer
 from room import Room
-from time_ import Time
-from types_ import ClassesType
+from time_ import Time, TimeDelta
+from types_ import ClassesType, ClassesId
 from utils import check_type_all, check_if_time_is_available
 
 
+@dataclass
 class Classes:
-    def __init__(self,
-                 id_,
-                 duration,
-                 classes_type_: ClassesType,
-                 available_rooms: Tuple[Room, ...],
-                 available_lecturers: Tuple[Lecturer, ...]):
-        self.id = id_
-        self.duration = duration
-        self.type = classes_type_
-        self.available_rooms = available_rooms
-        self.available_lecturers = available_lecturers
-        self.groups = None
-        self.assigned_lecturers = None
-        self.assigned_rooms = None
-        self.start_time = None
-        self.end_time = None
+    id: ClassesId
+    name: str
+    duration: TimeDelta
+    classes_type: ClassesType
+    available_rooms: Tuple[Room, ...]
+    available_lecturers: Tuple[Lecturer, ...]
+    groups: Tuple[Group, ...] = None
+    assigned_lecturers: Tuple[Lecturer, ...] = None
+    assigned_rooms: Tuple[Room, ...] = None
+    start_time: Time = None
+    end_time: Time = None
 
     @staticmethod
     def _check_if_attribute_is_not_already_assigned(attribute, name):

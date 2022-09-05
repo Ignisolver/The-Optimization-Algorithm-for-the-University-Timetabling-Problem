@@ -11,9 +11,9 @@ lecturer_2 = Lecturer()
 lecturer_3 = Lecturer()
 group_1 = Group()
 group_2 = Group()
-room_1 = Room()
-room_2 = Room()
-room_3 = Room()
+room_1 = Room(1)
+room_2 = Room(2)
+room_3 = Room(3)
 time_1 = Time(12, 40)
 time_2 = Time(10, 20)
 time_3 = Time(14, 10)
@@ -21,7 +21,7 @@ time_3 = Time(14, 10)
 
 @pytest.fixture(scope="function")
 def classes() -> Classes:
-    return Classes(0, TimeDelta(0, 50),
+    return Classes(0, "testowe", TimeDelta(0, 50),
                    None, (room_1, room_2), (lecturer_1, lecturer_2))
 
 
@@ -120,6 +120,7 @@ class TestClasses:
     def test_assign_time__unavailable(self, classes):
         with pytest.raises(ValueError):
             classes.assign_time(Time(23, 0))
+        print(classes)
 
     def test_assign(self):
         raise NotImplementedError
