@@ -109,6 +109,9 @@ class TimeRange:
                 if self.dur < 0:
                     raise ValueError("Start time is grater then end time")
 
+    # todo przecinanie z Range lub Time
+    # todo operacje arytmetyczne z Time / timedelta
+
 
 
 
