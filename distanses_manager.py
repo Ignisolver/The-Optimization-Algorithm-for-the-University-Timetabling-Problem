@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List
 
-from time_ import TimeDelta
+from time_tools import TimeDelta
 from types_ import RoomId, BuildingId
 
 

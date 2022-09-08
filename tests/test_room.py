@@ -1,9 +1,7 @@
 import pytest
 
 from classes import Classes
-from group import Group
 from room import Room
-from time_ import TimeDelta
 
 
 @pytest.fixture(scope='function')
