@@ -1,5 +1,7 @@
 class TimeDelta:
     def __init__(self, hours=0, minutes=0):
+        assert isinstance(hours, int)
+        assert isinstance(minutes, int)
         minutes = self._calc_total_amount_of_minutes(hours, minutes)
         self.hours = minutes // 60
         self.minutes = minutes % 60

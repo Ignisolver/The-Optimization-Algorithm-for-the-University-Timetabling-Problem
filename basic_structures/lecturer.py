@@ -1,8 +1,8 @@
 from dataclasses import dataclass, field
 from typing import List, TYPE_CHECKING
 
-from types_ import LecturerId, ClassesId
-from week_scheadule import WeekSchedule
+from utils.types_ import LecturerId, ClassesId
+from schedule.week_scheadule import WeekSchedule
 
 if TYPE_CHECKING:
     from classes import Classes

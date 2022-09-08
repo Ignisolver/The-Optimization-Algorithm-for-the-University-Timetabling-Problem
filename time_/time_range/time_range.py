@@ -2,8 +2,8 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from time_.time_range.time_range_utils import TimeRangeIntersectDetector, TimeRangeInitializer
-from types_ import Day, Week
-from time_.utils import DateCorrectnessCaretaker
+from utils.types_ import Day, Week
+from time_.time_utils import DateCorrectnessCaretaker
 from time_ import TimeDelta
 
 if TYPE_CHECKING:

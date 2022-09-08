@@ -5,7 +5,7 @@ from group import Group
 from lecturer import Lecturer
 from room import Room
 from time_ import Time, TimeDelta
-from types_ import ClassesType, ClassesId
+from utils.types_ import ClassesType, ClassesId
 from utils import check_type_all, check_if_time_is_available
 
 

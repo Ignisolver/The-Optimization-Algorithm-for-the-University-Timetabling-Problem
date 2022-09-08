@@ -1,7 +1,7 @@
 import pytest
 
-from classes import Classes
-from group import Group
+from basic_structures.classes import Classes
+from basic_structures.group import Group
 
 
 @pytest.fixture

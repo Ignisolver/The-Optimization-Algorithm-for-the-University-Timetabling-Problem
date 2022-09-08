@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 
 from time_ import TimeDelta
-from time_.utils import DateCorrectnessCaretaker
-from types_ import Day, Week
+from time_.time_utils import DateCorrectnessCaretaker
+from utils.types_ import Day, Week
 
 
 # todo tests, file split
@@ -12,8 +12,8 @@ from types_ import Day, Week
 class Time:
     hour: int
     minute: int
-    day: Day = None
-    week: Week = None
+    day: Day or None = None
+    week: Week or None = None
     _date_correctness = DateCorrectnessCaretaker()
 
     def __post_init__(self):

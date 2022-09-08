@@ -1,7 +1,7 @@
 import pytest
 
-from lecturer import Lecturer
-from classes import Classes
+from basic_structures.lecturer import Lecturer
+from basic_structures.classes import Classes
 
 
 @pytest.fixture(scope="function")

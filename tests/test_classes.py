@@ -1,9 +1,9 @@
 import pytest
 
-from classes import Classes, Assignation
-from group import Group
-from lecturer import Lecturer
-from room import Room
+from basic_structures.classes import Classes, Assignation
+from basic_structures.group import Group
+from basic_structures.lecturer import Lecturer
+from basic_structures.room import Room
 from time_.time_ import Time
 from time_ import TimeDelta
 

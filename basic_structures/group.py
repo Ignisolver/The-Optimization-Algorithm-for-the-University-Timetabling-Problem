@@ -2,8 +2,8 @@ from dataclasses import dataclass, field
 
 from typing import TYPE_CHECKING, Dict
 
-from types_ import GroupId, ClassesId
-from week_scheadule import WeekSchedule
+from utils.types_ import GroupId, ClassesId
+from schedule.week_scheadule import WeekSchedule
 
 if TYPE_CHECKING:
     from classes import Classes

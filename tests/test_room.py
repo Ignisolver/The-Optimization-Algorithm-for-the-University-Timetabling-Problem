@@ -1,7 +1,7 @@
 import pytest
 
-from classes import Classes
-from room import Room
+from basic_structures.classes import Classes
+from basic_structures.room import Room
 
 
 @pytest.fixture(scope='function')

@@ -1,5 +1,5 @@
 from typing import Tuple, TYPE_CHECKING
-from time_.utils import DateCorrectnessCaretaker
+from time_.time_utils import DateCorrectnessCaretaker
 
 
 if TYPE_CHECKING:
