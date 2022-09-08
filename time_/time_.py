@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
-from time_tools.time_delta import TimeDelta
-from time_tools.utils import DateCorrectnessCaretaker
+from time_ import TimeDelta
+from time_.utils import DateCorrectnessCaretaker
 from types_ import Day, Week
 
 
@@ -21,12 +21,12 @@ class Time:
         assert 0 <= self.minute <= 59
         self._date_correctness.assert_arguments_day_and_week_correct(self.day, self.week)
 
-    def __sub__(self, other: "Time" or TimeDelta) -> TimeDelta or "Time":
+    def __sub__(self, other: "Time" or "TimeDelta") -> "TimeDelta" or "Time":
         if isinstance(other, Time):
             self._date_correctness.assert_days_and_weeks_correctness(self, other)
             return TimeDelta(minutes=int(self) - int(other))
 
-        elif isinstance(other, TimeDelta):
+        if isinstance(other, TimeDelta):
             minutes = self.minute - other.minutes
             hours = self.hour - other.hours + (minutes // 60)
             minutes = minutes % 60

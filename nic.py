@@ -1,1 +1,1 @@
-from time_tools import Time, TimeDelta, TimeRange
+from time_ import Time, TimeDelta, TimeRange

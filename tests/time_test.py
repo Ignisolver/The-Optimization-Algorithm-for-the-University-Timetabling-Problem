@@ -1,8 +1,8 @@
 import pytest
 
-from time_tools.time_ import Time
-from time_tools.time_range import TimeRange
-from time_tools import TimeDelta
+from time_.time_ import Time
+from time_.time_range import TimeRange
+from time_ import TimeDelta
 
 
 class TestHour:

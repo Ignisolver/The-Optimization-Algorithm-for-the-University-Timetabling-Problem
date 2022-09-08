@@ -4,8 +4,8 @@ from classes import Classes, Assignation
 from group import Group
 from lecturer import Lecturer
 from room import Room
-from time_tools.time_ import Time
-from time_tools import TimeDelta
+from time_.time_ import Time
+from time_ import TimeDelta
 
 lecturer_1 = Lecturer(1)
 lecturer_2 = Lecturer(2)

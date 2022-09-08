@@ -1,16 +1,17 @@
-from typing import Tuple
+from typing import Tuple, TYPE_CHECKING
+from time_.utils import DateCorrectnessCaretaker
 
-from time_tools.time_ import Time
-from time_tools.time_delta import TimeDelta
-from time_tools.time_range.time_range_ import TimeRange
-from time_tools.utils import DateCorrectnessCaretaker
+
+if TYPE_CHECKING:
+    from time_.time_range.time_range import TimeRange
+    from time_.time_ import Time
+    from time_.time_delta import TimeDelta
 
 
 class TimeRangeIntersectDetector:
-
     def is_intersection(self,
                         one: "TimeRange",
-                        other: Time or "TimeRange") -> bool:
+                        other: "Time" or "TimeRange") -> bool:
         if isinstance(other, Time):
             return self._is_time_in_time_range(one, other)
 
@@ -49,9 +50,9 @@ class TimeRangeIntersectDetector:
 
 class TimeRangeInitializer:
     def __init__(self):
-        self._init_start: Time or None = None
-        self._init_end: Time or None = None
-        self._init_end: Time or None = None
+        self._init_start: "Time" or None = None
+        self._init_end: "Time" or None = None
+        self._init_end: "Time" or None = None
         self._date_correctness = DateCorrectnessCaretaker()
 
     @staticmethod
@@ -110,7 +111,7 @@ class TimeRangeInitializer:
     def _is_duration_given(time_range: "TimeRange"):
         return time_range.dur is not None
 
-    def calc_start_dur_end(self, time_range: "TimeRange") -> Tuple[Time, Time, TimeDelta]:
+    def calc_start_dur_end(self, time_range: "TimeRange") -> Tuple["Time", "Time", "TimeDelta"]:
         if self._is_duration_given(time_range):
             self._calc_start_or_end(time_range)
         else:

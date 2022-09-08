@@ -1,6 +1,6 @@
 from typing import Iterable, Type
 
-from time_tools.time_ import Time
+from time_.time_ import Time
 
 MIN_HOUR = Time(8,0)
 MAX_HOUR = Time(20,0)
