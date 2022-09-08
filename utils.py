@@ -1,7 +1,9 @@
 from typing import Iterable, Type
 
-from constans import MIN_HOUR, MAX_HOUR
 from time_ import Time
+
+MIN_HOUR = Time(8,0)
+MAX_HOUR = Time(20,0)
 
 
 def check_type_all(iterable: Iterable, type_: Type):

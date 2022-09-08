@@ -2,24 +2,40 @@ from enum import Enum, auto
 
 
 class ClassesType(Enum):
-    LECTURE = auto()
-    ELE_LECTURE = auto()
-    EXERCISE = auto()
-    ELE_EXERCISE = auto()
-    SLOT = auto()
-    HALF_EXERCISE = auto()
-    HALF_ELE_EXERCISE = auto()
-    HALF_LECTURE = auto()
-    HALF_ELE_LECTURE = auto()
+    pass
 
 
 class RoomId(str):
     pass
 
 
+class LecturerId(int):
+    pass
+
+
+class GroupId(int):
+    pass
+
+
+class ClassesId(int):
+    pass
+
+
 class BuildingId(str):
     pass
 
-class ClassesId(int):
+
+class Day(Enum):
+    MONDAY = 0
+    TUESDAY = 1
+    WEDNESDAY = 2
+    THURSDAY = 3
+    FRIDAY = 4
+    SATURDAY = 5
+    SUNDAY = 6
+
+
+
+class Week(int):
     pass
 

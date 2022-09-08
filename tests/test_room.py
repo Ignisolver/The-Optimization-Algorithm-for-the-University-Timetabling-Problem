@@ -1,6 +1,7 @@
 import pytest
 
 from classes import Classes
+from group import Group
 from room import Room
 from time_ import TimeDelta
 
@@ -8,7 +9,7 @@ from time_ import TimeDelta
 @pytest.fixture(scope='function')
 def room() -> Room:
     return Room(id_=1,
-                _initial_availability_minutes=5*8*60,
+                _initial_availability_minutes=5 * 8 * 60,
                 people_capacity=32)
 
 
@@ -16,6 +17,15 @@ def room() -> Room:
 def classes() -> Classes:
     return Classes(1, None, 20, None, None, None)
 
+
+class ClassesMock(Classes):
+    def __init__(self, val_or_none):
+        super().__init__(1, None, None, None, None, None)
+        self._amount = val_or_none
+
+    @property
+    def total_amount_of_students(self) -> int or None:
+        return self._amount
 
 
 class TestRoom:
@@ -40,7 +50,7 @@ class TestRoom:
         assert room.occupation_priority == (40.25 - 10.13) / 1.3
 
     def test__calc_predicted_occupation(self, room):
-        room._classes_occupation_probability = {1:0.2, 2:1, 3:0.1}
+        room._classes_occupation_probability = {1: 0.2, 2: 1, 3: 0.1}
         room._calc_predicted_occupation()
         assert room._predicted_occupation == 1.3
 
@@ -129,3 +139,5 @@ class TestRoom:
         assert room._classes_occupation_probability[1] == 0.2
         priority_after = room.occupation_priority
         assert priority_after != priority_before
+
+

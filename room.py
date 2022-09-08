@@ -26,6 +26,26 @@ class Room:
         else:
             return self._occupation_priority
 
+    def add_new_potential_classes_to_room(self, classes, probability):
+        """
+        use this function during initialisation step - before planning
+        """
+        if self._is_classes_available(classes.id_):
+            raise RuntimeError("An attempt to add classes again to the same room")
+        self._classes_occupation_probability[classes.id_] = probability
+        self._const_classes_occupation_probability[classes.id_] = probability
+        self._update()
+
+    def assign(self, classes: "Classes"):
+        self._current_occupation_minutes += int(classes.duration)
+        self._set_probability_of_classes(classes.id_, 0)
+        self.schedule.assign(classes)
+
+    def unassign(self, classes: "Classes"):
+        self._current_occupation_minutes -= int(classes.duration)
+        self._reset_probability_of_classes(classes.id_)
+        self.schedule.unassign(classes)
+
     def _calc_priority(self):
         try:
             self._occupation_priority = (self._initial_availability_minutes - self._current_occupation_minutes) / \
@@ -40,17 +60,7 @@ class Room:
         self._calc_predicted_occupation()
         self._calc_priority()
 
-    def add_new_potential_classes_to_room(self, classes, probability):
-        """
-        use this function during initialisation step - before planning
-        """
-        if self._is_classes_available(classes.id_):
-            raise RuntimeError("An attempt to add classes again to the same room")
-        self._classes_occupation_probability[classes.id_] = probability
-        self._const_classes_occupation_probability[classes.id_] = probability
-        self._update()
-
-    def _is_classes_available(self, classes_id):
+    def _is_classes_available(self, classes_id) -> bool:
         return classes_id in self._classes_occupation_probability.keys()
 
     def _set_probability_of_classes(self,
@@ -67,13 +77,3 @@ class Room:
     def _reset_probability_of_classes(self, classes_id):
         probability = self._const_classes_occupation_probability[classes_id]
         self._set_probability_of_classes(classes_id, probability)
-
-    def assign(self, classes: "Classes"):
-        self._current_occupation_minutes += int(classes.duration)
-        self._set_probability_of_classes(classes.id_, 0)
-        self.schedule.assign(classes)
-
-    def unassign(self, classes: "Classes"):
-        self._current_occupation_minutes -= int(classes.duration)
-        self._reset_probability_of_classes(classes.id_)
-        self.schedule.unassign(classes)
