@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Tuple, Iterable, Type
+from typing import Tuple, Iterable, Type, Union
 
 from group import Group
 from lecturer import Lecturer
@@ -33,11 +33,11 @@ class Classes:
     available_rooms: Tuple[Room, ...]
     available_lecturers: Tuple[Lecturer, ...]
     _attribute_assigned: Assignation = field(default_factory=Assignation)
-    _groups: Tuple[Group, ...] or None = None
-    _assigned_lecturers: Tuple[Lecturer, ...] or None = None
-    _assigned_rooms: Tuple[Room, ...] or None = None
-    _start_time: Time or None = None
-    _end_time: Time or None = None
+    _groups: Union[Tuple[Group, ...], None] = None
+    _assigned_lecturers: Union[Tuple[Lecturer, ...], None] = None
+    _assigned_rooms: Union[Tuple[Room, ...], None] = None
+    _start_time: Union[Time, None] = None
+    _end_time: Union[Time, None] = None
 
     def assign(self,
                time: Time = None,
@@ -61,7 +61,7 @@ class Classes:
         del self.groups
 
     @property
-    def total_amount_of_students(self) -> int or None:
+    def total_amount_of_students(self) -> Union[int, None]:
         if self.groups is None:
             return None
         else:
@@ -159,7 +159,7 @@ class Classes:
             raise RuntimeError(f"{name} attribute is not assigned yet - an attempt to unassign!")
 
     @staticmethod
-    def _assert_correct_assign_argument_type(argument: Iterable or None,
+    def _assert_correct_assign_argument_type(argument: Union[Iterable, None],
                                              type_: Type,
                                              name: str):
         if len(argument) == 0 or (not check_type_all(argument, type_)):

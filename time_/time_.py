@@ -1,29 +1,30 @@
 from dataclasses import dataclass
+from typing import Union
 
 from time_ import TimeDelta
 from time_.time_utils import DateCorrectnessCaretaker
 from utils.types_ import Day, Week
 
 
-# todo tests, file split
-
-
 @dataclass
 class Time:
     hour: int
     minute: int
-    day: Day or None = None
-    week: Week or None = None
+    day: Union[Day, None] = None
+    week: Union[Week, None] = None
     _date_correctness = DateCorrectnessCaretaker()
 
-    def __post_init__(self):
-        assert 0 <= self.hour <= 23
-        assert 0 <= self.minute <= 59
-        self._date_correctness.assert_arguments_day_and_week_correct(self.day, self.week)
+    def _assert_hour_and_minute_correctness(self):
+        assert 0 <= self.hour <= 23, f"Hour :{self.hour} is not in [0 - 23]"
+        assert 0 <= self.minute <= 59, f"Minute :{self.minute} is not in [0 - 59]"
 
-    def __sub__(self, other: "Time" or "TimeDelta") -> "TimeDelta" or "Time":
+    def __post_init__(self):
+        self._assert_hour_and_minute_correctness()
+        self._date_correctness.assert_initial_arguments_day_and_week_correct(self.day, self.week)
+
+    def __sub__(self, other: Union["Time", "TimeDelta"]) -> Union["Time", "TimeDelta"]:
         if isinstance(other, Time):
-            self._date_correctness.assert_days_and_weeks_correctness(self, other)
+            self._date_correctness.assert_days_and_weeks_correctness(self, other, none_able=True)
             return TimeDelta(minutes=int(self) - int(other))
 
         if isinstance(other, TimeDelta):

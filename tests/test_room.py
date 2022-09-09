@@ -1,3 +1,5 @@
+from typing import Union
+
 import pytest
 
 from basic_structures.classes import Classes
@@ -22,7 +24,7 @@ class ClassesMock(Classes):
         self._amount = val_or_none
 
     @property
-    def total_amount_of_students(self) -> int or None:
+    def total_amount_of_students(self) -> Union[int, None]:
         return self._amount
 
 
