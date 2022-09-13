@@ -11,6 +11,7 @@ if TYPE_CHECKING:
 @dataclass
 class Lecturer:
     id_: LecturerId
+    name: str = None
     week_schedule: WeekSchedule = field(default_factory=WeekSchedule)
     _available_classes: List[ClassesId] = field(default_factory=list)
 
@@ -34,5 +35,5 @@ class Lecturer:
         self.week_schedule.assign(classes)
 
     def unassign(self, classes: "Classes"):
-        self.week_schedule.assign(classes)
+        self.week_schedule.unassign(classes)
 

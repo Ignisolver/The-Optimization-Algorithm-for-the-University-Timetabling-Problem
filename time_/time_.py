@@ -3,11 +3,11 @@ from typing import Union
 
 from time_ import TimeDelta
 from time_.time_utils import DateCorrectnessCaretaker
-from utils.types_ import Day, Week
+from utils.types_ import Day, Week, TimeType
 
 
 @dataclass
-class Time:
+class Time(TimeType):
     hour: int
     minute: int
     day: Union[Day, None] = None

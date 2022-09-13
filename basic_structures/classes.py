@@ -1,12 +1,12 @@
 from dataclasses import dataclass, field
 from typing import Tuple, Iterable, Type, Union
 
-from group import Group
-from lecturer import Lecturer
-from room import Room
+from basic_structures.group import Group
+from basic_structures.lecturer import Lecturer
+from basic_structures.room import Room
 from time_ import Time, TimeDelta
 from utils.types_ import ClassesType, ClassesId
-from utils import check_type_all, check_if_time_is_available
+from utils.utils import check_type_all, check_if_time_is_available
 
 
 @dataclass
@@ -32,12 +32,12 @@ class Classes:
     classes_type: ClassesType
     available_rooms: Tuple[Room, ...]
     available_lecturers: Tuple[Lecturer, ...]
-    _attribute_assigned: Assignation = field(default_factory=Assignation)
     _groups: Union[Tuple[Group, ...], None] = None
     _assigned_lecturers: Union[Tuple[Lecturer, ...], None] = None
     _assigned_rooms: Union[Tuple[Room, ...], None] = None
     _start_time: Union[Time, None] = None
     _end_time: Union[Time, None] = None
+    _attribute_assigned: Assignation = field(default_factory=Assignation)
 
     def assign(self,
                time: Time = None,

@@ -12,6 +12,7 @@ class Room:
     id_: RoomId
     _initial_availability_minutes: int
     people_capacity: int = 0
+    name: str = None
     schedule: WeekSchedule = field(default_factory=WeekSchedule)
     _current_occupation_minutes: int = 0
     _predicted_occupation: float = 0

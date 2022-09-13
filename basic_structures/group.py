@@ -13,6 +13,7 @@ if TYPE_CHECKING:
 class Group:
     id_: GroupId
     amount_of_students: int
+    name: str = None
     week_schedule: WeekSchedule = field(default_factory=WeekSchedule)
     _unassigned_classes: Dict[ClassesId, "Classes"] = field(default_factory=dict)
     _assigned_classes: Dict[ClassesId, "Classes"] = field(default_factory=dict)
