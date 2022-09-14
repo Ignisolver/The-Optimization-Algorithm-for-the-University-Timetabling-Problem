@@ -22,18 +22,22 @@ class TimeRange(TimeRangeType):
     _initializer = TimeRangeInitializer()
 
     def __post_init__(self):
-        self._date_correctness.assert_initial_arguments_day_and_week_correct(self.day, self.week)
-        self.start, self.dur, self.end = self._initializer.calc_start_dur_end(self.start, self.dur, self.end)
+        self.start, self.dur, self.end = self._initializer.\
+            calc_start_dur_end(self.start, self.dur, self.end)
 
     def increase_end(self, time_delta: TimeDelta):
         self.end += time_delta
         self.dur += time_delta
-        self._initializer.assert__start_dur_end__correct(self.start, self.end, self.dur)
+        self._initializer.assert__start_dur_end__correct(self.start,
+                                                         self.end,
+                                                         self.dur)
 
     def decrease_start(self, time_delta: TimeDelta):
         self.start -= time_delta
         self.dur += time_delta
-        self._initializer.assert__start_dur_end__correct(self.start, self.end, self.dur)
+        self._initializer.assert__start_dur_end__correct(self.start,
+                                                         self.end,
+                                                         self.dur)
 
     def expand_start_and_end(self, time_delta: TimeDelta):
         self.increase_end(time_delta)

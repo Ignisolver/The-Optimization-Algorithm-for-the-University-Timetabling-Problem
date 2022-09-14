@@ -1,5 +1,13 @@
+from typing import Union, List,  Annotated
 from dataclasses import dataclass
 from enum import Enum
+
+TimeDataT = List
+DaysT = List
+DaysTimeT = List
+DaysTimeListT = List[DaysTimeT]
+PrefDaysTimeT = None | List
+PrefDaysTimeListT = List[PrefDaysTimeT]
 
 
 class InputStructureType(Enum):
@@ -26,5 +34,12 @@ class Tag:
     PREFERRED_TIMES = "PREFERRED_TIMES"
     CAPACITY = "CAPACITY"
 
+
+@dataclass
+class FolderNames:
+    GROUPS = "groups"
+    CLASSES = "classes"
+    LECTURERS = "lecturers"
+    ROOMS = "rooms"
 
 
