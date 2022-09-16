@@ -75,7 +75,7 @@ class TestTimeRange:
         with pytest.raises(ValueError):
             tr.expand_start_and_end(TimeDelta(-4, 20))
 
-    def test___mul__ok(self):
+    def test_intersect(self):
         tr1 = TimeRange(Time(8, 20), Time(11, 50))
         tr2 = TimeRange(Time(7, 20), Time(9, 50))
         assert tr1.intersect(tr2)
@@ -83,3 +83,7 @@ class TestTimeRange:
         t1 = Time(10, 6)
         assert tr1.intersect(t1)
         assert tr1.intersect(tr1)
+
+    def test_to_data_generation_str(self):
+        tr1 = TimeRange(Time(8, 20), Time(11, 50), day=Day(2))
+        assert tr1.to_generate() == [3, [8, 20], [11, 50]]

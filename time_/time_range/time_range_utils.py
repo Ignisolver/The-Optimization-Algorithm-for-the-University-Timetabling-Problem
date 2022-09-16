@@ -1,7 +1,6 @@
 from typing import Tuple, TYPE_CHECKING, Union, Iterable
 from utils.types_ import TimeType, TimeRangeType
 
-#  todo give as litte information as needed, @staticmethods
 
 if TYPE_CHECKING:
     from time_.time_ import Time

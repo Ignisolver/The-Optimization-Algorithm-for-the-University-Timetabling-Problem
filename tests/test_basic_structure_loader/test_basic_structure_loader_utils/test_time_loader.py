@@ -1,7 +1,7 @@
 import pytest
 
 from data_input.basic_structure_loader.basic_structure_loader_utils. \
-    time_loader import TimeLoader
+    time_loader import TimeLoader, PrefTime
 from time_ import TimeRange, Time
 from utils.types_ import Day
 
@@ -11,94 +11,118 @@ def tl() -> TimeLoader:
     return TimeLoader()
 
 
+tr1d = [1, [10, 20], [11, 40]]
+tr2d = [5, [14, 34], [17, 00]]
+tr1 = TimeRange(Time(10, 20), Time(11, 40), day=Day(0))
+tr2 = TimeRange(Time(14, 34), Time(17, 00), day=Day(4))
+
+
 class TestTimeLoader:
-    def test__create_ranges(self, tl):
-        time = [[1, 2, 3], [10, 20], [15, 18]]
-        time_ranges = tl._create_ranges(time)
-        assert len(time_ranges) == 3
-        assert TimeRange(Time(10, 20), Time(15, 18), day=Day(0)) in time_ranges
-        assert TimeRange(Time(10, 20), Time(15, 18), day=Day(1)) in time_ranges
-        assert TimeRange(Time(10, 20), Time(15, 18), day=Day(2)) in time_ranges
+    def test__assert_aval_ranges_correct__ok(self, tl):
+        tl._assert_aval_ranges_correct([tr1, tr2], None)
+        tl._assert_aval_ranges_correct(None, [tr1, tr2])
 
-    def test__extract_ranges(self, tl):
-        times = [[[1, 2, 3], [10, 20], [15, 18]],
-                 [[2, 3], [1, 20], [16, 18]],
-                 [[4, 5], [12, 20], [17, 18]],
-                 [[1], [13, 20], [18, 18]]]
-        time_ranges = tl._extract_ranges(times)
-        assert len(time_ranges) == 8
-        assert TimeRange(Time(10, 20), Time(15, 18), day=Day(2)) in time_ranges
-        assert TimeRange(Time(13, 20), Time(18, 18), day=Day(0)) in time_ranges
+    def test__assert_aval_ranges_correct__both_none(self, tl):
+        with pytest.raises(AssertionError):
+            tl._assert_aval_ranges_correct(None, None)
 
-    def test__assert_both_none(self, tl):
-        assert tl._assert_both_none(None, 1) is False
-        assert tl._assert_both_none(None, None) is True
-        assert tl._assert_both_none(1, None) is False
-        assert tl._assert_both_none(1, 1) is False
+    def test__assert_aval_ranges_correct__overlap(self, tl):
+        tr3 = TimeRange(Time(15, 34), Time(18, 00), day=Day(4))
+        with pytest.raises(AssertionError):
+            tl._assert_aval_ranges_correct(None, [tr1, tr2, tr3])
 
-    def test__assert_both_not_none(self, tl):
-        assert tl._assert_both_none(None, 1) is False
-        assert tl._assert_both_none(None, None) is False
-        assert tl._assert_both_none(1, None) is False
-        assert tl._assert_both_none(1, 1) is True
+    def test__assert_ranges_not_overlap(self, tl):
+        tr3 = TimeRange(Time(15, 34), Time(18, 00), day=Day(4))
+        with pytest.raises(AssertionError):
+            tl._assert_ranges_not_overlap([tr1, tr2, tr3])
+        with pytest.raises(AssertionError):
+            tl._assert_ranges_not_overlap([PrefTime(tr1, 2),
+                                           PrefTime(tr2, 3),
+                                           PrefTime(tr3, 20)])
 
-    def test_get_ranges_or_none(self, tl):
-        times = [[[4, 5], [12, 20], [17, 18]],
-                 [[1], [13, 20], [18, 18]]]
-        extracted_times = tl._get_ranges_or_none(times)
-        assert len(extracted_times) == 3
-        nan = tl._get_ranges_or_none(None)
-        assert nan is None
+        tl._assert_ranges_not_overlap([tr1, tr2])
+        tl._assert_ranges_not_overlap([PrefTime(tr1, 2),
+                                       PrefTime(tr2, 3)])
 
-    def test__extract_pref_times_3(self, tl):
-        assert False
+    def test__assert_one_none(self, tl):
+        tl._assert_one_none(None, 1)
+        tl._assert_one_none(1, None)
+        with pytest.raises(AssertionError):
+            tl._assert_one_none(None, None)
+        with pytest.raises(AssertionError):
+            tl._assert_one_none(1, 1)
 
-    def test__extract_pref_times_2(self, tl):
-        raw_pref_times = [[[1, 2, 3], [10, 20], [15, 18]], 2]
-        pref_times = tl._extract_pref_times_2(raw_pref_times)
-        assert PreferredTime(TimeRange(Time(10, 20), Time(15, 18),
-                                       day=Day(0)), 2) in pref_times
-        assert PreferredTime(TimeRange(Time(10, 20), Time(15, 18),
-                                       day=Day(1)), 2) in pref_times
-        assert PreferredTime(TimeRange(Time(10, 20), Time(15, 18),
-                                       day=Day(2)), 2) in pref_times
+    def test__get_range__ok(self, tl):
+        r1 = tl._get_range(tr1d)
+        assert r1 == tr1
+        r2 = tl._get_range(tr2d)
+        assert r2 == tr2
+        r3 = tl._get_range(None)
+        assert r3 is None
 
-        
-    def test__extract_pref_times_1(self, tl):
-        raw_pref_times = [[[[1, 2, 3], [10, 20], [15, 18]], 2],
-                          [[[1], [13, 20], [18, 18]], 10]]
-        pref_times = tl._extract_pref_times_1(raw_pref_times)
-        assert len(pref_times) == 4
-        assert PreferredTime(TimeRange(Time(10, 20), Time(15, 18),
-                                       day=Day(0)), 2) in pref_times
-        assert PreferredTime(TimeRange(Time(10, 20), Time(15, 18),
-                                       day=Day(1)), 2) in pref_times
-        assert PreferredTime(TimeRange(Time(10, 20), Time(15, 18),
-                                       day=Day(2)), 2) in pref_times
-        assert PreferredTime(TimeRange(Time(13, 20), Time(18, 18),
-                                       day=Day(0)), 10) in pref_times
+    def test__get_range__incorrect_input(self, tl):
+        with pytest.raises(ValueError):
+            tl._get_range(44)
+
+    def test__get_ranges(self, tl):
+        r_s_d = [tr1d, tr2d]
+        r_s = tl._get_ranges(r_s_d)
+        assert tr1 in r_s
+        assert tr2 in r_s
+        r_s_d_2 = tl._get_ranges(None)
+        assert r_s_d_2 is None
+
+    def test__get_pref_time(self, tl):
+        ptd1 = [tr1d, 10]
+        pt1 = tl._get_pref_time(ptd1)
+        assert pt1 == PrefTime(tr1, 10)
+
+        ptd2 = [tr2d, 10]
+        pt2 = tl._get_pref_time(ptd2)
+        assert pt2 == PrefTime(tr2, 10)
+
+        ptd3 = [None, 10]
+        pt3 = tl._get_pref_time(ptd3)
+        assert pt3 == PrefTime(None, 10)
+
+        ptd4 = [None, ]
+        pt4 = tl._get_pref_time(ptd4)
+        assert pt4 == PrefTime(None, 0)
 
     def test_load_pref_times(self, tl):
-        raw_pref_times = [[[[1, 2, 3], [10, 20], [15, 18]], 2],
-                          [[[1], [13, 20], [18, 18]], 10],
-                          [[None, None, None], 6]]
-        pref_times = tl.load_pref_times(raw_pref_times)
-        assert len(pref_times) == 5
-        assert PreferredTime(TimeRange(Time(10, 20), Time(15, 18),
-                                       day=Day(0)), 2) in pref_times
-        assert PreferredTime(TimeRange(Time(10, 20), Time(15, 18),
-                                       day=Day(1)), 2) in pref_times
-        assert PreferredTime(TimeRange(Time(10, 20), Time(15, 18),
-                                       day=Day(2)), 2) in pref_times
-        assert PreferredTime(TimeRange(Time(13, 20), Time(18, 18),
-                                       day=Day(0)), 10) in pref_times
-        assert PreferredTime(None, 6) in pref_times
+        d_t_l = [[tr1d, 2],
+                 [tr2d, 4],
+                 [None, 10]]
+        p_d_t = tl.load_pref_times(d_t_l)
+        assert PrefTime(*d_t_l[0]) in p_d_t
+        assert PrefTime(*d_t_l[1]) in p_d_t
+        assert PrefTime(None, 10) in p_d_t
 
-    def test__assert_times_not_overlap(self, tl):
-        assert False
+        assert tl.load_pref_times(None) == PrefTime(None, 0)
 
-    def test__assert_ranges_correct(self, tl):
-        assert False
+    def test_load_times(self, tl):
+        d_t_l = [tr1d, tr2d]
+        av, unav = tl.load_times(d_t_l, None)
+        assert TimeRange(*d_t_l[0]) in av
+        assert TimeRange(*d_t_l[1]) in av
+        assert unav is None
 
-    def test_load_available_and_unavailable_times(self, tl):
-        assert False
+        av, unav = tl.load_times(None, unav)
+        assert TimeRange(*d_t_l[0]) in unav
+        assert TimeRange(*d_t_l[1]) in unav
+        assert av is None
+
+
+class TestPrefTime:
+    def test_to_generate(self):
+        pt = PrefTime(tr1, 2)
+        assert pt.to_generate() == [tr1d, 2]
+        pt = PrefTime(None, 3)
+        assert pt.to_generate() == [None, 3]
+
+    def test__get_tr_list(self):
+        pt1 = PrefTime(tr1, 2)
+        assert pt1._get_tr_list() == tr1d
+        pt2 = PrefTime(None, 3)
+        assert pt2._get_tr_list() is None
+

@@ -1,13 +1,12 @@
-from typing import Union, List,  Annotated
+from typing import Union, List, Annotated, Iterable, Tuple
 from dataclasses import dataclass
 from enum import Enum
 
-TimeDataT = List
-DaysT = List
-DaysTimeT = List
-DaysTimeListT = List[DaysTimeT]
-PrefDaysTimeT = None | List
-PrefDaysTimeListT = List[PrefDaysTimeT]
+from time_ import TimeRange
+
+TRList = Union[None, List[TimeRange]]
+TRList2 = Tuple[TRList, TRList]
+NorList = Union[List, None]
 
 
 class InputStructureType(Enum):
@@ -37,9 +36,9 @@ class Tag:
 
 @dataclass
 class FolderNames:
-    GROUPS = "groups"
-    CLASSES = "classes"
-    LECTURERS = "lecturers"
-    ROOMS = "rooms"
+    GROUPS = "Groups"
+    CLASSES = "Classes"
+    LECTURERS = "Lecturers"
+    ROOMS = "Rooms"
 
 

@@ -38,6 +38,7 @@ class Classes:
     _start_time: Union[Time, None] = None
     _end_time: Union[Time, None] = None
     _attribute_assigned: Assignation = field(default_factory=Assignation)
+    # todo available groups
 
     def assign(self,
                time: Time = None,

@@ -28,9 +28,14 @@ NONE: null"""
 expected_data = {"INT": 2, "STR": "ola", "LIST":[1,2,3],"NONE": None}
 
 class TestYamlLoader:
-    def test__get_yaml_str_from_file(self, yl, file_path):
+    def test__get_yaml_str_from_file__ok(self, yl, file_path):
         yaml_str = yl._get_yaml_str_from_file(file_path)
         assert yaml_str == expected_yaml_str
+
+    def test__get_yaml_str_from_file__incorrect_path(self, yl):
+        path = Path(r"C\iuyduvgjhbkniubh")
+        with pytest.raises(FileNotFoundError):
+            _ = yl._get_yaml_str_from_file(path)
 
     def test__load_data_from_yaml_string(self, yl):
         data = yl._load_data_from_yaml_string(expected_yaml_str)

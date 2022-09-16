@@ -1,22 +1,23 @@
 from dataclasses import dataclass
-from enum import Enum, auto
+from enum import Enum
 
 
 @dataclass
 class ClassesTypes:
     LECTURE = 'LECTURE'
-    LABOLATORY = 'LABOLATORY'
+    LABORATORY = 'LABORATORY'
     ELECTIVE = 'ELECTIVE'
     NORMAL = 'NORMAL'
 
 
+@dataclass
 class ClassesType:
     def __init__(self, init_str: str):
         le_la, el_no, weeks = init_str.split('-')
         if le_la == "W":
             self.lect_lab = ClassesTypes.LECTURE
         elif le_la == "L":
-            self.lect_lab = ClassesTypes.LABOLATORY
+            self.lect_lab = ClassesTypes.LABORATORY
         else:
             raise ValueError(f"Incorrect classes type {init_str}")
         if el_no == "E":
@@ -26,6 +27,8 @@ class ClassesType:
         else:
             raise ValueError(f"Incorrect classes type {init_str}")
         self.weeks = int(weeks)
+        if self.weeks <= 0:
+            raise ValueError(f"Incorrect classes type {init_str}")
 
 
 class RoomId(int):

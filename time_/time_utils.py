@@ -8,20 +8,22 @@ if TYPE_CHECKING:
     from time_ import TimeRange
 
 
-# todo add missing tests
 class DateCorrectnessCaretaker:
-
-    def assert_days_and_weeks_correctness(self, one_time: Union["Time", "TimeRange"],
-                                          another_time: Union["Time", "TimeRange"],
+    def assert_days_and_weeks_correctness(self, one_time: Union["Time",
+                                                                "TimeRange"],
+                                          another_time: Union["Time",
+                                                              "TimeRange"],
                                           none_able=False):
         if none_able:
-            if self._are_both_day_and_week_in_self_or_other_nones(one_time, another_time):
+            if self._are_both_day_and_week_in_self_or_other_nones(one_time,
+                                                                  another_time):
                 return None
         self._assert_days_and_weeks_same(one_time, another_time)
 
     @staticmethod
     def _are_weeks_and_days_same(one_time, another_time):
-        return (one_time.day == another_time.day) and (one_time.week == another_time.week)
+        return ((one_time.day == another_time.day) and
+                (one_time.week == another_time.week))
 
     @staticmethod
     def _are_day_and_week_nones(day, week):

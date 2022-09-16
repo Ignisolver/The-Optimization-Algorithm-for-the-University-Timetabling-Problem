@@ -1,7 +1,8 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Union, List
 
-from time_.time_range.time_range_utils import TimeRangeIntersectDetector, TimeRangeInitializer
+from time_.time_range.time_range_utils import (TimeRangeIntersectDetector,
+                                               TimeRangeInitializer)
 from utils.types_ import Day, Week, TimeRangeType
 from time_.time_utils import DateCorrectnessCaretaker
 from time_ import TimeDelta
@@ -43,6 +44,12 @@ class TimeRange(TimeRangeType):
         self.increase_end(time_delta)
         self.decrease_start(time_delta)
 
-    def intersect(self: "TimeRange", other: Union["Time", "TimeRange"]) -> bool:
+    def intersect(self, other: Union["Time", "TimeRange"]) -> bool:
         self._date_correctness.assert_days_and_weeks_correctness(self, other)
         return self._intersect_detector.is_intersection(self, other)
+
+    def to_generate(self) -> List:
+        list_ = [self.day.value + 1,
+                 [self.start.hour, self.start.minute],
+                 [self.end.hour, self.end.minute]]
+        return list_
