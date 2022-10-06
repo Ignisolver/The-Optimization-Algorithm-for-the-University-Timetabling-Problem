@@ -1,4 +1,6 @@
 from typing import Tuple, TYPE_CHECKING, Union, Iterable
+
+from utils.none_machine import NM
 from utils.types_ import TimeType, TimeRangeType
 
 
@@ -76,13 +78,10 @@ class TimeRangeInitializer:
     @staticmethod
     def _calc_end(start, dur):
         return start + dur
-        
+
     @staticmethod
-    def _calc_amount_of_nones(item: Iterable):
-        return sum(1 for x in item if x is None)
-    
-    def _assert_2_of__start_end_dur__not_none(self, start, end, dur):
-        nones_amount = self._calc_amount_of_nones((start, end, dur))
+    def _assert_2_of__start_end_dur__not_none(start, end, dur):
+        nones_amount = NM.count_nones((start, end, dur))
         if nones_amount >= 2:
             raise ValueError("To less information to specify TimeRange")
 

@@ -1,7 +1,8 @@
 from dataclasses import dataclass
-from typing import List
+from typing import Tuple
 
-from time_ import TimeDelta
+from basic_structures import Room
+from time_ import TimeDelta as TD, TimeDelta
 from utils.types_ import RoomId, BuildingId
 
 
@@ -11,18 +12,39 @@ class Place:
     building: BuildingId = None
 
 
-class DistancesManager:
+class Distances:
     def __init__(self):
-        self.distance_matrix = {}
+        self._room_time_matrix = {}
+        self._building_time_matrix = {}
 
-    def add_distance(self, place_1, place_2, distance_p1_p2, distance_p2_p1=None):
-        if distance_p2_p1 is None:
-            distance_p2_p1 = distance_p1_p2
+    @staticmethod
+    def _update_matrix(p1, p2, dist, matrix):
+        if p1 in matrix.keys():
+            matrix[p1].update({p2: dist})
+        else:
+            matrix[p1] = {p2: dist}
 
-        self.distance_matrix[pla]
+    def set_room_dist(self, p1: RoomId, p2: RoomId, dist: TD):
+        self._update_matrix(p1, p2, dist, self._room_time_matrix)
 
-    def get_distance_between_buildings(self):
-        pass
+    def set_building_dist(self, p1: BuildingId, p2: BuildingId, time: TD):
+        self._update_matrix(p1, p2, time, self._building_time_matrix)
 
-    def get_distances_between_rooms(self, room_1: RoomId, rooms_2: list) -> List[TimeDelta]:
-        pass
+    def __getitem__(self, key: Tuple["Room", "Room"]) -> TD:
+        p1, p2 = key
+        if p1 == p2:
+            return TimeDelta(0, 0)
+        try:
+            dist = self._room_time_matrix[p1.id_][p2.id_]
+        except KeyError:
+            try:
+                dist = self._room_time_matrix[p2.id_][p1.id_]
+            except KeyError:
+                try:
+                    dist = self._building_time_matrix[p1.build_id][p2.build_id]
+                except KeyError:
+                    dist = self._building_time_matrix[p2.build_id][p1.build_id]
+        return dist
+
+
+DISTANCES = Distances()

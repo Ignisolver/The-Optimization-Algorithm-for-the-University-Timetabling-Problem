@@ -1,6 +1,6 @@
 from typing import Tuple
 
-from data_input.basic_structure_loader.basic_structure_loader_utils.input_types import InputStructureType, Tag
+from old.data_input.basic_structure_loader.basic_structure_loader_utils.input_types import InputStructureType, Tag
 
 
 class BasicStructureLoaderPrimitive:

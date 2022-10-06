@@ -9,8 +9,6 @@ from time_.time_range.time_range_utils import TimeRangeInitializer
 from utils.types_ import Day, Week
 
 
-# todo fix tests and do them for static methods
-
 @dataclass
 class TRMock:
     start: Union[None, "Time"] = None
@@ -26,12 +24,6 @@ def tri() -> TimeRangeInitializer:
 
 
 class TestTimeRangeInitializer:
-    def test__calc_amount_of_nones(self, tri):
-        assert tri._calc_amount_of_nones((None, None, None)) == 3
-        assert tri._calc_amount_of_nones((None, 1, None)) == 2
-        assert tri._calc_amount_of_nones((1, None, None )) == 2
-        assert tri._calc_amount_of_nones((1, 1, 2)) == 0
-
     def test__assert_2_of__start_end_dur__not_none__ok(self, tri):
         tri._assert_2_of__start_end_dur__not_none(Time(10, 10), TimeDelta(12, 30), None)
         tri._assert_2_of__start_end_dur__not_none(None, TimeDelta(12, 30), Time(13, 10))

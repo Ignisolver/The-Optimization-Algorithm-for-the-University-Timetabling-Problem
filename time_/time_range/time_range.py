@@ -45,7 +45,7 @@ class TimeRange(TimeRangeType):
         self.decrease_start(time_delta)
 
     def intersect(self, other: Union["Time", "TimeRange"]) -> bool:
-        self._date_correctness.assert_days_and_weeks_correctness(self, other)
+        self._date_correctness.assert_days_and_weeks_correctness(self, other, none_able=False)
         return self._intersect_detector.is_intersection(self, other)
 
     def to_generate(self) -> List:

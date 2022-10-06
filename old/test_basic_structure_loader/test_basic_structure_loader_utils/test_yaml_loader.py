@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from data_input.basic_structure_loader.basic_structure_loader_utils.yaml_loader import \
+from old.data_input.basic_structure_loader.basic_structure_loader_utils.yaml_loader import \
     YamlLoader
 
 

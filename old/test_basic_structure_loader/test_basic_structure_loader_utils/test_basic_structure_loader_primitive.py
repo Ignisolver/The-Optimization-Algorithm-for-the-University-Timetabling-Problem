@@ -1,13 +1,8 @@
 import pytest
 
-from data_input.basic_structure_loader. \
-    basic_structure_loader_utils. \
-    basic_structure_loader_primitive import \
+from old.data_input.basic_structure_loader.basic_structure_loader_utils.basic_structure_loader_primitive import \
     BasicStructureLoaderPrimitive
-from data_input. \
-    basic_structure_loader. \
-    basic_structure_loader_utils. \
-    input_types import \
+from old.data_input.basic_structure_loader.basic_structure_loader_utils.input_types import \
     InputStructureType as InpST
 
 

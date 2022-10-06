@@ -20,11 +20,13 @@ class Lecturer:
 
     def _assert_classes_available(self, classes: "Classes"):
         if not self._classes_is_available(classes):
-            raise RuntimeError("An attempt to assign unavailable classes to Lecturer")
+            raise RuntimeError("An attempt to assign unavailable"
+                               " classes to Lecturer")
 
     def _assert_new_classes(self, classes):
         if self._classes_is_available(classes):
-            raise RuntimeError("An attempt to add already added classes to Lecturer")
+            raise RuntimeError("An attempt to add already"
+                               " added classes to Lecturer")
 
     def add_available_classes(self, classes: "Classes"):
         self._assert_new_classes(classes)

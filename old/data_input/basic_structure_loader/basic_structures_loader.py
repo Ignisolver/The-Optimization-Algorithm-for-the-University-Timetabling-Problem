@@ -4,14 +4,10 @@ from pathlib import Path
 from typing import Tuple, List, Callable
 
 from basic_structures import Group, Room, Classes, Lecturer
-from data_input.basic_structure_loader.basic_structure_loader_utils. \
-    time_loader import TimeLoader
-from data_input.basic_structure_loader.basic_structure_loader_utils. \
-    basic_structure_loader_primitive import BasicStructureLoaderPrimitive
-from data_input.basic_structure_loader.basic_structure_loader_utils. \
-    yaml_loader import YamlLoader
-from data_input.basic_structure_loader.basic_structure_loader_utils. \
-    input_types import InputStructureType, Tag, FolderNames
+from old.data_input.basic_structure_loader.basic_structure_loader_utils.time_loader import TimeLoader
+from old.data_input.basic_structure_loader.basic_structure_loader_utils.basic_structure_loader_primitive import BasicStructureLoaderPrimitive
+from old.data_input.basic_structure_loader.basic_structure_loader_utils.yaml_loader import YamlLoader
+from old.data_input.basic_structure_loader.basic_structure_loader_utils.input_types import InputStructureType, Tag, FolderNames
 from utils.types_ import ClassesType, GroupId, RoomId, ClassesId, LecturerId
 
 
@@ -49,12 +45,16 @@ class BasicStructureLoader(BasicStructureLoaderPrimitive, ABC):
         capacity = data[Tag.CAPACITY]
         self._assert_not_negative_int(capacity)
 
+        building_id = data[Tag.BUILDING_ID]
+        self._assert_not_negative_int(building_id)
+
         av = data[Tag.AVAILABLE_TIMES]
         unav = data[Tag.UNAVAILABLE_TIMES]
         av_times, unav_times = self.time_loader.load_times(av, unav)
 
         room = Room(RoomId(id_),
                     name=name,
+                    building_id=building_id,
                     _initial_availability_minutes=0,
                     people_capacity=capacity)
 

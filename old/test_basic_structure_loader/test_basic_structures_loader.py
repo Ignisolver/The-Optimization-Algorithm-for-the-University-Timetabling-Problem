@@ -3,9 +3,9 @@ from typing import List
 
 import pytest
 
-from data_input.basic_structure_loader.basic_structure_loader_utils.input_types import \
+from old.data_input.basic_structure_loader.basic_structure_loader_utils.input_types import \
     FolderNames
-from data_input.basic_structure_loader.basic_structures_loader import \
+from old.data_input import \
     BasicStructureLoader, BasicStructures
 from utils.types_ import ClassesType
 
@@ -74,6 +74,7 @@ class TestBasicStructureLoader:
                      "ID": 0,
                      "NAME": "r_name",
                      "CAPACITY": 30,
+                     "BUILDING_ID": 12,
                      "AVAILABLE_TIMES": [[1, [10, 30], [12, 35]],
                                          [4, [11, 30], [15, 16]]],
                      "UNAVAILABLE_TIMES": None}
@@ -81,6 +82,7 @@ class TestBasicStructureLoader:
         assert room.name == "r_name"
         assert room.id_ == 0
         assert room.people_capacity == 30
+        assert room.build_id == 12
         # todo available times
 
     def test__load_room__incorrect_type(self, bsl):
@@ -116,6 +118,22 @@ class TestBasicStructureLoader:
         with pytest.raises(AssertionError):
             _ = bsl._load_room(room_data)
 
+    def test__load_room__incorrect_building(self, bsl):
+        room_data = {"TYPE": "Room",
+                     "ID": 0,
+                     "NAME": "r_name",
+                     "CAPACITY": 30,
+                     "BUILDING_ID": 12,
+                     "AVAILABLE_TIMES": [[1, [10, 30], [12, 35]],
+                                         [4, [11, 30], [15, 16]]],
+                     "UNAVAILABLE_TIMES": None}
+        room = bsl._load_room(room_data)
+        assert room.name == "r_name"
+        assert room.id_ == 0
+        assert room.people_capacity == 30
+        with pytest.raises(AssertionError):
+            assert room.build_id == "ds"
+
     def test__load_room__incorrect_times(self, bsl):
         assert False
 
@@ -131,11 +149,11 @@ class TestBasicStructureLoader:
         classes = bsl._load_classes(classes_data)
         assert classes.id_ == 0
         assert classes.name == "87654"
-        assert classes.duration == 15
+        assert classes.dur == 15
         assert classes.classes_type == ClassesType("W-N-2")
-        assert classes.available_rooms == [10, 20]
+        assert classes.avail_rooms == [10, 20]
         assert classes.groups == [10, 44, 502]
-        assert classes.available_lecturers == [14, 25]
+        assert classes.avail_lecturers == [14, 25]
 
     def test__load_classes__incorrect_type(self, bsl):
         classes_data = {"TYPE": "Room",

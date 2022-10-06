@@ -13,68 +13,77 @@ class Room:
     _initial_availability_minutes: int
     people_capacity: int = 0
     name: str = None
+    build_id: int = None
     schedule: WeekSchedule = field(default_factory=WeekSchedule)
-    _current_occupation_minutes: int = 0
-    _predicted_occupation: float = 0
-    _classes_occupation_probability: Dict[ClassesId, float] = field(default_factory=dict)
-    _const_classes_occupation_probability: Dict[ClassesId, float] = field(default_factory=dict)
-    _occupation_priority: float = 0  # the grater, the better
+    _curr_occup_min: int = 0
+    _pred_occup: float = 0
+    _classes_occup_probab: Dict[ClassesId, float] = \
+        field(default_factory=dict)
+    _const_classes_occup_probab: Dict[ClassesId, float] = \
+        field(default_factory=dict)
+    _occup_priority: float = 0  # the grater, the better
 
     @property
-    def occupation_priority(self):
-        if self._occupation_priority == 0:
-            raise RuntimeError("An attempt to get access to priority of room for which all classes was assigned")
+    def occup_priority(self):
+        if self._occup_priority == 0:
+            raise RuntimeError("An attempt to get access to priority of"
+                               " room for which all classes was assigned")
         else:
-            return self._occupation_priority
+            return self._occup_priority
 
-    def add_new_potential_classes_to_room(self, classes, probability):
+    def add_potential_classes(self, classes, probab):
         """
         use this function during initialisation step - before planning
         """
         if self._is_classes_available(classes.id_):
-            raise RuntimeError("An attempt to add classes again to the same room")
-        self._classes_occupation_probability[classes.id_] = probability
-        self._const_classes_occupation_probability[classes.id_] = probability
+            raise RuntimeError("An attempt to add classes"
+                               " again to the same room")
+        self._classes_occup_probab[classes.id_] = probab
+        self._const_classes_occup_probab[classes.id_] = probab
         self._update()
 
     def assign(self, classes: "Classes"):
-        self._current_occupation_minutes += int(classes.duration)
-        self._set_probability_of_classes(classes.id_, 0)
+        self._curr_occup_min += int(classes.dur)
+        self._set_probab_of_classes(classes.id_, 0)
         self.schedule.assign(classes)
 
     def unassign(self, classes: "Classes"):
-        self._current_occupation_minutes -= int(classes.duration)
-        self._reset_probability_of_classes(classes.id_)
+        self._curr_occup_min -= int(classes.dur)
+        self._reset_probab_of_classes(classes.id_)
         self.schedule.unassign(classes)
 
     def _calc_priority(self):
         try:
-            self._occupation_priority = (self._initial_availability_minutes - self._current_occupation_minutes) / \
-                                        self._predicted_occupation
+            self._occup_priority = ((self._initial_availability_minutes -
+                                     self._curr_occup_min) /
+                                    self._pred_occup)
         except ZeroDivisionError:
-            self._occupation_priority = 0
+            self._occup_priority = 0
 
-    def _calc_predicted_occupation(self):
-        self._predicted_occupation = sum(self._classes_occupation_probability.values())
+    def _calc_predicted_occup(self):
+        self._pred_occup = sum(self._classes_occup_probab.values())
 
     def _update(self):
-        self._calc_predicted_occupation()
+        self._calc_predicted_occup()
         self._calc_priority()
 
     def _is_classes_available(self, classes_id) -> bool:
-        return classes_id in self._classes_occupation_probability.keys()
+        return classes_id in self._classes_occup_probab.keys()
 
-    def _set_probability_of_classes(self,
-                                    classes_id: ClassesId,
-                                    probability: float):
+    def _set_probab_of_classes(self, classes_id: ClassesId, probab: float):
         """
         Use this function during planning
         """
         if not self._is_classes_available(classes_id):
             raise RuntimeError("An attempt to access to not existing classes")
-        self._classes_occupation_probability[classes_id] = probability
+        self._classes_occup_probab[classes_id] = probab
         self._update()
 
-    def _reset_probability_of_classes(self, classes_id):
-        probability = self._const_classes_occupation_probability[classes_id]
-        self._set_probability_of_classes(classes_id, probability)
+    def _reset_probab_of_classes(self, classes_id):
+        probability = self._const_classes_occup_probab[classes_id]
+        self._set_probab_of_classes(classes_id, probability)
+
+
+class A:
+    def __getitem__(self, item):
+        print(item)

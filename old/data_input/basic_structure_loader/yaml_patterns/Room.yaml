@@ -1,5 +1,6 @@
 TYPE: Room # Room, Lecturer, Group, Classes
 ID: 0 # int
+BUILDING_ID: 33
 NAME: "B5 - 105" # string
 CAPACITY: 30 # int
 AVAILABLE_TIMES: # array (unavailable must be null) or null (unavailable must be array)

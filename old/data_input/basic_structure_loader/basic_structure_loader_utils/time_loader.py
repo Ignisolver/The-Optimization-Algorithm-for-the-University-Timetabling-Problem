@@ -1,9 +1,10 @@
 from dataclasses import dataclass
 from typing import List, Union
 
-from data_input.basic_structure_loader.basic_structure_loader_utils.input_types import \
+from old.data_input.basic_structure_loader.basic_structure_loader_utils.input_types import \
     TRList, TRList2, NorList
 from time_ import Time, TimeRange
+from utils.none_machine import NM
 from utils.types_ import Day
 
 
@@ -78,7 +79,7 @@ class TimeLoader:
 
     @staticmethod
     def _assert_one_none(a, b):
-        assert (a and b) != (b or a)
+        assert NM.contain_one_none((a, b))
 
     def _assert_aval_ranges_correct(self, avail_times, unavail_times):
         self._assert_one_none(avail_times, unavail_times)

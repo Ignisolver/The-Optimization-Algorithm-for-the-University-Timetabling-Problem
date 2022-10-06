@@ -1,7 +1,6 @@
 import pytest
 
-from data_input.basic_structure_loader.basic_structure_loader_utils. \
-    time_loader import TimeLoader, PrefTime
+from old.data_input.basic_structure_loader.basic_structure_loader_utils.time_loader import TimeLoader, PrefTime
 from time_ import TimeRange, Time
 from utils.types_ import Day
 

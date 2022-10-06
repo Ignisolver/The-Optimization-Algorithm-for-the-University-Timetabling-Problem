@@ -1,0 +1,5 @@
+TYPE: Group
+ID: 0 # int
+NAME: "Air 3 4" # string
+AMOUNT_OF_STUDENTS: 15 # int
+#todo delete classes to assign

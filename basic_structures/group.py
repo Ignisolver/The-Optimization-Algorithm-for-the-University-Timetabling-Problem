@@ -15,7 +15,8 @@ class Group:
     amount_of_students: int
     name: str = None
     week_schedule: WeekSchedule = field(default_factory=WeekSchedule)
-    _unassigned_classes: Dict[ClassesId, "Classes"] = field(default_factory=dict)
+    _unassigned_classes: Dict[ClassesId, "Classes"] =\
+        field(default_factory=dict)
     _assigned_classes: Dict[ClassesId, "Classes"] = field(default_factory=dict)
 
     def add_classes_to_assign(self, classes: "Classes"):
@@ -43,11 +44,13 @@ class Group:
 
     def _assert_classes_in_available_unassigned(self, classes: "Classes"):
         if not self._is_classes_in_available_unassigned(classes):
-            raise RuntimeError(f"Classes: f{classes} unavailable for group: {self}")
+            raise RuntimeError(f"Classes: f{classes} unavailable"
+                               f" for group: {self}")
 
     def _assert_classes_not_in_available_unassigned(self, classes: "Classes"):
         if self._is_classes_in_available_unassigned(classes):
-            raise RuntimeError(f"Classes: f{classes} already added for group: {self}")
+            raise RuntimeError(f"Classes: f{classes} already added "
+                               f"for group: {self}")
 
     def _assert_classes_in_assigned(self, classes):
         if not self._is_classes_in_assigned(classes):

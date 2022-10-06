@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING, Union
 
 from utils.constans import DAYS
+from utils.none_machine import NM
 from utils.types_ import Week, Day
 
 if TYPE_CHECKING:
@@ -13,10 +14,9 @@ class DateCorrectnessCaretaker:
                                                                 "TimeRange"],
                                           another_time: Union["Time",
                                                               "TimeRange"],
-                                          none_able=False):
+                                          none_able=True):
         if none_able:
-            if self._are_both_day_and_week_in_self_or_other_nones(one_time,
-                                                                  another_time):
+            if self._are_week_and_day_nones_in_one(one_time, another_time):
                 return None
         self._assert_days_and_weeks_same(one_time, another_time)
 
@@ -26,28 +26,24 @@ class DateCorrectnessCaretaker:
                 (one_time.week == another_time.week))
 
     @staticmethod
-    def _are_day_and_week_nones(day, week):
-        return (day is None) and (week is None)
-
-    @staticmethod
     def _are_day_and_week_set(day, week):
         return (day in DAYS) and isinstance(week, Week)
 
-    def _are_both_day_and_week_in_self_or_other_nones(self,
-                                                      one_time: Union["Time", "TimeRange"],
-                                                      another_time: Union["Time", "TimeRange"]):
-        return (self._are_day_and_week_nones(one_time.day, one_time.week) or
-                self._are_day_and_week_nones(another_time.day, another_time.week))
+    @staticmethod
+    def _are_week_and_day_nones_in_one(one_t: Union["Time", "TimeRange"],
+                                       another_t: Union["Time", "TimeRange"]):
+        return (NM.both_nones(one_t.day, one_t.week) or
+                NM.both_nones(another_t.day, another_t.week))
 
     def _assert_days_and_weeks_same(self, one_time, another_time):
         if not self._are_weeks_and_days_same(one_time, another_time):
-            raise RuntimeError("Operation forbidden for times with different days")
+            raise RuntimeError(
+                "Operation forbidden for times with different days")
 
-    def assert_initial_arguments_day_and_week_correct(self, day, week):
-        if (self._are_day_and_week_nones(day, week) or
+    def assert_args_day_and_week_correct(self, day, week):
+        if (NM.both_nones(day, week) or
                 self._are_day_and_week_set(day, week)):
             pass
         else:
-            raise RuntimeError(f"Day and week are not correct: Day: {day}; Week: {week}")
-
-
+            raise RuntimeError(
+                f"Day and week are not correct: Day: {day}; Week: {week}")
