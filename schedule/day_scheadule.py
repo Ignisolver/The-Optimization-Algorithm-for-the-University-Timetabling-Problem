@@ -1,10 +1,10 @@
 from dataclasses import dataclass, field
-from typing import Iterator, List, TYPE_CHECKING
+from typing import Iterator, List, TYPE_CHECKING, Union
 
 from data import MIN_HOUR, MAX_HOUR
 from tools.distanses_manager import DISTANCES, Distances
-from utils.types_ import ClassesTypes as CT
-from time_ import TimeDelta, TimeRange
+from utils.types_ import ClassesType as CT
+from time_ import TimeDelta, TimeRange, Time
 
 if TYPE_CHECKING:
     from basic_structures import Classes
@@ -27,24 +27,39 @@ class DaySchedule:
     def __iter__(self) -> Iterator:
         return iter(self._classes)
 
-    def get_classes(self):
+    def get_classes(self) -> List["Classes"]:
         return self._classes
 
-    def get_last_classes(self):
+    def get_last_classes(self) -> Union["Classes", None]:
+        if len(self._classes) == 0:
+            return None
         return self._classes[-1]
 
-    def get_first_classes(self):
+    def get_last_classes_before(self, time: Time) -> Union["Classes", None]:
+        if len(self._classes) == 0:
+            return None
+        last_cl = None
+        for cl in self._classes:
+            if cl.start_time < time:
+                last_cl = cl
+            else:
+                break
+        return last_cl
+
+    def get_first_classes(self) -> Union["Classes", None]:
+        if len(self._classes) == 0:
+            return None
         return self._classes[0]
 
-    def get_amount_of_labs(self):
+    def get_amount_of_labs(self) -> int:
         am = sum(1 for cl in self._classes if cl.classes_type == CT.LABORATORY)
         return am
 
-    def get_amount_of_lectures(self):
+    def get_amount_of_lectures(self) -> int:
         am = sum(1 for cl in self._classes if cl.classes_type == CT.LECTURE)
         return am
 
-    def get_amount_of_classes(self):
+    def get_amount_of_classes(self) -> int:
         return len(self._classes)
 
     def temp_assign(self, classes: "Classes"):
@@ -69,8 +84,8 @@ class DaySchedule:
 
     def pretty_represent(self):
         s = " "
-        print(f"{3*s}ID | start ->{2*s}end{2*s}| ELE/NORM-LAB/LECT{3*s}| NAME")
-        print(2*s + 4 *"-"+"|"+16*'-'+'|'+21*'-'+"|"+10*'-')
+        print(f"{3*s}ID | start ->{2*s}end{2*s}| LAB/LECT{3*s}| NAME")
+        print(2*s + 4 *"-"+"|"+16*'-'+'|'+12*'-'+"|"+10*'-')
         for cl in self._classes:
             cl.pretty_represent()
 
@@ -82,9 +97,9 @@ class DaySchedule:
         return time_before + time_during + time_after
 
     def _calc_time_btw_classes(self, earlier: "Classes", later: "Classes"):
+        """without move time"""
         total_t = later.start_time - earlier.end_time
-        mov_t = self._distances[earlier.assigned_rooms[0],
-                                later.assigned_rooms[0]]
+        mov_t = self._distances[earlier.assigned_room, later.assigned_room]
         return total_t - mov_t
 
     def get_brake_time(self) -> "TimeDelta":

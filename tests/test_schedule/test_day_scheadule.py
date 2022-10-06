@@ -6,7 +6,7 @@ import pytest
 from basic_structures import Classes
 from schedule.day_scheadule import DaySchedule
 from time_ import TimeDelta, Time
-from utils.types_ import ClassesTypes as CT, ClassesType, ClassesTypes
+from utils.types_ import ClassesType as CT
 
 DISTANCES = {(1, 0): TimeDelta(1, 0),
              (0, 1): TimeDelta(1, 0),
@@ -32,15 +32,15 @@ class RoomM:
 @dataclass
 class ClassesM:
     dur: TimeDelta
-    classes_type: ClassesType
-    _assigned_rooms: List[RoomM]
+    classes_type: CT
+    assigned_room: List[RoomM]
     _start_t: Time = None
 
     def __post_init__(self):
         self._end_t = self._start_t + self.dur
         self.start_time = self._start_t
         self.end_time = self._end_t
-        self.assigned_rooms = self._assigned_rooms
+        self.assigned_rooms = self.assigned_room
 
 @dataclass
 class DistM:
@@ -62,11 +62,11 @@ def day_schedule_1():
 
 @pytest.fixture
 def classes_list() -> List[Classes]:
-    classes = [Classes(1, "nam1", TimeDelta(1, 20), CT.LECTURE, None, None),
-               Classes(2, "nam2", TimeDelta(2, 20), CT.LABORATORY, None, None),
-               Classes(3, "nam3", TimeDelta(1, 00), CT.LECTURE, None, None),
-               Classes(4, "nam4", TimeDelta(2, 00), CT.LABORATORY, None, None),
-               Classes(5, "nam5", TimeDelta(3, 30), CT.LECTURE, None, None),
+    classes = [Classes(1, "nam1", TimeDelta(1, 20), CT.LECTURE, None, None, None),
+               Classes(2, "nam2", TimeDelta(2, 20), CT.LABORATORY, None, None, None),
+               Classes(3, "nam3", TimeDelta(1, 00), CT.LECTURE, None, None, None),
+               Classes(4, "nam4", TimeDelta(2, 00), CT.LABORATORY, None, None, None),
+               Classes(5, "nam5", TimeDelta(3, 30), CT.LECTURE, None, None, None),
                ]
     return classes
 
@@ -90,10 +90,10 @@ class TestDayScheadule:
     def test__calc_time_between_classes(self, day_schedule, classes_list):
         cl1 = classes_list[0]
         cl1.start_time = Time(10, 20)
-        cl1._assigned_rooms = [1]
+        cl1.assigned_room = 1
         cl2 = classes_list[1]
         cl2.start_time = Time(14, 20)
-        cl2._assigned_rooms = [0]
+        cl2.assigned_room = 0
         assert day_schedule._calc_time_btw_classes(classes_list[0],
                                                    classes_list[1]) == \
                TimeDelta(1, 40)
@@ -104,7 +104,7 @@ class TestDayScheadule:
         start_times = [Time(8, 0), Time(10,0), Time(13, 0), Time(15, 0)]
         for nr, cl in enumerate(classes_list[0: 4]):
             cl.start_time = start_times[nr]
-            cl._assigned_rooms = [rooms[nr]]
+            cl.assigned_room = rooms[nr]
             new_cl_list.append(cl)
         day_schedule._classes = new_cl_list
         assert day_schedule.get_free_time(min_h=Time(7, 0),
@@ -116,18 +116,41 @@ class TestDayScheadule:
         start_times = [Time(8, 0), Time(10, 0), Time(13, 0), Time(15, 0)]
         for nr, cl in enumerate(classes_list[0: 4]):
             cl.start_time = start_times[nr]
-            cl._assigned_rooms = [rooms[nr]]
+            cl.assigned_room = rooms[nr]
             new_cl_list.append(cl)
         day_schedule._classes = new_cl_list
         assert day_schedule.get_brake_time() == TimeDelta(1, 20)
 
-    def test_get_last_classes(self, day_schedule, classes_list):
+    def test_get_last_classes_ok(self, day_schedule, classes_list):
         day_schedule._classes = classes_list
         assert day_schedule.get_last_classes() == classes_list[-1]
 
-    def test_get_first_classes(self, day_schedule, classes_list):
+    def test_get_last_classes_empty(self, day_schedule, classes_list):
+        day_schedule._classes = []
+        assert day_schedule.get_last_classes() is None
+
+    def test_get_first_classes_ok(self, day_schedule, classes_list):
         day_schedule._classes = classes_list
         assert day_schedule.get_first_classes() == classes_list[0]
+
+    def test_get_first_classes_empty(self, day_schedule, classes_list):
+        day_schedule._classes = []
+        assert day_schedule.get_first_classes() is None
+
+    def test_get_last_classes_before(self, day_schedule, classes_list):
+        cl1, cl2 = classes_list[0:2]
+        cl1.start_time = Time(10, 10)
+        cl2.start_time = Time(14, 10)
+        day_schedule._classes = [cl1, cl2]
+        assert day_schedule.get_last_classes_before(Time(10, 00)) is None
+        assert day_schedule.get_last_classes_before(Time(10, 10)) is None
+        assert day_schedule.get_last_classes_before(Time(10, 30)) == cl1
+        assert day_schedule.get_last_classes_before(Time(11, 30)) == cl1
+        assert day_schedule.get_last_classes_before(Time(12, 30)) == cl1
+        assert day_schedule.get_last_classes_before(Time(14, 30)) == cl2
+        assert day_schedule.get_last_classes_before(Time(18, 30)) == cl2
+
+
 
     def test_get_amount_of_labs(self, day_schedule, classes_list):
         day_schedule._classes = classes_list
@@ -147,217 +170,217 @@ class TestDayScheadule:
         # 9:40 - 11:20,  12:30 - 14:30
         day_schedule_1._classes = [cl1, cl2]
 
-        cl3 = ClassesM(TimeDelta(1, 0), None, [RoomM(2, 66)], Time(8, 0))
+        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(8, 0))
         day_schedule_1._assert_not_intersect(cl3)
 
-        cl3 = ClassesM(TimeDelta(1, 0), None, [RoomM(2, 66)], Time(9, 0))
+        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(9, 0))
         day_schedule_1._assert_not_intersect(cl3)
 
-        cl3 = ClassesM(TimeDelta(1, 0), None, [RoomM(2, 66)], Time(11, 0))
+        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(11, 0))
         day_schedule_1._assert_not_intersect(cl3)
 
-        cl3 = ClassesM(TimeDelta(1, 0), None, [RoomM(2, 66)], Time(11, 30))
+        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(11, 30))
         day_schedule_1._assert_not_intersect(cl3)
 
-        cl3 = ClassesM(TimeDelta(1, 0), None, [RoomM(2, 66)], Time(12, 00))
+        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(12, 00))
         day_schedule_1._assert_not_intersect(cl3)
 
-        cl3 = ClassesM(TimeDelta(1, 0), None, [RoomM(2, 66)], Time(14, 0))
+        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(14, 0))
         day_schedule_1._assert_not_intersect(cl3)
 
-        cl3 = ClassesM(TimeDelta(1, 0), None, [RoomM(2, 66)], Time(15, 50))
+        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(15, 50))
         day_schedule_1._assert_not_intersect(cl3)
 
     def test__assert_not_intersect__incorrect(self, day_schedule_1):
-        cl1 = ClassesM(TimeDelta(1,0), None, [RoomM(0,44)], Time(10,0))
-        cl2 = ClassesM(TimeDelta(1,0), None, [RoomM(1,55)], Time(13,0))
+        cl1 = ClassesM(TimeDelta(1,0), None, RoomM(0,44), Time(10,0))
+        cl2 = ClassesM(TimeDelta(1,0), None, RoomM(1,55), Time(13,0))
         # 9:40 - 11:20,  12:30 - 14:30
         day_schedule_1._classes = [cl1, cl2]
 
-        cl3 = ClassesM(TimeDelta(1, 0), None, [RoomM(2, 66)], Time(9, 10))
+        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(9, 10))
         with pytest.raises(AssertionError):
             day_schedule_1._assert_not_intersect(cl3)
 
-        cl3 = ClassesM(TimeDelta(0, 30), None, [RoomM(2, 66)], Time(10, 00))
+        cl3 = ClassesM(TimeDelta(0, 30), None, RoomM(2, 66), Time(10, 00))
         with pytest.raises(AssertionError):
             day_schedule_1._assert_not_intersect(cl3)
 
-        cl3 = ClassesM(TimeDelta(1, 0), None, [RoomM(2, 66)], Time(10, 00))
+        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(10, 00))
         with pytest.raises(AssertionError):
             day_schedule_1._assert_not_intersect(cl3)
 
-        cl3 = ClassesM(TimeDelta(0, 50), None, [RoomM(2, 66)], Time(10, 10))
+        cl3 = ClassesM(TimeDelta(0, 50), None, RoomM(2, 66), Time(10, 10))
         with pytest.raises(AssertionError):
             day_schedule_1._assert_not_intersect(cl3)
 
-        cl3 = ClassesM(TimeDelta(1,0), None, [RoomM(2, 66)], Time(10, 10))
+        cl3 = ClassesM(TimeDelta(1,0), None, RoomM(2, 66), Time(10, 10))
         with pytest.raises(AssertionError):
             day_schedule_1._assert_not_intersect(cl3)
 
-        cl3 = ClassesM(TimeDelta(1, 0), None, [RoomM(2, 66)], Time(13, 50))
+        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(13, 50))
         with pytest.raises(AssertionError):
             day_schedule_1._assert_not_intersect(cl3)
 
     def test__assert_distance_is_not_to_long__ok(self, day_schedule_1):
-        cl1 = ClassesM(TimeDelta(1, 0), None, [RoomM(0, 44)], Time(10, 0))
-        cl2 = ClassesM(TimeDelta(1, 0), None, [RoomM(1, 55)], Time(13, 0))
+        cl1 = ClassesM(TimeDelta(1, 0), None, RoomM(0, 44), Time(10, 0))
+        cl2 = ClassesM(TimeDelta(1, 0), None, RoomM(1, 55), Time(13, 0))
         # 9:40 - 11:20,  12:30 - 14:30
         day_schedule_1._classes = [cl1, cl2]
 
-        cl3 = ClassesM(TimeDelta(1, 0), None, [RoomM(2, 66)], Time(8, 0))
+        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(8, 0))
         day_schedule_1._assert_distance_is_not_to_long(cl3)
 
-        cl3 = ClassesM(TimeDelta(0, 40), None, [RoomM(2, 66)], Time(9, 0))
+        cl3 = ClassesM(TimeDelta(0, 40), None, RoomM(2, 66), Time(9, 0))
         day_schedule_1._assert_distance_is_not_to_long(cl3)
 
-        cl3 = ClassesM(TimeDelta(1, 0), None, [RoomM(2, 66)], Time(11, 20))
+        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(11, 20))
         day_schedule_1._assert_distance_is_not_to_long(cl3)
 
-        cl3 = ClassesM(TimeDelta(0, 50), None, [RoomM(2, 66)], Time(11, 30))
+        cl3 = ClassesM(TimeDelta(0, 50), None, RoomM(2, 66), Time(11, 30))
         day_schedule_1._assert_distance_is_not_to_long(cl3)
 
-        cl3 = ClassesM(TimeDelta(1, 0), None, [RoomM(2, 66)], Time(11, 30))
+        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(11, 30))
         day_schedule_1._assert_distance_is_not_to_long(cl3)
 
-        cl3 = ClassesM(TimeDelta(1, 0), None, [RoomM(2, 66)], Time(14, 30))
+        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(14, 30))
         day_schedule_1._assert_distance_is_not_to_long(cl3)
 
-        cl3 = ClassesM(TimeDelta(1, 0), None, [RoomM(2, 66)], Time(15, 0))
+        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(15, 0))
         day_schedule_1._assert_distance_is_not_to_long(cl3)
 
     def test__assert_distance_is_not_to_long__incorrect(self, day_schedule_1):
-        cl1 = ClassesM(TimeDelta(1, 0), None, [RoomM(0, 44)], Time(10, 0))
-        cl2 = ClassesM(TimeDelta(1, 0), None, [RoomM(1, 55)], Time(13, 0))
+        cl1 = ClassesM(TimeDelta(1, 0), None, RoomM(0, 44), Time(10, 0))
+        cl2 = ClassesM(TimeDelta(1, 0), None, RoomM(1, 55), Time(13, 0))
         # 9:40 - 11:20,  12:30 - 14:30
         day_schedule_1._classes = [cl1, cl2]
 
-        cl3 = ClassesM(TimeDelta(0, 50), None, [RoomM(2, 66)], Time(9, 0))
+        cl3 = ClassesM(TimeDelta(0, 50), None, RoomM(2, 66), Time(9, 0))
         with pytest.raises(AssertionError):
             day_schedule_1._assert_distance_is_not_to_long(cl3)
 
-        cl3 = ClassesM(TimeDelta(0, 5), None, [RoomM(2, 66)], Time(9, 50))
+        cl3 = ClassesM(TimeDelta(0, 5), None, RoomM(2, 66), Time(9, 50))
         with pytest.raises(AssertionError):
             day_schedule_1._assert_distance_is_not_to_long(cl3)
 
-        cl3 = ClassesM(TimeDelta(0,40), None, [RoomM(2, 66)], Time(11,0))
+        cl3 = ClassesM(TimeDelta(0,40), None, RoomM(2, 66), Time(11,0))
         with pytest.raises(AssertionError):
             day_schedule_1._assert_distance_is_not_to_long(cl3)
 
-        cl3 = ClassesM(TimeDelta(0, 4), None, [RoomM(2, 66)], Time(11, 10))
+        cl3 = ClassesM(TimeDelta(0, 4), None, RoomM(2, 66), Time(11, 10))
         with pytest.raises(AssertionError):
             day_schedule_1._assert_distance_is_not_to_long(cl3)
 
-        cl3 = ClassesM(TimeDelta(0, 40), None, [RoomM(2, 66)], Time(11, 10))
+        cl3 = ClassesM(TimeDelta(0, 40), None, RoomM(2, 66), Time(11, 10))
         with pytest.raises(AssertionError):
             day_schedule_1._assert_distance_is_not_to_long(cl3)
 
-        cl3 = ClassesM(TimeDelta(1, 0), None, [RoomM(2, 66)], Time(14, 20))
+        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(14, 20))
         with pytest.raises(AssertionError):
             day_schedule_1._assert_distance_is_not_to_long(cl3)
 
     def test__assert_assignment_available__ok(self, day_schedule_1,
                                               classes_list):
 
-        cl1 = ClassesM(TimeDelta(1, 0), None, [RoomM(0, 44)], Time(10, 0))
-        cl2 = ClassesM(TimeDelta(1, 0), None, [RoomM(1, 55)], Time(13, 0))
+        cl1 = ClassesM(TimeDelta(1, 0), None, RoomM(0, 44), Time(10, 0))
+        cl2 = ClassesM(TimeDelta(1, 0), None, RoomM(1, 55), Time(13, 0))
         # 9:40 - 11:20,  12:30 - 14:30
         day_schedule_1._classes = [cl1, cl2]
 
-        cl3 = ClassesM(TimeDelta(1, 0), None, [RoomM(2, 66)], Time(8, 0))
+        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(8, 0))
         day_schedule_1._assert_assignment_available(cl3)
 
-        cl3 = ClassesM(TimeDelta(1, 0), None, [RoomM(2, 66)], Time(11, 30))
+        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(11, 30))
         day_schedule_1._assert_assignment_available(cl3)
 
-        cl3 = ClassesM(TimeDelta(1, 0), None, [RoomM(2, 66)], Time(15, 50))
+        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(15, 50))
         day_schedule_1._assert_assignment_available(cl3)
 
-        cl3 = ClassesM(TimeDelta(1, 0), None, [RoomM(2, 66)], Time(8, 0))
+        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(8, 0))
         day_schedule_1._assert_assignment_available(cl3)
 
-        cl3 = ClassesM(TimeDelta(0, 40), None, [RoomM(2, 66)], Time(9, 0))
+        cl3 = ClassesM(TimeDelta(0, 40), None, RoomM(2, 66), Time(9, 0))
         day_schedule_1._assert_assignment_available(cl3)
 
-        cl3 = ClassesM(TimeDelta(1, 0), None, [RoomM(2, 66)], Time(11, 20))
+        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(11, 20))
         day_schedule_1._assert_assignment_available(cl3)
 
-        cl3 = ClassesM(TimeDelta(0, 50), None, [RoomM(2, 66)], Time(11, 30))
+        cl3 = ClassesM(TimeDelta(0, 50), None, RoomM(2, 66), Time(11, 30))
         day_schedule_1._assert_assignment_available(cl3)
 
-        cl3 = ClassesM(TimeDelta(1, 0), None, [RoomM(2, 66)], Time(11, 30))
+        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(11, 30))
         day_schedule_1._assert_assignment_available(cl3)
 
-        cl3 = ClassesM(TimeDelta(1, 0), None, [RoomM(2, 66)], Time(14, 30))
+        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(14, 30))
         day_schedule_1._assert_assignment_available(cl3)
 
-        cl3 = ClassesM(TimeDelta(1, 0), None, [RoomM(2, 66)], Time(15, 0))
+        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(15, 0))
         day_schedule_1._assert_assignment_available(cl3)
 
     def test__assert_assignment_available__incorrect(self,
                                                      day_schedule_1,
                                                      classes_list):
-        cl1 = ClassesM(TimeDelta(1, 0), None, [RoomM(0, 44)], Time(10, 0))
-        cl2 = ClassesM(TimeDelta(1, 0), None, [RoomM(1, 55)], Time(13, 0))
+        cl1 = ClassesM(TimeDelta(1, 0), None, RoomM(0, 44), Time(10, 0))
+        cl2 = ClassesM(TimeDelta(1, 0), None, RoomM(1, 55), Time(13, 0))
         # 9:40 - 11:20,  12:30 - 14:30
         day_schedule_1._classes = [cl1, cl2]
 
-        cl3 = ClassesM(TimeDelta(1, 0), None, [RoomM(2, 66)], Time(9, 0))
+        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(9, 0))
         with pytest.raises(AssertionError):
             day_schedule_1._assert_assignment_available(cl3)
 
-        cl3 = ClassesM(TimeDelta(0, 30), None, [RoomM(2, 66)], Time(9, 50))
+        cl3 = ClassesM(TimeDelta(0, 30), None, RoomM(2, 66), Time(9, 50))
         with pytest.raises(AssertionError):
             day_schedule_1._assert_assignment_available(cl3)
 
-        cl3 = ClassesM(TimeDelta(0, 30), None, [RoomM(2, 66)], Time(10, 10))
+        cl3 = ClassesM(TimeDelta(0, 30), None, RoomM(2, 66), Time(10, 10))
         with pytest.raises(AssertionError):
             day_schedule_1._assert_assignment_available(cl3)
 
-        cl3 = ClassesM(TimeDelta(0, 5), None, [RoomM(2, 66)], Time(11, 10))
+        cl3 = ClassesM(TimeDelta(0, 5), None, RoomM(2, 66), Time(11, 10))
         with pytest.raises(AssertionError):
             day_schedule_1._assert_assignment_available(cl3)
 
-        cl3 = ClassesM(TimeDelta(0, 50), None, [RoomM(2, 66)], Time(10, 50))
+        cl3 = ClassesM(TimeDelta(0, 50), None, RoomM(2, 66), Time(10, 50))
         with pytest.raises(AssertionError):
             day_schedule_1._assert_assignment_available(cl3)
 
-        cl3 = ClassesM(TimeDelta(1, 0), None, [RoomM(2, 66)], Time(10, 00))
+        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(10, 00))
         with pytest.raises(AssertionError):
             day_schedule_1._assert_assignment_available(cl3)
 
-        cl3 = ClassesM(TimeDelta(1, 0), None, [RoomM(2, 66)], Time(11, 00))
+        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(11, 00))
         with pytest.raises(AssertionError):
             day_schedule_1._assert_assignment_available(cl3)
 
-        cl3 = ClassesM(TimeDelta(1, 0), None, [RoomM(2, 66)], Time(11, 5))
+        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(11, 5))
         with pytest.raises(AssertionError):
             day_schedule_1._assert_assignment_available(cl3)
 
-        cl3 = ClassesM(TimeDelta(1, 0), None, [RoomM(2, 66)], Time(13, 50))
+        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(13, 50))
         with pytest.raises(AssertionError):
             day_schedule_1._assert_assignment_available(cl3)
 
-        cl3 = ClassesM(TimeDelta(0, 50), None, [RoomM(2, 66)], Time(9, 0))
+        cl3 = ClassesM(TimeDelta(0, 50), None, RoomM(2, 66), Time(9, 0))
         with pytest.raises(AssertionError):
             day_schedule_1._assert_assignment_available(cl3)
 
-        cl3 = ClassesM(TimeDelta(0, 5), None, [RoomM(2, 66)], Time(9, 50))
+        cl3 = ClassesM(TimeDelta(0, 5), None, RoomM(2, 66), Time(9, 50))
         with pytest.raises(AssertionError):
             day_schedule_1._assert_assignment_available(cl3)
 
-        cl3 = ClassesM(TimeDelta(0, 40), None, [RoomM(2, 66)], Time(11, 0))
+        cl3 = ClassesM(TimeDelta(0, 40), None, RoomM(2, 66), Time(11, 0))
         with pytest.raises(AssertionError):
             day_schedule_1._assert_assignment_available(cl3)
 
-        cl3 = ClassesM(TimeDelta(0, 4), None, [RoomM(2, 66)], Time(11, 10))
+        cl3 = ClassesM(TimeDelta(0, 4), None, RoomM(2, 66), Time(11, 10))
         with pytest.raises(AssertionError):
             day_schedule_1._assert_assignment_available(cl3)
 
-        cl3 = ClassesM(TimeDelta(0, 40), None, [RoomM(2, 66)], Time(11, 10))
+        cl3 = ClassesM(TimeDelta(0, 40), None, RoomM(2, 66), Time(11, 10))
         with pytest.raises(AssertionError):
             day_schedule_1._assert_assignment_available(cl3)
 
-        cl3 = ClassesM(TimeDelta(1, 0), None, [RoomM(2, 66)], Time(14, 20))
+        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(14, 20))
         with pytest.raises(AssertionError):
             day_schedule_1._assert_assignment_available(cl3)
         
@@ -381,39 +404,39 @@ class TestDayScheadule:
         assert day_schedule_1._classes == corr_ord_cl_list
 
     def test_assign_classes_ok(self, day_schedule_1):
-        cl1 = ClassesM(TimeDelta(1, 0), None, [RoomM(0, 44)], Time(10, 0))
-        cl2 = ClassesM(TimeDelta(1, 0), None, [RoomM(1, 55)], Time(13, 0))
+        cl1 = ClassesM(TimeDelta(1, 0), None, RoomM(0, 44), Time(10, 0))
+        cl2 = ClassesM(TimeDelta(1, 0), None, RoomM(1, 55), Time(13, 0))
         # 9:40 - 11:20,  12:30 - 14:30
         day_schedule_1._classes = [cl1, cl2]
-        cl3 = ClassesM(TimeDelta(1, 0), None, [RoomM(2, 66)], Time(8, 0))
+        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(8, 0))
         day_schedule_1.assign_classes(cl3)
         assert day_schedule_1._classes == [cl3, cl1, cl2]
 
     def test_assign_classes__incorrect(self, day_schedule_1):
-        cl1 = ClassesM(TimeDelta(1, 0), None, [RoomM(0, 44)], Time(10, 0))
-        cl2 = ClassesM(TimeDelta(1, 0), None, [RoomM(1, 55)], Time(13, 0))
+        cl1 = ClassesM(TimeDelta(1, 0), None, RoomM(0, 44), Time(10, 0))
+        cl2 = ClassesM(TimeDelta(1, 0), None, RoomM(1, 55), Time(13, 0))
         # 9:40 - 11:20,  12:30 - 14:30
         day_schedule_1._classes = [cl1, cl2]
-        cl3 = ClassesM(TimeDelta(1, 0), None, [RoomM(2, 66)], Time(10, 0))
+        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(10, 0))
         with pytest.raises(AssertionError):
             day_schedule_1.assign_classes(cl3)
 
     def test_assign_temporary(self, day_schedule_1):
-        cl1 = ClassesM(TimeDelta(1, 0), None, [RoomM(0, 44)], Time(10, 0))
-        cl2 = ClassesM(TimeDelta(1, 0), None, [RoomM(1, 55)], Time(13, 0))
+        cl1 = ClassesM(TimeDelta(1, 0), None, RoomM(0, 44), Time(10, 0))
+        cl2 = ClassesM(TimeDelta(1, 0), None, RoomM(1, 55), Time(13, 0))
         # 9:40 - 11:20,  12:30 - 14:30
         day_schedule_1._classes = [cl1, cl2]
-        cl3 = ClassesM(TimeDelta(1, 0), None, [RoomM(2, 66)], Time(8, 0))
+        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(8, 0))
         day_schedule_1.temp_assign(cl3)
         assert day_schedule_1._classes == [cl3, cl1, cl2]
         assert day_schedule_1._temp_cl_nr == 0
 
     def test_revert_temporary_assign(self, day_schedule_1):
-        cl1 = ClassesM(TimeDelta(1, 0), None, [RoomM(0, 44)], Time(10, 0))
-        cl2 = ClassesM(TimeDelta(1, 0), None, [RoomM(1, 55)], Time(13, 0))
+        cl1 = ClassesM(TimeDelta(1, 0), None, RoomM(0, 44), Time(10, 0))
+        cl2 = ClassesM(TimeDelta(1, 0), None, RoomM(1, 55), Time(13, 0))
         # 9:40 - 11:20,  12:30 - 14:30
         day_schedule_1._classes = [cl1, cl2]
-        cl3 = ClassesM(TimeDelta(1, 0), None, [RoomM(2, 66)], Time(8, 0))
+        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(8, 0))
         day_schedule_1.temp_assign(cl3)
         assert day_schedule_1._classes == [cl3, cl1, cl2]
         assert day_schedule_1._temp_cl_nr == 0
@@ -425,11 +448,10 @@ class TestDayScheadule:
         new_cl_list = []
         rooms = [2, 3, 2, 3]
         start_times = [Time(8, 0), Time(10, 0), Time(13, 0), Time(15, 0)]
-        types = [ClassesType("W-E-3"), ClassesType("L-N-3"),
-                 ClassesType("W-E-3"), ClassesType("L-N-3")]
+        types = [CT.LECTURE, CT.LABORATORY, CT.LABORATORY, CT.LECTURE]
         for nr, cl in enumerate(classes_list[0: 4]):
             cl.start_time = start_times[nr]
-            cl._assigned_rooms = [rooms[nr]]
+            cl.assigned_room = rooms[nr]
             cl.classes_type = types[nr]
             new_cl_list.append(cl)
         day_schedule._classes = new_cl_list

@@ -7,3 +7,9 @@ class WeekSchedule:
 
     def unassign(self, classes):
         pass
+
+    def temp_assign(self, classes):
+        pass
+
+    def unassign_temp(self):
+        pass

@@ -1,20 +1,20 @@
 from dataclasses import dataclass, field
 from typing import Dict, TYPE_CHECKING
+
+from basic_structures.assignable import Assignable
 from utils.types_ import RoomId, ClassesId
-from schedule.week_scheadule import WeekSchedule
 
 if TYPE_CHECKING:
     from classes import Classes
 
 
 @dataclass
-class Room:
+class Room(Assignable):
     id_: RoomId
     _initial_availability_minutes: int
     people_capacity: int = 0
     name: str = None
     build_id: int = None
-    schedule: WeekSchedule = field(default_factory=WeekSchedule)
     _curr_occup_min: int = 0
     _pred_occup: float = 0
     _classes_occup_probab: Dict[ClassesId, float] = \
@@ -22,6 +22,9 @@ class Room:
     _const_classes_occup_probab: Dict[ClassesId, float] = \
         field(default_factory=dict)
     _occup_priority: float = 0  # the grater, the better
+
+    def __post_init__(self):
+        super().__init__()
 
     @property
     def occup_priority(self):
@@ -45,12 +48,12 @@ class Room:
     def assign(self, classes: "Classes"):
         self._curr_occup_min += int(classes.dur)
         self._set_probab_of_classes(classes.id_, 0)
-        self.schedule.assign(classes)
+        super().assign(classes)
 
     def unassign(self, classes: "Classes"):
         self._curr_occup_min -= int(classes.dur)
         self._reset_probab_of_classes(classes.id_)
-        self.schedule.unassign(classes)
+        super().unassign(classes)
 
     def _calc_priority(self):
         try:
@@ -82,8 +85,3 @@ class Room:
     def _reset_probab_of_classes(self, classes_id):
         probability = self._const_classes_occup_probab[classes_id]
         self._set_probab_of_classes(classes_id, probability)
-
-
-class A:
-    def __getitem__(self, item):
-        print(item)
