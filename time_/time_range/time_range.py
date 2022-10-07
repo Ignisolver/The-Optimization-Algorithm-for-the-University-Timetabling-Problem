@@ -3,8 +3,7 @@ from typing import TYPE_CHECKING, Union, List
 
 from time_.time_range.time_range_utils import (TimeRangeIntersectDetector,
                                                TimeRangeInitializer)
-from utils.types_ import Day, Week, TimeRangeType
-from time_.time_utils import DateCorrectnessCaretaker
+from utils.types_ import Day, TimeRangeType
 from time_ import TimeDelta
 
 if TYPE_CHECKING:
@@ -17,9 +16,7 @@ class TimeRange(TimeRangeType):
     end: Union["Time", None] = None
     dur: Union[TimeDelta, None] = None
     day: Union[Day, None] = None
-    week: Union[Week, None] = None
     _intersect_detector = TimeRangeIntersectDetector()
-    _date_correctness = DateCorrectnessCaretaker()
     _initializer = TimeRangeInitializer()
 
     def __post_init__(self):
@@ -45,11 +42,12 @@ class TimeRange(TimeRangeType):
         self.decrease_start(time_delta)
 
     def intersect(self, other: Union["Time", "TimeRange"]) -> bool:
-        self._date_correctness.assert_days_and_weeks_correctness(self, other, none_able=False)
+        if self.day != other.day:
+            return False
         return self._intersect_detector.is_intersection(self, other)
 
     def to_generate(self) -> List:
-        list_ = [self.day.value + 1,
+        list_ = [self.day + 1,
                  [self.start.hour, self.start.minute],
                  [self.end.hour, self.end.minute]]
         return list_

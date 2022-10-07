@@ -1,9 +1,10 @@
 from pathlib import Path
 
-from utils.types_ import Day
+from utils.types_ import (MONDAY, TUESDAY, WEDNESDAY, THURSDAY,
+                          FRIDAY, SATURDAY, SUNDAY)
 
 
-DAYS = [Day.MONDAY, Day.TUESDAY, Day.WEDNESDAY,
-        Day.THURSDAY, Day.FRIDAY, Day.SATURDAY, Day.SUNDAY]
+DAYS = [MONDAY, TUESDAY, WEDNESDAY,
+        THURSDAY, FRIDAY, SATURDAY, SUNDAY]
 
 root_path = Path(__file__).parent.parent.absolute()

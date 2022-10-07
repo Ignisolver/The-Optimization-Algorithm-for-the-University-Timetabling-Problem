@@ -1,4 +1,3 @@
-from dataclasses import field, dataclass
 from typing import TYPE_CHECKING
 
 from schedule.week_scheadule import WeekSchedule
@@ -7,8 +6,7 @@ if TYPE_CHECKING:
     from basic_structures import Classes
 
 
-class Assignable:
-    # todo testme
+class WithSchedule:
     def __init__(self):
         self.week_schedule: WeekSchedule = WeekSchedule()
 
@@ -20,6 +18,3 @@ class Assignable:
 
     def assign(self, classes: "Classes"):
         self.week_schedule.assign(classes)
-
-    def unassign(self, classes: "Classes"):
-        self.week_schedule.unassign(classes)

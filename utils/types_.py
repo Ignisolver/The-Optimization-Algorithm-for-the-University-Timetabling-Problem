@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from enum import Enum
 
 
 @dataclass
@@ -28,14 +27,17 @@ class BuildingId(str):
     pass
 
 
-class Day(Enum):
-    MONDAY = 0
-    TUESDAY = 1
-    WEDNESDAY = 2
-    THURSDAY = 3
-    FRIDAY = 4
-    SATURDAY = 5
-    SUNDAY = 6
+class Day(int):
+    pass
+
+
+MONDAY = Day(0)
+TUESDAY = Day(1)
+WEDNESDAY = Day(2)
+THURSDAY = Day(3)
+FRIDAY = Day(4)
+SATURDAY = Day(5)
+SUNDAY = Day(6)
 
 
 class Week(int):

@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
-from typing import Dict, TYPE_CHECKING
+from typing import Dict, TYPE_CHECKING, Union
 
-from basic_structures.assignable import Assignable
+from basic_structures.with_schedule import WithSchedule
 from utils.types_ import RoomId, ClassesId
 
 if TYPE_CHECKING:
@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 
 @dataclass
-class Room(Assignable):
+class Room(WithSchedule):
     id_: RoomId
     _initial_availability_minutes: int
     people_capacity: int = 0
@@ -22,6 +22,7 @@ class Room(Assignable):
     _const_classes_occup_probab: Dict[ClassesId, float] = \
         field(default_factory=dict)
     _occup_priority: float = 0  # the grater, the better
+    _temp_cl: Union["Classes", None] = None
 
     def __post_init__(self):
         super().__init__()
@@ -50,10 +51,16 @@ class Room(Assignable):
         self._set_probab_of_classes(classes.id_, 0)
         super().assign(classes)
 
-    def unassign(self, classes: "Classes"):
-        self._curr_occup_min -= int(classes.dur)
-        self._reset_probab_of_classes(classes.id_)
-        super().unassign(classes)
+    def temp_assign(self, classes: "Classes"):
+        self._curr_occup_min += int(classes.dur)
+        self._set_probab_of_classes(classes.id_, 0)
+        self._temp_cl = classes
+        super(Room, self).temp_assign(classes)
+
+    def unassign_temp(self):
+        self._curr_occup_min -= int(self._temp_cl.dur)
+        self._reset_probab_of_classes(self._temp_cl.id_)
+        super(Room, self).unassign_temp()
 
     def _calc_priority(self):
         try:

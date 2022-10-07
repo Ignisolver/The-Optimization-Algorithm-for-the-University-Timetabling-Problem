@@ -1,38 +1,43 @@
 from dataclasses import dataclass
-from typing import Tuple, Union
+from typing import Tuple, Union, TYPE_CHECKING
 
-from basic_structures.group import Group
 from basic_structures.lecturer import Lecturer
 from basic_structures.room import Room
 from time_ import Time, TimeDelta
-from utils.types_ import ClassesType, ClassesId
+from utils.types_ import ClassesType, ClassesId, Day
+
+if TYPE_CHECKING:
+    from basic_structures import Group
 
 
 @dataclass
 class Classes:
-    #todo testme
     id_: ClassesId
     name: str
     dur: TimeDelta
     classes_type: ClassesType
     avail_rooms: Tuple[Room, ...]
     lecturer: Lecturer
-    groups: Tuple[Group]
-    assigned_room: Room | None = None
+    groups: Tuple["Group", ...]
+    room: Room | None = None
     _start_time: Union[Time, None] = None
     _end_time: Union[Time, None] = None
+    day: Day = None
 
     def assign(self,
-               time: Time = None,
-               room: Room = None):
-        if room is not None:
-            self.assigned_room = room
-        if time is not None:
-            self.start_time = time
+               time: Time,
+               room: Room,
+               day: Day):
+        self.room = room
+        self.start_time = time
+        self.day = day
+        self._assign_to_room_groups_lecturer()
 
-    def unassign(self):
-        del self.assigned_room
-        del self.start_time
+    def _assign_to_room_groups_lecturer(self):
+        self.lecturer.assign(self)
+        self.room.assign(self)
+        for i in range(len(self.groups)):
+            self.groups[i].assign(self)
 
     @property
     def start_time(self):
@@ -52,14 +57,13 @@ class Classes:
     def start_time(self):
         self._start_time = None
         self._end_time = None
-    
+
     def pretty_represent(self):
         id_ = f"{self.id_:>5}"
         start_time = f"{self.start_time.hour:>02}:{self.start_time.minute:>02}"
         end_time = f"{self.end_time.hour:>02}:{self.end_time.minute:>02}"
         name = f"{self.name}"
         type_ = self.classes_type
-        s1 = f"{id_} | {start_time} -> {end_time} | "
-        s2 = f"{type_:>10} | {name}"
+        s1 = f"{id_} | {start_time} -> {end_time} |"
+        s2 = f"{type_:^12}| {name}"
         print(s1 + s2)
-

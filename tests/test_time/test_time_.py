@@ -2,7 +2,7 @@ import pytest
 
 from time_ import Time, TimeDelta
 from utils.constans import DAYS
-from utils.types_ import Day, Week
+from utils.types_ import Week, FRIDAY, WEDNESDAY, MONDAY, TUESDAY
 
 
 class TestTime:
@@ -32,22 +32,18 @@ class TestTime:
 
     def test___post_init__ok_date(self):
         for day in DAYS:
-            _ = Time(10, 20, day, Week(2))
+            _ = Time(10, 20, day)
 
         _ = Time(10, 20)
 
     def test___post_init__incorrect_date(self):
-        with pytest.raises(RuntimeError):
-            _ = Time(10, 20, 1, Week(2))
 
-        with pytest.raises(RuntimeError):
-            _ = Time(10, 20, Day.FRIDAY, 2)
+        with pytest.raises(AssertionError):
+            _ = Time(34, 20, FRIDAY)
 
-        with pytest.raises(RuntimeError):
-            _ = Time(10, 20, None, Week(1))
+        with pytest.raises(AssertionError):
+            _ = Time(10, 66, None)
 
-        with pytest.raises(RuntimeError):
-            _ = Time(10, 20, Day.FRIDAY, None)
 
     def test_int(self):
         h1 = Time(10, 22)
@@ -69,26 +65,26 @@ class TestTime:
         assert h2 - h1 == TimeDelta(minutes=120 + 38 + 33)
 
         h1 = Time(10, 22)
-        h2 = Time(13, 33, day=Day.WEDNESDAY, week=Week(3))
+        h2 = Time(13, 33, day=WEDNESDAY)
         assert h2 - h1 == TimeDelta(minutes=120 + 38 + 33)
 
         h2 = Time(10, 22)
-        h1 = Time(13, 33, day=Day.WEDNESDAY, week=Week(3))
+        h1 = Time(13, 33, day=WEDNESDAY)
         assert h2 - h1 == - TimeDelta(minutes=120 + 38 + 33)
 
     def test_sub_time__incorrect_days(self):
-        h1 = Time(13, 33, day=Day.WEDNESDAY, week=Week(3))
-        h2 = Time(13, 33, day=Day.FRIDAY, week=Week(3))
-        with pytest.raises(RuntimeError):
+        h1 = Time(13, 33, day=WEDNESDAY)
+        h2 = Time(13, 33, day=FRIDAY)
+        with pytest.raises(AssertionError):
             _ = h2 - h1
-        with pytest.raises(RuntimeError):
+        with pytest.raises(AssertionError):
             _ = h1 - h2
 
-        h1 = Time(13, 33, day=Day.WEDNESDAY, week=Week(3))
-        h2 = Time(13, 33, day=Day.FRIDAY, week=Week(2))
-        with pytest.raises(RuntimeError):
+        h1 = Time(13, 33, day=WEDNESDAY)
+        h2 = Time(13, 33, day=FRIDAY)
+        with pytest.raises(AssertionError):
             _ = h2 - h1
-        with pytest.raises(RuntimeError):
+        with pytest.raises(AssertionError):
             _ = h1 - h2
 
     def test_sub_time_delta(self):
@@ -101,39 +97,34 @@ class TestTime:
         assert Time(2, 5) != Time(2, 7)
         assert Time(2, 5) != Time(7, 5)
 
-        assert Time(2, 5) == Time(2, 5,day=Day.WEDNESDAY, week=Week(3))
-        assert Time(5, 2) == Time(5, 2,day=Day.WEDNESDAY, week=Week(3))
-        assert Time(2, 5) != Time(2, 7,day=Day.WEDNESDAY, week=Week(3))
-        assert Time(2, 5) != Time(7, 5,day=Day.WEDNESDAY, week=Week(3))
+        assert Time(2, 5) == Time(2, 5,day=WEDNESDAY)
+        assert Time(5, 2) == Time(5, 2,day=WEDNESDAY)
+        assert Time(2, 5) != Time(2, 7,day=WEDNESDAY)
+        assert Time(2, 5) != Time(7, 5,day=WEDNESDAY)
 
     def test_eq__incorrect_date(self):
-        with pytest.raises(RuntimeError):
-            assert Time(2, 5,day=Day.WEDNESDAY, week=Week(3)) == Time(2, 5,day=Day.WEDNESDAY, week=Week(2))
-        with pytest.raises(RuntimeError):
-            assert Time(5, 2,day=Day.WEDNESDAY, week=Week(3)) == Time(5, 2,day=Day.MONDAY, week=Week(3))
+        with pytest.raises(AssertionError):
+            assert Time(5, 2,day=WEDNESDAY) == Time(5, 2,day=MONDAY)
 
     def test_lt(self):
         assert Time(2, 6) > Time(2, 5)
         assert Time(3, 5) > Time(2, 5)
-        assert Time(2, 5) < Time(2, 6, day=Day.WEDNESDAY, week=Week(3))
-        assert Time(2, 5) < Time(3, 5, day=Day.WEDNESDAY, week=Week(3))
+        assert Time(2, 5) < Time(2, 6, day=WEDNESDAY)
+        assert Time(2, 5) < Time(3, 5, day=WEDNESDAY)
 
     def test_lt_incorrect_date(self):
-        with pytest.raises(RuntimeError):
-            assert Time(2, 6, day=Day.WEDNESDAY, week=Week(4)) > Time(2, 5, day=Day.WEDNESDAY, week=Week(3))
-        with pytest.raises(RuntimeError):
-            assert Time(3, 5, day=Day.WEDNESDAY, week=Week(3)) > Time(2, 5, day=Day.MONDAY, week=Week(3))
+        with pytest.raises(AssertionError):
+            assert Time(3, 5, day=WEDNESDAY) > Time(2, 5, day=MONDAY)
 
     def test_le(self):
         assert Time(2, 6) >= Time(2, 5)
         assert Time(3, 5) >= Time(2, 5)
         assert Time(2, 5) <= Time(2, 6)
-        assert Time(2, 5) <= Time(3, 5, day=Day.WEDNESDAY, week=Week(3))
-        assert Time(2, 5) >= Time(2, 5, day=Day.WEDNESDAY, week=Week(3))
-        assert Time(2, 5) <= Time(2, 5, day=Day.WEDNESDAY, week=Week(3))
+        assert Time(2, 5) <= Time(3, 5, day=WEDNESDAY)
+        assert Time(2, 5) >= Time(2, 5, day=WEDNESDAY)
+        assert Time(2, 5) <= Time(2, 5, day=WEDNESDAY)
 
     def test_le__incorrect_date(self):
-        with pytest.raises(RuntimeError):
-            assert Time(2, 5, day=Day.TUESDAY, week=Week(3)) <= Time(3, 5, day=Day.WEDNESDAY, week=Week(3))
-        with pytest.raises(RuntimeError):
-            assert Time(2, 5, day=Day.WEDNESDAY, week=Week(2)) >= Time(2, 5, day=Day.WEDNESDAY, week=Week(3))
+        with pytest.raises(AssertionError):
+            assert Time(2, 5, day=TUESDAY) <= Time(3, 5, day=WEDNESDAY)
+

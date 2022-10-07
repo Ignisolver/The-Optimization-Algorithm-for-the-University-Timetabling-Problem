@@ -2,8 +2,8 @@ from dataclasses import dataclass, field
 from typing import Iterator, List, TYPE_CHECKING, Union
 
 from data import MIN_HOUR, MAX_HOUR
-from tools.distanses_manager import DISTANCES, Distances
-from utils.types_ import ClassesType as CT
+from utils.distanses_manager import DISTANCES, Distances
+from utils.types_ import ClassesType as CT, Day
 from time_ import TimeDelta, TimeRange, Time
 
 if TYPE_CHECKING:
@@ -12,9 +12,9 @@ if TYPE_CHECKING:
 
 @dataclass
 class DaySchedule:
-    day_number: int
+    day: Day
     _classes: List["Classes"] = field(default_factory=list)
-    _temp_cl_nr: int = None
+    _temp_cl_nr: int | None = None
     _distances: Distances = DISTANCES
 
     def __len__(self) -> int:
@@ -63,10 +63,10 @@ class DaySchedule:
         return len(self._classes)
 
     def temp_assign(self, classes: "Classes"):
-        self.assign_classes(classes)
+        self.assign(classes)
         self._temp_cl_nr = self._classes.index(classes)
 
-    def revert_temp_assign(self):
+    def unassign_temp(self):
         del self._classes[self._temp_cl_nr]
         self._temp_cl_nr = None
 
@@ -77,7 +77,7 @@ class DaySchedule:
     def _sort_classes(self):
         self._classes.sort(key=self._sort_classes_fcn)
 
-    def assign_classes(self, classes: "Classes"):
+    def assign(self, classes: "Classes"):
         self._assert_assignment_available(classes)
         self._classes.append(classes)
         self._sort_classes()
@@ -99,7 +99,7 @@ class DaySchedule:
     def _calc_time_btw_classes(self, earlier: "Classes", later: "Classes"):
         """without move time"""
         total_t = later.start_time - earlier.end_time
-        mov_t = self._distances[earlier.assigned_room, later.assigned_room]
+        mov_t = self._distances[earlier.room, later.room]
         return total_t - mov_t
 
     def get_brake_time(self) -> "TimeDelta":

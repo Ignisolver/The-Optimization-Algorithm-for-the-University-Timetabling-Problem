@@ -15,7 +15,6 @@ class TRMock:
     end: Union["Time", None] = None
     dur: Union[TimeDelta, None] = None
     day: Union[Day, None] = None
-    week: Union[Week, None] = None
 
 
 @pytest.fixture

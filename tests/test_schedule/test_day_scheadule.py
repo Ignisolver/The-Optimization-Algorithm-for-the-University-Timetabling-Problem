@@ -33,14 +33,14 @@ class RoomM:
 class ClassesM:
     dur: TimeDelta
     classes_type: CT
-    assigned_room: List[RoomM]
+    room: List[RoomM]
     _start_t: Time = None
 
     def __post_init__(self):
         self._end_t = self._start_t + self.dur
         self.start_time = self._start_t
         self.end_time = self._end_t
-        self.assigned_rooms = self.assigned_room
+        self.assigned_rooms = self.room
 
 @dataclass
 class DistM:
@@ -90,10 +90,10 @@ class TestDayScheadule:
     def test__calc_time_between_classes(self, day_schedule, classes_list):
         cl1 = classes_list[0]
         cl1.start_time = Time(10, 20)
-        cl1.assigned_room = 1
+        cl1.room = 1
         cl2 = classes_list[1]
         cl2.start_time = Time(14, 20)
-        cl2.assigned_room = 0
+        cl2.room = 0
         assert day_schedule._calc_time_btw_classes(classes_list[0],
                                                    classes_list[1]) == \
                TimeDelta(1, 40)
@@ -104,7 +104,7 @@ class TestDayScheadule:
         start_times = [Time(8, 0), Time(10,0), Time(13, 0), Time(15, 0)]
         for nr, cl in enumerate(classes_list[0: 4]):
             cl.start_time = start_times[nr]
-            cl.assigned_room = rooms[nr]
+            cl.room = rooms[nr]
             new_cl_list.append(cl)
         day_schedule._classes = new_cl_list
         assert day_schedule.get_free_time(min_h=Time(7, 0),
@@ -116,7 +116,7 @@ class TestDayScheadule:
         start_times = [Time(8, 0), Time(10, 0), Time(13, 0), Time(15, 0)]
         for nr, cl in enumerate(classes_list[0: 4]):
             cl.start_time = start_times[nr]
-            cl.assigned_room = rooms[nr]
+            cl.room = rooms[nr]
             new_cl_list.append(cl)
         day_schedule._classes = new_cl_list
         assert day_schedule.get_brake_time() == TimeDelta(1, 20)
@@ -409,7 +409,7 @@ class TestDayScheadule:
         # 9:40 - 11:20,  12:30 - 14:30
         day_schedule_1._classes = [cl1, cl2]
         cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(8, 0))
-        day_schedule_1.assign_classes(cl3)
+        day_schedule_1.assign(cl3)
         assert day_schedule_1._classes == [cl3, cl1, cl2]
 
     def test_assign_classes__incorrect(self, day_schedule_1):
@@ -419,7 +419,7 @@ class TestDayScheadule:
         day_schedule_1._classes = [cl1, cl2]
         cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(10, 0))
         with pytest.raises(AssertionError):
-            day_schedule_1.assign_classes(cl3)
+            day_schedule_1.assign(cl3)
 
     def test_assign_temporary(self, day_schedule_1):
         cl1 = ClassesM(TimeDelta(1, 0), None, RoomM(0, 44), Time(10, 0))
@@ -440,7 +440,7 @@ class TestDayScheadule:
         day_schedule_1.temp_assign(cl3)
         assert day_schedule_1._classes == [cl3, cl1, cl2]
         assert day_schedule_1._temp_cl_nr == 0
-        day_schedule_1.revert_temp_assign()
+        day_schedule_1.unassign_temp()
         assert day_schedule_1._temp_cl_nr == None
         assert day_schedule_1._classes == [cl1, cl2]
 
@@ -451,7 +451,7 @@ class TestDayScheadule:
         types = [CT.LECTURE, CT.LABORATORY, CT.LABORATORY, CT.LECTURE]
         for nr, cl in enumerate(classes_list[0: 4]):
             cl.start_time = start_times[nr]
-            cl.assigned_room = rooms[nr]
+            cl.room = rooms[nr]
             cl.classes_type = types[nr]
             new_cl_list.append(cl)
         day_schedule._classes = new_cl_list

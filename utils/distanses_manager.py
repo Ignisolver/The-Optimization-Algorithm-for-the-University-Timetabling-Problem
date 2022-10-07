@@ -1,9 +1,11 @@
 from dataclasses import dataclass
-from typing import Tuple
+from typing import Tuple, TYPE_CHECKING
 
-from basic_structures import Room
 from time_ import TimeDelta as TD, TimeDelta
 from utils.types_ import RoomId, BuildingId
+
+if TYPE_CHECKING:
+    from basic_structures import Room
 
 
 @dataclass

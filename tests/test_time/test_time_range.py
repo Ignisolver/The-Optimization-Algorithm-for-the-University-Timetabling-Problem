@@ -1,17 +1,16 @@
 import pytest
 
 from time_ import TimeRange, Time, TimeDelta
-from utils.types_ import Day, Week
+from utils.types_ import Day, Week, FRIDAY
 
 
 class TestTimeRange:
     def test___init__ok(self):
-        tr = TimeRange(Time(10,20), Time(10,40), TimeDelta(0,20), Day.FRIDAY, Week(2))
+        tr = TimeRange(Time(10,20), Time(10,40), TimeDelta(0,20), FRIDAY)
         assert tr.start == Time(10,20)
         assert tr.end == Time(10,40)
         assert tr.dur == TimeDelta(0,20)
-        assert tr.day == Day.FRIDAY
-        assert tr.week == Week(2)
+        assert tr.day == FRIDAY
 
     def test___init__incorrect(self):
         with pytest.raises(ValueError):

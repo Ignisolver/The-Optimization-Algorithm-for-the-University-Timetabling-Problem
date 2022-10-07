@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 import pytest
 
-from tools.distanses_manager import Distances
+from utils.distanses_manager import Distances
 from utils.types_ import RoomId, BuildingId
 
 

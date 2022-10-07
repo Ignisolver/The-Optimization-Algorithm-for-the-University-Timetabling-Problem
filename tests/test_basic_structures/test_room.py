@@ -2,8 +2,11 @@ from typing import Union
 
 import pytest
 
+from basic_structures import Lecturer, Group
 from basic_structures.classes import Classes
 from basic_structures.room import Room
+from time_ import Time, TimeDelta
+from utils.types_ import ClassesType
 
 
 @pytest.fixture(scope='function')
@@ -15,7 +18,19 @@ def room() -> Room:
 
 @pytest.fixture(scope='function')
 def classes() -> Classes:
-    return Classes(1, None, 20, None, None, None, None)
+    cl = Classes(1,"sss", TimeDelta(1,20), ClassesType.LECTURE, [Room(1,1,1)],
+                   Lecturer(1,"dd"), [Group(1,"dd", 30), Group(2,"dd", 30)],
+                   day=1)
+    cl.start_time = Time(10,20)
+    return cl
+
+@pytest.fixture(scope='function')
+def classes_2() -> Classes:
+    cl = Classes(2,"sss", TimeDelta(0,40), ClassesType.LECTURE, [Room(1,1,1)],
+                   Lecturer(1,"dd"), [Group(1,"dd", 30), Group(2,"dd", 30)],
+                   day=1)
+    cl.start_time = Time(12,20)
+    return cl
 
 
 class ClassesMock(Classes):
@@ -103,8 +118,8 @@ class TestRoom:
         room.assign(classes)
         assert start_occup + int(classes.dur) == room._curr_occup_min
 
-    def test_assign__probability_and_priority_after_assign(self, classes, room):
-        classes_2 = Classes(2, None, None, None, None, None,None)
+    def test_assign__probability_and_priority_after_assign(self, classes,
+                                                           classes_2, room):
         room.add_potential_classes(classes, 0.2)
         room.add_potential_classes(classes_2, 0.4)
         priority_before = room.occup_priority
@@ -113,8 +128,8 @@ class TestRoom:
         priority_after = room.occup_priority
         assert priority_after != priority_before
 
-    def test_assign__priority_exception_after_all_assignments(self, classes, room):
-        classes_2 = Classes(2, None, 40, None, None, None, None)
+    def test_assign__priority_exception_after_all_assignments(self, classes,
+                                                              classes_2, room):
         room.add_potential_classes(classes, 0.2)
         room.add_potential_classes(classes_2, 0.4)
         room.assign(classes)
@@ -124,18 +139,18 @@ class TestRoom:
 
     def test_unassign_occup(self, classes, room):
         room.add_potential_classes(classes, 0.2)
-        room.assign(classes)
+        room.temp_assign(classes)
         start_occup = room._curr_occup_min
-        room.unassign(classes)
+        room.unassign_temp()
         assert start_occup - int(classes.dur) == room._curr_occup_min
 
-    def test_unassign__probability_and_priority_after_assign(self, classes, room):
-        classes_2 = Classes(2, None, None, None, None, None, None)
+    def test_unassign__probability_and_priority_after_assign(self, classes,
+                                                             classes_2, room):
         room.add_potential_classes(classes, 0.2)
         room.add_potential_classes(classes_2, 0.4)
-        room.assign(classes)
+        room.temp_assign(classes)
         priority_before = room.occup_priority
-        room.unassign(classes)
+        room.unassign_temp()
         assert room._classes_occup_probab[1] == 0.2
         priority_after = room.occup_priority
         assert priority_after != priority_before
