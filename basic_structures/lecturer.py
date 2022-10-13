@@ -9,3 +9,8 @@ class Lecturer(WithSchedule):
         self.name: str = name
 
 
+class UnavailableLecturer():
+    def __new__(cls, *args, **kwargs):
+        return Lecturer(-1, "UNAVAILABLE")
+
+

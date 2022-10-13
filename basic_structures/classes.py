@@ -1,10 +1,11 @@
 from dataclasses import dataclass
 from typing import Tuple, Union, TYPE_CHECKING
 
-from basic_structures.lecturer import Lecturer
-from basic_structures.room import Room
+from basic_structures.lecturer import Lecturer, UnavailableLecturer
+from basic_structures.room import Room, UnavailabilityRoom
 from time_ import Time, TimeDelta
-from utils.types_ import ClassesType, ClassesId, Day
+from utils.types_ import ClassesType, ClassesId, Day, UNAVAILABLE_ID, \
+    DAY_LETTER, get_color
 
 if TYPE_CHECKING:
     from basic_structures import Group
@@ -66,4 +67,34 @@ class Classes:
         type_ = self.classes_type
         s1 = f"{id_} | {start_time} -> {end_time} |"
         s2 = f"{type_:^12}| {name}"
-        print(s1 + s2)
+        return s1 + s2
+
+    def __repr__(self):
+        s = " "
+        txt = f'\n{2*s}'.join([f"- name: |",
+                               f"{2 * s}{self.name}",
+                               f"{2 * s}ID: {self.id_}",
+                               f"{2 * s}R: {self.room.name}",
+                               f"{2 * s}L: {self.lecturer.name}",
+                               f"{2 * s}G: {[g for g in self.groups]}",
+                               f"days: {DAY_LETTER[self.day]}",
+                               f"time: {self.start_time} - {self.end_time}",
+                               f"color: '{next(get_color)}'"])
+        return txt
+
+
+class UnavailableClasses:
+    def __new__(cls, start: Time, dur: TimeDelta, day: Day):
+        cl = Classes(id_=UNAVAILABLE_ID,
+                     name="UNAVAILABLE",
+                     dur=dur,
+                     classes_type=ClassesType.UNAVAILABLE,
+                     avail_rooms=(),
+                     lecturer=UnavailableLecturer(),
+                     groups=(),
+                     day=day,
+                     room=UnavailabilityRoom())
+        cl.start_time = start
+        return cl
+
+

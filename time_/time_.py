@@ -58,4 +58,7 @@ class Time(TimeType):
     def __int__(self):
         return self.hour * 60 + self.minute
 
+    def __repr__(self):
+        return str(self.hour) + ':' + str(self.minute)
+
 

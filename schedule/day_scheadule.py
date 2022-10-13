@@ -60,7 +60,9 @@ class DaySchedule:
         return am
 
     def get_amount_of_classes(self) -> int:
-        return len(self._classes)
+        am = sum(1 for cl in self._classes
+                 if cl.classes_type != CT.UNAVAILABLE)
+        return am
 
     def temp_assign(self, classes: "Classes"):
         self.assign(classes)
@@ -84,20 +86,32 @@ class DaySchedule:
 
     def pretty_represent(self):
         s = " "
-        print(f"{3*s}ID | start ->{2*s}end{2*s}| LAB/LECT{3*s}| NAME")
+        print(f"{3*s}ID | start ->{2*s}end{2*s}| {'TYPE':^11}| NAME")
         print(2*s + 4 *"-"+"|"+16*'-'+'|'+12*'-'+"|"+10*'-')
         for cl in self._classes:
-            cl.pretty_represent()
+            print(cl.pretty_represent())
 
     def get_free_time(self, max_h=MAX_HOUR, min_h=MIN_HOUR) -> "TimeDelta":
         """time between min and max hour without classes and move time"""
         time_before = self._classes[0].start_time - min_h
         time_after = max_h - self._classes[-1].end_time
         time_during = self.get_brake_time()
-        return time_before + time_during + time_after
+        time_unavail = self._get_unavailable_time()
+        return time_before + time_during + time_after - time_unavail
 
-    def _calc_time_btw_classes(self, earlier: "Classes", later: "Classes"):
+    def _get_unavailable_time(self):
+        tot_time = TimeDelta()
+        for cl in self._classes:
+            if cl.classes_type == CT.UNAVAILABLE:
+                tot_time += cl.dur
+        return tot_time
+
+    def _calc_time_btw_classes(self, earlier: "Classes",
+                               later: "Classes") -> TimeDelta:
         """without move time"""
+        if (earlier.classes_type == CT.UNAVAILABLE or
+                later.classes_type == CT.UNAVAILABLE):
+            return TimeDelta()
         total_t = later.start_time - earlier.end_time
         mov_t = self._distances[earlier.room, later.room]
         return total_t - mov_t
@@ -107,17 +121,20 @@ class DaySchedule:
         total_time = TimeDelta()
         last_cl = self._classes[0]
         for cl in self._classes[1:]:
+            if cl.classes_type == CT.UNAVAILABLE:
+                continue
             total_time += self._calc_time_btw_classes(last_cl, cl)
             last_cl = cl
-        return total_time
+        unavail_time = self._get_unavailable_time()
+        return total_time - unavail_time
 
-    def _assert_not_intersect(self, new_cl):
+    def _assert_not_intersect(self, new_cl: "Classes"):
         new_cl_tr = TimeRange(new_cl.start_time, new_cl.end_time)
         for cl in self._classes:
             cl_tr = TimeRange(cl.start_time, cl.end_time)
             assert not cl_tr.intersect(new_cl_tr)
 
-    def _assert_distance_is_not_to_long(self, new_cl):
+    def _assert_distance_is_not_to_long(self, new_cl: "Classes"):
         for cl in self._classes:
             td = None
             if new_cl.end_time <= cl.start_time:
@@ -127,7 +144,7 @@ class DaySchedule:
             if td is not None:
                 assert td >= TimeDelta(0, 0)
 
-    def _assert_assignment_available(self, new_cl):
+    def _assert_assignment_available(self, new_cl: "Classes"):
         self._assert_not_intersect(new_cl)
         self._assert_distance_is_not_to_long(new_cl)
 

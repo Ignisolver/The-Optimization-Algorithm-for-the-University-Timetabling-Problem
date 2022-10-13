@@ -1,3 +1,4 @@
+# set generation parameters
 # buildings
 # distances
 # rooms
@@ -8,3 +9,4 @@
 # classes
 # classes groups
 # classes rooms
+

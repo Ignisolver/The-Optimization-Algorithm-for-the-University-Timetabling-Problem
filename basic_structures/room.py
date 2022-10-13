@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from typing import Dict, TYPE_CHECKING, Union
 
 from basic_structures.with_schedule import WithSchedule
-from utils.types_ import RoomId, ClassesId
+from utils.types_ import RoomId, ClassesId, UNAVAILABLE_ID
 
 if TYPE_CHECKING:
     from classes import Classes
@@ -92,3 +92,12 @@ class Room(WithSchedule):
     def _reset_probab_of_classes(self, classes_id):
         probability = self._const_classes_occup_probab[classes_id]
         self._set_probab_of_classes(classes_id, probability)
+
+
+class UnavailabilityRoom:
+    def __new__(cls):
+        return Room(id_=RoomId(-1),
+                    _initial_availability_minutes=0,
+                    people_capacity=0,
+                    name="NONE",
+                    build_id=UNAVAILABLE_ID)

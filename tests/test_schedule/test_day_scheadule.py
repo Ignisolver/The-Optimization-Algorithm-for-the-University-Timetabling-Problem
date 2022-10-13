@@ -4,9 +4,10 @@ from typing import List
 import pytest
 
 from basic_structures import Classes
+from basic_structures.classes import UnavailableClasses
 from schedule.day_scheadule import DaySchedule
 from time_ import TimeDelta, Time
-from utils.types_ import ClassesType as CT
+from utils.types_ import ClassesType as CT, TUESDAY
 
 DISTANCES = {(1, 0): TimeDelta(1, 0),
              (0, 1): TimeDelta(1, 0),
@@ -19,7 +20,7 @@ DISTANCES = {(1, 0): TimeDelta(1, 0),
 
 @pytest.fixture
 def day_schedule():
-    return DaySchedule(1, _distances=DISTANCES)
+    return DaySchedule(TUESDAY, _distances=DISTANCES)
 
 
 @dataclass
@@ -149,8 +150,6 @@ class TestDayScheadule:
         assert day_schedule.get_last_classes_before(Time(12, 30)) == cl1
         assert day_schedule.get_last_classes_before(Time(14, 30)) == cl2
         assert day_schedule.get_last_classes_before(Time(18, 30)) == cl2
-
-
 
     def test_get_amount_of_labs(self, day_schedule, classes_list):
         day_schedule._classes = classes_list
@@ -455,5 +454,7 @@ class TestDayScheadule:
             cl.classes_type = types[nr]
             new_cl_list.append(cl)
         day_schedule._classes = new_cl_list
+        day_schedule.assign(UnavailableClasses(Time(18,0), TimeDelta(0,30),
+                                               TUESDAY))
         print()
         day_schedule.pretty_represent()
