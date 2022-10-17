@@ -1,16 +1,50 @@
 import os
+import shutil
 from pathlib import Path
 
+import pytest
+
+from basic_structures import Room
+from basic_structures.classes import UnavailableClasses
 from data_presentation.data_presentation import _save_yaml, _delete_yaml, \
-    _save_pdf
+    _save_pdf, _generate_pdfs_for_items, generate_pdfs
+from time_ import Time, TimeDelta
+from utils.constans import ROOT_PATH
+from utils.types_ import MONDAY
 
 
-def test_generate_pdfs():
-    assert False
+@pytest.fixture
+def items():
+    un_av_cl = UnavailableClasses(day=MONDAY, start=Time(10, 20),
+                                  dur=TimeDelta(1,1))
+    rooms = [Room(1,12,12,"R1"),
+             Room(2,12,12,"R2"),
+             Room(3,12,12,"R3"),
+             Room(4,12,12,"R4"),
+             Room(5,12,12,"R5"),
+             Room(6,12,12,"R6")]
+    for i in range(len(rooms)):
+        rooms[i].assign(un_av_cl)
+    return rooms
 
 
-def test_generate_pdfs_for_items():
-    assert False
+def test_generate_pdfs(items):
+    generate_pdfs(items, items, items, "unit_tests")
+    path = ROOT_PATH.joinpath("results").joinpath("unit_tests")
+    names = ("groups", "lecturers", "rooms")
+    assert all(elem in os.listdir(path) for elem in names)
+    assert len(os.listdir(path.joinpath("rooms"))) == 6
+    shutil.rmtree(path)
+
+
+def test_generate_pdfs_for_items(items):
+    path = Path(__file__).parent
+    name = "rooms"
+    _generate_pdfs_for_items(path, name, items)
+    assert name in os.listdir(path)
+    folder_path = path.joinpath("rooms")
+    assert len(os.listdir(folder_path)) == len(items)
+    shutil.rmtree(folder_path)
 
 
 def test_save_delete_yaml():

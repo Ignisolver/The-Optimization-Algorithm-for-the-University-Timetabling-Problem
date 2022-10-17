@@ -1,4 +1,3 @@
-# todo test data presentation
 # todo generate data
 # todo data input - db API
 # todo test db_api

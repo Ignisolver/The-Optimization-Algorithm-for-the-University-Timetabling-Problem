@@ -26,6 +26,7 @@ class Room(WithSchedule):
 
     def __post_init__(self):
         super().__init__()
+        self._classes_occup_probab = {UNAVAILABLE_ID: 0}
 
     @property
     def occup_priority(self):

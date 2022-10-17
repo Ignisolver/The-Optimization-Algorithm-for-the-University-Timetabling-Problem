@@ -17,6 +17,8 @@ class DaySchedule:
     _temp_cl_nr: int | None = None
     _distances: Distances = DISTANCES
 
+    # todo not to much...
+
     def __len__(self) -> int:
         """
         return time of classes in minutes
@@ -40,11 +42,21 @@ class DaySchedule:
             return None
         last_cl = None
         for cl in self._classes:
-            if cl.start_time < time:
+            if cl.start_time <= time:
                 last_cl = cl
             else:
                 break
         return last_cl
+
+    def get_next_classes_after(self, time: Time) -> Union["Classes", None]:
+        if len(self._classes) == 0:
+            return None
+        next_cl = None
+        for cl in self._classes:
+            if cl.start_time >= time:
+                next_cl = cl
+                break
+        return next_cl
 
     def get_first_classes(self) -> Union["Classes", None]:
         if len(self._classes) == 0:
@@ -99,6 +111,20 @@ class DaySchedule:
         time_unavail = self._get_unavailable_time()
         return time_before + time_during + time_after - time_unavail
 
+    def get_free_times(self, max_h=MAX_HOUR,
+                       min_h=MIN_HOUR) -> List["TimeDelta"]:
+        """with distances"""
+        # testme
+        start_h = min_h
+        times = []
+        for cls_ in self._classes:
+            end_h = cls_.start_time
+            tim = end_h-start_h
+            times.append(tim)
+            start_h = cls_.end_time
+        times.append(max_h - start_h)
+        return times
+
     def _get_unavailable_time(self):
         tot_time = TimeDelta()
         for cl in self._classes:
@@ -128,6 +154,15 @@ class DaySchedule:
         unavail_time = self._get_unavailable_time()
         return total_time - unavail_time
 
+    def get_amount_of_classes_between(self, start_h, end_h):
+        # testme
+        n = 0
+        tr = TimeRange(start_h, end_h)
+        for cls_ in self._classes:
+            if tr.intersect(cls_.start_time):
+                n += 1
+        return n
+
     def _assert_not_intersect(self, new_cl: "Classes"):
         new_cl_tr = TimeRange(new_cl.start_time, new_cl.end_time)
         for cl in self._classes:
@@ -147,6 +182,7 @@ class DaySchedule:
     def _assert_assignment_available(self, new_cl: "Classes"):
         self._assert_not_intersect(new_cl)
         self._assert_distance_is_not_to_long(new_cl)
+
 
 
 

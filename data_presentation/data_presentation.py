@@ -4,11 +4,11 @@ from pathlib import Path
 from typing import List
 
 from basic_structures.with_schedule import WithSchedule
-from utils.constans import root_path
+from utils.constans import ROOT_PATH
 
 
 def generate_pdfs(groups, lecturers, rooms, name):
-    result_path = root_path.joinpath(name)
+    result_path = ROOT_PATH.joinpath("results").joinpath(name)
     os.mkdir(result_path)
     names_items = (("groups", groups),
                    ("lecturers", lecturers),

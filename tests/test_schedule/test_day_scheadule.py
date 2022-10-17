@@ -5,6 +5,7 @@ import pytest
 
 from basic_structures import Classes
 from basic_structures.classes import UnavailableClasses
+from data import MIN_HOUR, MAX_HOUR
 from schedule.day_scheadule import DaySchedule
 from time_ import TimeDelta, Time
 from utils.types_ import ClassesType as CT, TUESDAY
@@ -150,6 +151,31 @@ class TestDayScheadule:
         assert day_schedule.get_last_classes_before(Time(12, 30)) == cl1
         assert day_schedule.get_last_classes_before(Time(14, 30)) == cl2
         assert day_schedule.get_last_classes_before(Time(18, 30)) == cl2
+
+    def test_get_next_classes_after(self, day_schedule, classes_list):
+        cl1, cl2 = classes_list[0:2]
+        cl1.start_time = Time(10, 10)
+        cl2.start_time = Time(14, 10)
+        day_schedule._classes = [cl1, cl2]
+        assert day_schedule.get_next_classes_after(Time(10, 00)) == cl1
+        assert day_schedule.get_next_classes_after(Time(10, 10)) == cl1
+        assert day_schedule.get_next_classes_after(Time(10, 30)) == cl2
+        assert day_schedule.get_next_classes_after(Time(11, 30)) == cl2
+        assert day_schedule.get_next_classes_after(Time(12, 30)) == cl2
+        assert day_schedule.get_next_classes_after(Time(14, 30)) is None
+        assert day_schedule.get_next_classes_after(Time(18, 30)) is None
+
+    def test_get_free_times(self, day_schedule, classes_list):
+        cl1, cl2, cl3 = classes_list[0:3]
+        cl1.start_time = Time(10, 10)
+        cl2.start_time = Time(12, 10)
+        cl3.start_time = Time(15, 10)
+        day_schedule._classes = [cl1, cl2, cl3]
+        times = day_schedule.get_free_times()
+        assert times == [Time(10, 10) - MIN_HOUR,
+                         Time(12, 10) - Time(11, 30),
+                         Time(15, 10) - Time(14, 30),
+                         MAX_HOUR - Time(16, 10)]
 
     def test_get_amount_of_labs(self, day_schedule, classes_list):
         day_schedule._classes = classes_list

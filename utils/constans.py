@@ -7,4 +7,4 @@ from utils.types_ import (MONDAY, TUESDAY, WEDNESDAY, THURSDAY,
 DAYS = [MONDAY, TUESDAY, WEDNESDAY,
         THURSDAY, FRIDAY, SATURDAY, SUNDAY]
 
-root_path = Path(__file__).parent.parent.absolute()
+ROOT_PATH = Path(__file__).parent.parent.absolute()

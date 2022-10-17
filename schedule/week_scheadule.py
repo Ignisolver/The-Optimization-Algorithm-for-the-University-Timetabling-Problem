@@ -1,4 +1,4 @@
-from typing import Dict, TYPE_CHECKING, Union, List
+from typing import Dict, TYPE_CHECKING, Union, List, Iterator
 
 from schedule.day_scheadule import DaySchedule
 from utils.constans import DAYS
@@ -17,6 +17,9 @@ class WeekSchedule:
         self.temp_day_tag = None
         if unavailability is not None:
             self._set_unavailability(unavailability)
+
+    def __iter__(self) -> Iterator[DaySchedule]:
+        return iter(self.days.values())
 
     def _set_unavailability(self, unavailability):
         for unav_cl in unavailability:
