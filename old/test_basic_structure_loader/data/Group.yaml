@@ -1,5 +1,0 @@
-TYPE: Group
-ID: 33 # int
-NAME: "group Name" # string
-AMOUNT_OF_STUDENTS: 15 # int
-CLASSES_TO_ASSIGN: [14, 25] # array of classes ID

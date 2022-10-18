@@ -14,6 +14,7 @@ class Place:
     building: BuildingId = None
 
 
+# todo sth better for generation
 class Distances:
     def __init__(self):
         self._room_time_matrix = {}

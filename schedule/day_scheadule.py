@@ -116,17 +116,17 @@ class DaySchedule:
         return time_before + time_during + time_after - time_unavail
 
     def get_free_times(self, max_h=MAX_HOUR,
-                       min_h=MIN_HOUR) -> List["TimeDelta"]:
-        """with distances"""
-        # testme
+                       min_h=MIN_HOUR) -> List["TimeRange"]:
+        """with move time"""
         start_h = min_h
         times = []
         for cls_ in self._classes:
             end_h = cls_.start_time
-            tim = end_h-start_h
-            times.append(tim)
+            dur = end_h - start_h
+            tr = TimeRange(start_h, dur=dur)
+            times.append(tr)
             start_h = cls_.end_time
-        times.append(max_h - start_h)
+        times.append(TimeRange(start_h, dur=max_h - start_h))
         return times
 
     def get_unavailable_len(self):
@@ -137,26 +137,31 @@ class DaySchedule:
         return tot_time
 
     def _calc_time_btw_classes(self, earlier: "Classes",
-                               later: "Classes") -> TimeDelta:
+                               later: "Classes",
+                               move_time_enable=True) -> TimeDelta:
         """without move time"""
         if (earlier.classes_type == CT.UNAVAILABLE or
                 later.classes_type == CT.UNAVAILABLE):
             return TimeDelta()
         total_t = later.start_time - earlier.end_time
-        mov_t = self._distances[earlier.room, later.room]
+        if move_time_enable:
+            mov_t = self._distances[earlier.room, later.room]
+        else:
+            mov_t = TimeDelta()
         return total_t - mov_t
 
-    def get_brake_time(self) -> "TimeDelta":
+    def get_brake_time(self, move_time_enable=True) -> "TimeDelta":
         """without move time"""
-        if len(self._classes) <= 1:
-            return TimeDelta()
         total_time = TimeDelta()
-        last_cl = self._classes[0]
+        if len(self._classes) <= 1:
+            return total_time
+        prev_cl = self._classes[0]
         for cl in self._classes[1:]:
             if cl.classes_type == CT.UNAVAILABLE:
                 continue
-            total_time += self._calc_time_btw_classes(last_cl, cl)
-            last_cl = cl
+            total_time += self._calc_time_btw_classes(prev_cl, cl,
+                                                      move_time_enable)
+            prev_cl = cl
         unavail_time = self.get_unavailable_len()
         return total_time - unavail_time
 

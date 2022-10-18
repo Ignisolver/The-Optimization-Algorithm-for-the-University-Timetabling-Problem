@@ -7,7 +7,7 @@ from basic_structures import Classes
 from basic_structures.classes import UnavailableClasses
 from data import MIN_HOUR, MAX_HOUR
 from schedule.day_scheadule import DaySchedule
-from time_ import TimeDelta, Time
+from time_ import TimeDelta, Time, TimeRange
 from utils.types_ import ClassesType as CT, TUESDAY
 
 DISTANCES = {(1, 0): TimeDelta(1, 0),
@@ -121,7 +121,9 @@ class TestDayScheadule:
             cl.room = rooms[nr]
             new_cl_list.append(cl)
         day_schedule._classes = new_cl_list
-        assert day_schedule.get_brake_time() == TimeDelta(1, 20)
+        day_schedule.assign(UnavailableClasses(Time(9, 30),
+                                               TimeDelta(0, 20), 1))
+        assert day_schedule.get_brake_time() == TimeDelta(1, 0)
 
     def test_get_brake_time__empty(self, day_schedule):
         assert day_schedule.get_brake_time() == TimeDelta()
@@ -181,10 +183,10 @@ class TestDayScheadule:
         cl3.start_time = Time(15, 10)
         day_schedule._classes = [cl1, cl2, cl3]
         times = day_schedule.get_free_times()
-        assert times == [Time(10, 10) - MIN_HOUR,
-                         Time(12, 10) - Time(11, 30),
-                         Time(15, 10) - Time(14, 30),
-                         MAX_HOUR - Time(16, 10)]
+        assert times == [TimeRange(MIN_HOUR, dur=Time(10, 10) - MIN_HOUR),
+                         TimeRange(Time(11, 30), dur=Time(12, 10) - Time(11, 30)),
+                         TimeRange(Time(14, 30), dur=Time(15, 10) - Time(14, 30)),
+                         TimeRange(Time(16, 10), dur=MAX_HOUR - Time(16, 10))]
 
     def test_get_amount_of_labs(self, day_schedule, classes_list):
         day_schedule._classes = classes_list

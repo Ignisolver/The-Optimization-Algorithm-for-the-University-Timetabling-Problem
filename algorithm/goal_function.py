@@ -14,9 +14,7 @@ Funkcja celu - mierzy rozwiązanie:
 - najgorzej = śrenia * 5
 """
 
-from math import ceil
-
-from data import (MIN_HOUR, MAX_HOUR, MAX_TIME_PER_DAY, DAY_TIME_WEIGHTS,
+from data import (MIN_HOUR, MAX_HOUR, DAY_TIME_WEIGHTS,
                   GOAL_FUNCTION_WEIGHTS as GFW, WEEK_LENGTH_MIN)
 from schedule.week_scheadule import WeekSchedule
 from time_ import TimeDelta, TimeRange
@@ -49,6 +47,7 @@ class Metric:
         self._classes_amount = week_schedule.classes_amount
         self._best_days_unfolding = 0
         self._worst_days_unfolding = None
+        self._calc_all_basics()
 
     def _calc_worst_brake_time(self):
         self._worst_brake_time = int(WEEK_LENGTH_MIN) - self._classes_time
@@ -61,8 +60,7 @@ class Metric:
         self._worst_uniformity = self._medium_unfolding * 5
 
     def _calc_worst_days_unfolding(self):
-        day_obligatory_time = int(self._classes_time /
-                                  self._best_week_arrangement)
+        day_obligatory_time = int(self._classes_time / 5)
         day_obl_td = TimeDelta(0, day_obligatory_time)
         counted_time = TimeDelta(0, 0)
         points = 0
@@ -73,7 +71,7 @@ class Metric:
                 counted_time += td
             else:
                 break
-        self._worst_days_unfolding = points # todo best_week-arengment
+        self._worst_days_unfolding = points * 5
 
     def _calc_days_unfolding(self):
         points = 0
@@ -88,7 +86,7 @@ class Metric:
     def _calc_brake_time_value(self):
         total_break_time = TimeDelta(0)
         for day in self.ws:
-            total_break_time += day.get_brake_time()
+            total_break_time += day.get_brake_time(move_time_enable=False)
         return ((int(total_break_time) - self._best_brake_time) /
                  self._worst_brake_time)
 
@@ -113,7 +111,6 @@ class Metric:
         self._calc_worst_days_unfolding()
 
     def calc_goal_fcn(self):
-        self._calc_all_basics()
         btw = self._calc_brake_time_value() * GFW[BTW]
         wa = self._calc_week_arrangement() * GFW[WA]
         uni = self._calc_uniformity() * GFW[UNI]

@@ -15,6 +15,7 @@ from utils.types_ import MONDAY, ClassesType as CT, THURSDAY, FRIDAY
 def test_iterator_over_day():
     iod = iterator_over_day()
     l = [i for i in iod]
+    print("", *l, sep='\n')
     assert len(l) == len(DAY_TIME_WEIGHTS)
     assert len(l[0]) == 3
 
@@ -59,11 +60,11 @@ class TestMetric:
 
     def test__calc_worst_days_unfolding(self, metric):
         metric._calc_worst_days_unfolding()
-        assert metric._worst_days_unfolding == 54
+        assert metric._worst_days_unfolding == 100
 
     def test__calc_days_unfolding(self, metric):
         d_a = metric._calc_days_unfolding()
-        assert d_a == 13/54
+        assert d_a == 13/100
 
     def test__calc_brake_time_value(self, metric):
         bt = metric._calc_brake_time_value()
@@ -82,7 +83,7 @@ class TestMetric:
 
     def test_calc_goal_fcn(self, metric):
         gfv = metric.calc_goal_fcn()
-        sum_ = 13/54 * GOAL_FUNCTION_WEIGHTS[DU]
+        sum_ = 13/100 * GOAL_FUNCTION_WEIGHTS[DU]
         sum_ += (3 * 60 - 0) / (60 * 60) * GOAL_FUNCTION_WEIGHTS[BTW]
         sum_ += 2 / 7 * GOAL_FUNCTION_WEIGHTS[WA]
         sum_ += (300-120 + 300-180) / 1500 * GOAL_FUNCTION_WEIGHTS[UNI]

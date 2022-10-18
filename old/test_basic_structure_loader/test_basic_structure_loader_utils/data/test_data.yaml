@@ -1,7 +1,0 @@
-INT: 2
-STR: "ola"
-LIST:
-  - 1
-  - 2
-  - 3
-NONE: null

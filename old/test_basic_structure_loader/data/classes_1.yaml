@@ -1,8 +1,0 @@
-TYPE: Classes # Room, Lecturer, Group, Classes
-ID: 0 # int
-NAME: "B5 - 105" # string
-DURATION: 15 # minutes - int
-CLASSES_TYPE: "W-N-2" # "(W=Wykład/L=Labolatorium)-(N=Zwykły/E=Obieralny)-(1/2/3... co ile tygodni)
-AVAILABLE_ROOMS: [10,20] # ROOMS IDs
-GROUPS: [ 10, 44, 502] # groups IDs
-LECTURERS: [14, 25] # array of classes ID
