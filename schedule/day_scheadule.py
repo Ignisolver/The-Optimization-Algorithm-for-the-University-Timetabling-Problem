@@ -24,10 +24,14 @@ class DaySchedule:
         return time of classes in minutes
         """
         total_time = int(sum([cl.dur for cl in self._classes], TimeDelta()))
+        total_time -= int(self.get_unavailable_len())
         return total_time
 
     def __iter__(self) -> Iterator:
         return iter(self._classes)
+
+    def __repr__(self):
+        return str(self._classes)
 
     def get_classes(self) -> List["Classes"]:
         return self._classes
@@ -42,7 +46,7 @@ class DaySchedule:
             return None
         last_cl = None
         for cl in self._classes:
-            if cl.start_time <= time:
+            if cl.start_time < time:
                 last_cl = cl
             else:
                 break
@@ -108,7 +112,7 @@ class DaySchedule:
         time_before = self._classes[0].start_time - min_h
         time_after = max_h - self._classes[-1].end_time
         time_during = self.get_brake_time()
-        time_unavail = self._get_unavailable_time()
+        time_unavail = self.get_unavailable_len()
         return time_before + time_during + time_after - time_unavail
 
     def get_free_times(self, max_h=MAX_HOUR,
@@ -125,7 +129,7 @@ class DaySchedule:
         times.append(max_h - start_h)
         return times
 
-    def _get_unavailable_time(self):
+    def get_unavailable_len(self):
         tot_time = TimeDelta()
         for cl in self._classes:
             if cl.classes_type == CT.UNAVAILABLE:
@@ -144,6 +148,8 @@ class DaySchedule:
 
     def get_brake_time(self) -> "TimeDelta":
         """without move time"""
+        if len(self._classes) <= 1:
+            return TimeDelta()
         total_time = TimeDelta()
         last_cl = self._classes[0]
         for cl in self._classes[1:]:
@@ -151,16 +157,17 @@ class DaySchedule:
                 continue
             total_time += self._calc_time_btw_classes(last_cl, cl)
             last_cl = cl
-        unavail_time = self._get_unavailable_time()
+        unavail_time = self.get_unavailable_len()
         return total_time - unavail_time
 
     def get_amount_of_classes_between(self, start_h, end_h):
-        # testme
         n = 0
         tr = TimeRange(start_h, end_h)
         for cls_ in self._classes:
-            if tr.intersect(cls_.start_time):
-                n += 1
+            if cls_.classes_type != CT.UNAVAILABLE:
+                cls_tr = TimeRange(cls_.start_time, cls_.end_time)
+                if cls_tr.intersect(tr):
+                    n += 1
         return n
 
     def _assert_not_intersect(self, new_cl: "Classes"):

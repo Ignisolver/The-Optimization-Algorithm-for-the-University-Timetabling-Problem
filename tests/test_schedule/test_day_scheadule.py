@@ -112,7 +112,7 @@ class TestDayScheadule:
         assert day_schedule.get_free_time(min_h=Time(7, 0),
                                           max_h=Time(22,0)) == TimeDelta(7, 20)
 
-    def test_get_brake_time(self, day_schedule, classes_list):
+    def test_get_brake_time_ok(self, day_schedule, classes_list):
         new_cl_list = []
         rooms = [2, 3, 2, 3]
         start_times = [Time(8, 0), Time(10, 0), Time(13, 0), Time(15, 0)]
@@ -122,6 +122,15 @@ class TestDayScheadule:
             new_cl_list.append(cl)
         day_schedule._classes = new_cl_list
         assert day_schedule.get_brake_time() == TimeDelta(1, 20)
+
+    def test_get_brake_time__empty(self, day_schedule):
+        assert day_schedule.get_brake_time() == TimeDelta()
+
+    def test_get_brake_time__one(self, day_schedule, classes_list):
+        cl = classes_list[0]
+        cl.start_time = Time(10, 20)
+        day_schedule.assign(cl)
+        assert day_schedule.get_brake_time() == TimeDelta()
 
     def test_get_last_classes_ok(self, day_schedule, classes_list):
         day_schedule._classes = classes_list
@@ -408,8 +417,6 @@ class TestDayScheadule:
         cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(14, 20))
         with pytest.raises(AssertionError):
             day_schedule_1._assert_assignment_available(cl3)
-        
-        
 
     def test__sort_classes_fcn(self, day_schedule_1, classes_list):
         cl1 = classes_list[0]
@@ -470,6 +477,8 @@ class TestDayScheadule:
         assert day_schedule_1._classes == [cl1, cl2]
 
     def test_pretty_represent(self, day_schedule, classes_list):
+        print()
+        day_schedule.pretty_represent()
         new_cl_list = []
         rooms = [2, 3, 2, 3]
         start_times = [Time(8, 0), Time(10, 0), Time(13, 0), Time(15, 0)]
@@ -484,3 +493,40 @@ class TestDayScheadule:
                                                TUESDAY))
         print()
         day_schedule.pretty_represent()
+
+    def test_get_amount_of_classes_between(self, day_schedule):
+        cl1 = ClassesM(TimeDelta(1, 0), None, RoomM(0, 44), Time(10, 0))
+        day_schedule.assign(cl1)
+        n = day_schedule.get_amount_of_classes_between(Time(9, 0),
+                                                       Time(9, 30))
+        assert 0 == n
+
+        n = day_schedule.get_amount_of_classes_between(Time(9, 0),
+                                                       Time(10, 0))
+        assert 0 == n
+
+        n = day_schedule.get_amount_of_classes_between(Time(9, 0),
+                                                       Time(10, 30))
+        assert 1 == n
+
+        n = day_schedule.get_amount_of_classes_between(Time(10, 0),
+                                                       Time(10, 30))
+        assert 1 == n
+
+        n = day_schedule.get_amount_of_classes_between(Time(10, 30),
+                                                       Time(11, 0))
+        assert 1 == n
+
+        n = day_schedule.get_amount_of_classes_between(Time(10, 30),
+                                                       Time(12, 0))
+        assert 1 == n
+
+        n = day_schedule.get_amount_of_classes_between(Time(11, 0),
+                                                       Time(12, 0))
+        assert 0 == n
+
+        n = day_schedule.get_amount_of_classes_between(Time(12, 0),
+                                                       Time(13, 0))
+        assert 0 == n
+
+

@@ -69,7 +69,7 @@ class Classes:
         s2 = f"{type_:^12}| {name}"
         return s1 + s2
 
-    def __repr__(self):
+    def to_yaml(self):
         s = " "
         txt = f'\n{2*s}'.join([f"- name: |",
                                f"{2 * s}{self.name}",

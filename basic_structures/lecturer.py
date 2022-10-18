@@ -8,6 +8,9 @@ class Lecturer(WithSchedule):
         self.id_: LecturerId = id_
         self.name: str = name
 
+    def __repr__(self):
+        return f"Lecturer(id:{self.id_}, name:{self.name})"
+
 
 class UnavailableLecturer():
     def __new__(cls, *args, **kwargs):

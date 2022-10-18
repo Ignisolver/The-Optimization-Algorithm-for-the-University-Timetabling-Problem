@@ -9,21 +9,22 @@ if TYPE_CHECKING:
 
 
 class WeekSchedule:
-    #todo add start unavailability mechanizm
     def __init__(self,
-                 unavailability: Union[None, List["Classes"]] = None):
+                 unavailability: None | List["Classes"] = None):
         self.days: Dict[Day, DaySchedule] = {day_tag: DaySchedule(day_tag)
                                              for day_tag in DAYS}
+        self._set_unavailability(unavailability)
         self.temp_day_tag = None
-        if unavailability is not None:
-            self._set_unavailability(unavailability)
+        self.classes_time = None
+        self.classes_amount = None
 
     def __iter__(self) -> Iterator[DaySchedule]:
         return iter(self.days.values())
 
     def _set_unavailability(self, unavailability):
-        for unav_cl in unavailability:
-            self.days[unav_cl.day].assign(unav_cl)
+        if unavailability is not None:
+            for unav_cl in unavailability:
+                self.days[unav_cl.day].assign(unav_cl)
 
     def assign(self, classes: "Classes"):
         day_tag = classes.day
@@ -41,5 +42,5 @@ class WeekSchedule:
         txt = ""
         for day_sche in self.days.values():
             for classes in day_sche:
-                txt += str(classes) + "\n\n"
+                txt += classes.to_yaml() + "\n\n"
         return txt

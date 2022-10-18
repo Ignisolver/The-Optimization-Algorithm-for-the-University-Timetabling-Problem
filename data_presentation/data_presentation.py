@@ -38,7 +38,7 @@ def _save_yaml(path: Path, text):
 def _save_pdf(path: Path):
     yaml_path = path.with_suffix(".yaml")
     pdf_path = path.with_suffix(".pdf")
-    print(system(f'py -3.10 -m pdfschedule "{yaml_path}" "{pdf_path}"'))
+    system(f'py -3.10 -m pdfschedule "{yaml_path}" "{pdf_path}"')
 
 
 def _delete_yaml(path):

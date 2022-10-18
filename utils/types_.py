@@ -49,6 +49,10 @@ class TimeType:
     pass
 
 
+class Building(list):
+    pass
+
+
 class TimeRangeType:
     pass
 
