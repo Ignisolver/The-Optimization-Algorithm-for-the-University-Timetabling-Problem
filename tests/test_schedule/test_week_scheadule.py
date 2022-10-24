@@ -27,8 +27,8 @@ def week_schedule():
 
 @pytest.fixture()
 def u_c():
-    return [UnavailableClasses(Time(10, 30), TimeDelta(1, 0), MONDAY),
-            UnavailableClasses(Time(14, 30), TimeDelta(2, 0), MONDAY)]
+    return [UnavailableClasses(1, Time(10, 30), TimeDelta(1, 0), MONDAY),
+            UnavailableClasses(1, Time(14, 30), TimeDelta(2, 0), MONDAY)]
 
 
 @pytest.fixture(scope="function")

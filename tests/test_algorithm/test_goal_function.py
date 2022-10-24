@@ -23,7 +23,7 @@ def test_iterator_over_day():
 @pytest.fixture(scope="class")
 def metric():
     start, dur, day = Tim(12, 30), TD(1, 0), MONDAY
-    ws = WeekSchedule([UnavailableClasses(start, dur, day)])
+    ws = WeekSchedule([UnavailableClasses(1, start, dur, day)])
     classes = [Classes(1, "a", TD(1, 0), CT.LECTURE, [], Lect(1,"l"), []),
                Classes(2, "a", TD(1, 0), CT.LECTURE, [], Lect(1,"l"), []),
                Classes(3, "a", TD(1, 0), CT.LECTURE, [], Lect(1,"l"), []),

@@ -4,8 +4,7 @@ from typing import Tuple, Union, TYPE_CHECKING
 from basic_structures.lecturer import Lecturer, UnavailableLecturer
 from basic_structures.room import Room, UnavailabilityRoom
 from time_ import Time, TimeDelta
-from utils.types_ import ClassesType, ClassesId, Day, UNAVAILABLE_ID, \
-    DAY_LETTER, get_color
+from utils.types_ import ClassesType, ClassesId, Day, DAY_LETTER, get_color
 
 if TYPE_CHECKING:
     from basic_structures import Group
@@ -84,8 +83,8 @@ class Classes:
 
 
 class UnavailableClasses:
-    def __new__(cls, start: Time, dur: TimeDelta, day: Day):
-        cl = Classes(id_=UNAVAILABLE_ID,
+    def __new__(cls, id_: int, start: Time, dur: TimeDelta, day: Day):
+        cl = Classes(id_= id_,
                      name="UNAVAILABLE",
                      dur=dur,
                      classes_type=ClassesType.UNAVAILABLE,

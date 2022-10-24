@@ -49,15 +49,12 @@ class TimeType:
     pass
 
 
-class Building(list):
-    pass
-
-
 class TimeRangeType:
     pass
 
 
 UNAVAILABLE_ID = -1
+
 
 COLORS = ['edc9cd', '1d6c2b', '1f08b0', 'a3c1ad', 'e35259', '22b4b7', '4d5d53', 'bcbbff', '4d5d53', '96c8a2',
           'efdfbb', '8fbc8f', 'bdb76b', 'fffdd0', 'eee8cd', '8c92ac', 'f7e7ce', 'ace1af', '78866b', 'a3c1ad',

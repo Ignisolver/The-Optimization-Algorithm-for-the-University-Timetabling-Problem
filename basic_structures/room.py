@@ -9,6 +9,12 @@ if TYPE_CHECKING:
 
 
 @dataclass
+class Building:
+    id_: int
+    rooms: list = field(default_factory=list)
+
+
+@dataclass
 class Room(WithSchedule):
     id_: RoomId
     _initial_availability_minutes: int
@@ -26,7 +32,6 @@ class Room(WithSchedule):
 
     def __post_init__(self):
         super().__init__()
-        self._classes_occup_probab = {UNAVAILABLE_ID: 0}
 
     @property
     def occup_priority(self):
@@ -97,7 +102,7 @@ class Room(WithSchedule):
 
 class UnavailabilityRoom:
     def __new__(cls):
-        return Room(id_=RoomId(-1),
+        return Room(id_=UNAVAILABLE_ID,
                     _initial_availability_minutes=0,
                     people_capacity=0,
                     name="NONE",

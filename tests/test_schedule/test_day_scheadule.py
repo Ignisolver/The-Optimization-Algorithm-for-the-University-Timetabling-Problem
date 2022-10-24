@@ -121,7 +121,7 @@ class TestDayScheadule:
             cl.room = rooms[nr]
             new_cl_list.append(cl)
         day_schedule._classes = new_cl_list
-        day_schedule.assign(UnavailableClasses(Time(9, 30),
+        day_schedule.assign(UnavailableClasses(1, Time(9, 30),
                                                TimeDelta(0, 20), 1))
         assert day_schedule.get_brake_time() == TimeDelta(1, 0)
 
@@ -491,7 +491,7 @@ class TestDayScheadule:
             cl.classes_type = types[nr]
             new_cl_list.append(cl)
         day_schedule._classes = new_cl_list
-        day_schedule.assign(UnavailableClasses(Time(18,0), TimeDelta(0,30),
+        day_schedule.assign(UnavailableClasses(1, Time(18,0), TimeDelta(0,30),
                                                TUESDAY))
         print()
         day_schedule.pretty_represent()

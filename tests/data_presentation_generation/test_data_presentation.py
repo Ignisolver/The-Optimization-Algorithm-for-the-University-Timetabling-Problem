@@ -15,7 +15,7 @@ from utils.types_ import MONDAY
 
 @pytest.fixture
 def items():
-    un_av_cl = UnavailableClasses(day=MONDAY, start=Time(10, 20),
+    un_av_cl = UnavailableClasses(1, day=MONDAY, start=Time(10, 20),
                                   dur=TimeDelta(1,1))
     rooms = [Room(1,12,12,"R1"),
              Room(2,12,12,"R2"),
@@ -24,6 +24,7 @@ def items():
              Room(5,12,12,"R5"),
              Room(6,12,12,"R6")]
     for i in range(len(rooms)):
+        rooms[i].add_potential_classes(un_av_cl, 0)
         rooms[i].assign(un_av_cl)
     return rooms
 

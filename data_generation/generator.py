@@ -11,8 +11,8 @@
 # classes rooms
 
 from generation_configs import *
-from utils.types_ import Building
-buildings = [Building() for i in range(AMOUNT_OF_BUILDINGS)]
+from basic_structures.room import Building
+buildings = [Building(i) for i in range(AMOUNT_OF_BUILDINGS)]
 
 
 
