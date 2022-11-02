@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Union, List
 
+from time_ import TimeDelta
 from time_.time_range.time_range_utils import (TimeRangeIntersectDetector,
                                                TimeRangeInitializer)
 from utils.types_ import Day, TimeRangeType
-from time_ import TimeDelta
 
 if TYPE_CHECKING:
     from time_.time_ import Time
@@ -20,7 +20,7 @@ class TimeRange(TimeRangeType):
     _initializer = TimeRangeInitializer()
 
     def __post_init__(self):
-        self.start, self.dur, self.end = self._initializer.\
+        self.start, self.dur, self.end = self._initializer. \
             calc_start_dur_end(self.start, self.dur, self.end)
 
     def increase_end(self, time_delta: TimeDelta):

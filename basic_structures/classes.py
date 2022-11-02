@@ -1,11 +1,10 @@
 from dataclasses import dataclass
 from typing import Tuple, Union, TYPE_CHECKING
 
+from utils.types_ import ClassesType, ClassesId, Day, DAY_LETTER, get_color
 from basic_structures.lecturer import Lecturer, UnavailableLecturer
 from basic_structures.room import Room, UnavailabilityRoom
 from time_ import Time, TimeDelta
-from utils.types_ import ClassesType, ClassesId, Day, DAY_LETTER, get_color
-
 if TYPE_CHECKING:
     from basic_structures import Group
 
@@ -17,7 +16,7 @@ class Classes:
     dur: TimeDelta
     classes_type: ClassesType
     avail_rooms: Tuple[Room, ...]
-    lecturer: Lecturer
+    lecturer: "Lecturer"
     groups: Tuple["Group", ...]
     room: Room | None = None
     _start_time: Union[Time, None] = None
@@ -70,21 +69,25 @@ class Classes:
 
     def to_yaml(self):
         s = " "
-        txt = f'\n{2*s}'.join([f"- name: |",
-                               f"{2 * s}{self.name}",
-                               f"{2 * s}ID: {self.id_}",
-                               f"{2 * s}R: {self.room.name}",
-                               f"{2 * s}L: {self.lecturer.name}",
-                               f"{2 * s}G: {[g for g in self.groups]}",
-                               f"days: {DAY_LETTER[self.day]}",
-                               f"time: {self.start_time} - {self.end_time}",
-                               f"color: '{next(get_color)}'"])
+        txt = f'\n{2 * s}'.join([f"- name: |",
+                                 f"{2 * s}{self.name}",
+                                 f"{2 * s}ID: {self.id_}",
+                                 f"{2 * s}R: {self.room.name}",
+                                 f"{2 * s}L: {self.lecturer.name}",
+                                 f"{2 * s}G: {[g for g in self.groups]}",
+                                 f"days: {DAY_LETTER[self.day]}",
+                                 f"time: {self.start_time} - {self.end_time}",
+                                 f"color: '{next(get_color)}'"])
         return txt
+
+    def assign_occupacity(self):
+        for room in self.avail_rooms:
+            room.add_potential_classes(self)
 
 
 class UnavailableClasses:
     def __new__(cls, id_: int, start: Time, dur: TimeDelta, day: Day):
-        cl = Classes(id_= id_,
+        cl = Classes(id_=id_,
                      name="UNAVAILABLE",
                      dur=dur,
                      classes_type=ClassesType.UNAVAILABLE,
@@ -95,5 +98,3 @@ class UnavailableClasses:
                      room=UnavailabilityRoom())
         cl.start_time = start
         return cl
-
-

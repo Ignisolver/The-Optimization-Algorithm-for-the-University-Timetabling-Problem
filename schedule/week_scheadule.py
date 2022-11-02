@@ -1,4 +1,4 @@
-from typing import Dict, TYPE_CHECKING, Union, List, Iterator
+from typing import Dict, TYPE_CHECKING, List, Iterator
 
 from schedule.day_scheadule import DaySchedule
 from utils.constans import DAYS

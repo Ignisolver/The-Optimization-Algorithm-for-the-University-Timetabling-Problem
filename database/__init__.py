@@ -9,4 +9,3 @@ from database_model import (LecturersTab,
                             RoomsUnavailableTimes,
                             LecturersUnavailableTimes,
                             )
-

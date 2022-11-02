@@ -41,13 +41,15 @@ class Room(WithSchedule):
         else:
             return self._occup_priority
 
-    def add_potential_classes(self, classes, probab):
+    def add_potential_classes(self, classes, probab=None):
         """
         use this function during initialisation step - before planning
         """
         if self._is_classes_available(classes.id_):
             raise RuntimeError("An attempt to add classes"
                                " again to the same room")
+        if probab is None:
+            probab = 1/len(classes.avail_rooms)
         self._classes_occup_probab[classes.id_] = probab
         self._const_classes_occup_probab[classes.id_] = probab
         self._update()
@@ -90,8 +92,6 @@ class Room(WithSchedule):
         """
         Use this function during planning
         """
-        if not self._is_classes_available(classes_id):
-            raise RuntimeError("An attempt to access to not existing classes")
         self._classes_occup_probab[classes_id] = probab
         self._update()
 

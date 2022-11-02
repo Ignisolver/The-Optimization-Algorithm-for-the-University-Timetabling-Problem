@@ -4,7 +4,7 @@ from basic_structures import Classes, Room, Lecturer
 from basic_structures.classes import UnavailableClasses
 from schedule.week_scheadule import WeekSchedule
 from time_ import TimeDelta, Time
-from utils.types_ import ClassesType, MONDAY, FRIDAY, WEDNESDAY, LecturerId
+from utils.types_ import ClassesType, MONDAY, WEDNESDAY
 
 
 class WithScheduleMock:
@@ -25,6 +25,7 @@ def classes():
 def week_schedule():
     return WeekSchedule()
 
+
 @pytest.fixture()
 def u_c():
     return [UnavailableClasses(1, Time(10, 30), TimeDelta(1, 0), MONDAY),
@@ -40,7 +41,7 @@ def unav_ws(u_c) -> WeekSchedule:
 @pytest.fixture(scope="function")
 def cl():
     cl = Classes(1, "aa", TimeDelta(1, 20), ClassesType.LECTURE,
-            [1, 2, 3], Lecturer(1,"lect"), [1, 2, 4], day=MONDAY)
+                 [1, 2, 3], Lecturer(1, "lect"), [1, 2, 4], day=MONDAY)
     cl.start_time = Time(10, 40)
     return cl
 
@@ -74,4 +75,3 @@ def test_to_yaml(unav_ws, cl):
     unav_ws.assign(cl)
     print()
     print(unav_ws.to_yaml())
-

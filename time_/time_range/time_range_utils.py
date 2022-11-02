@@ -1,8 +1,7 @@
-from typing import Tuple, TYPE_CHECKING, Union, Iterable
+from typing import Tuple, TYPE_CHECKING, Union
 
 from utils.none_machine import NM
 from utils.types_ import TimeType, TimeRangeType
-
 
 if TYPE_CHECKING:
     from time_.time_ import Time
@@ -89,8 +88,3 @@ class TimeRangeInitializer:
     def assert__start_dur_end__correct(start, end, dur):
         if (end - start != dur) or (dur < 0):
             raise ValueError("Incorrect time range data passed")
-
-
-
-
-

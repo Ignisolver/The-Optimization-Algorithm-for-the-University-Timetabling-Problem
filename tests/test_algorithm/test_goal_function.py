@@ -3,11 +3,11 @@ from time import time
 import pytest
 
 from algorithm.goal_function import iterator_over_day, Metric
-from basic_structures import Classes, Lecturer as Lect
+from basic_structures import Classes, Lecturer as Lect, Room
 from basic_structures.classes import UnavailableClasses
 from data import DAY_TIME_WEIGHTS, GOAL_FUNCTION_WEIGHTS
 from schedule.week_scheadule import WeekSchedule
-from time_ import Time as Tim, TimeDelta as TD, TimeDelta
+from time_ import Time as Tim, TimeDelta as TD
 from utils.constans import DU, BTW, WA, UNI
 from utils.types_ import MONDAY, ClassesType as CT, THURSDAY, FRIDAY
 
@@ -24,11 +24,11 @@ def test_iterator_over_day():
 def metric():
     start, dur, day = Tim(12, 30), TD(1, 0), MONDAY
     ws = WeekSchedule([UnavailableClasses(1, start, dur, day)])
-    classes = [Classes(1, "a", TD(1, 0), CT.LECTURE, [], Lect(1,"l"), []),
-               Classes(2, "a", TD(1, 0), CT.LECTURE, [], Lect(1,"l"), []),
-               Classes(3, "a", TD(1, 0), CT.LECTURE, [], Lect(1,"l"), []),
-               Classes(4, "a", TD(1, 0), CT.LECTURE, [], Lect(1,"l"), []),
-               Classes(5, "a", TD(1, 0), CT.LECTURE, [], Lect(1,"l"), [])]
+    classes = [Classes(1, "a", TD(1, 0), CT.LECTURE, [], Lect(1, "l"), [], room=Room(1,1,1)),
+               Classes(2, "a", TD(1, 0), CT.LECTURE, [], Lect(1, "l"), [], room=Room(1,1,1)),
+               Classes(3, "a", TD(1, 0), CT.LECTURE, [], Lect(1, "l"), [], room=Room(1,1,1)),
+               Classes(4, "a", TD(1, 0), CT.LECTURE, [], Lect(1, "l"), [], room=Room(1,1,1)),
+               Classes(5, "a", TD(1, 0), CT.LECTURE, [], Lect(1, "l"), [], room=Room(1,1,1))]
     for i in range(len(classes))[:2]:
         classes[i].day = THURSDAY
 
@@ -64,7 +64,7 @@ class TestMetric:
 
     def test__calc_days_unfolding(self, metric):
         d_a = metric._calc_days_unfolding()
-        assert d_a == 13/100
+        assert d_a == 13 / 100
 
     def test__calc_brake_time_value(self, metric):
         bt = metric._calc_brake_time_value()
@@ -76,17 +76,17 @@ class TestMetric:
 
     def test__calc_uniformity(self, metric):
         uni = metric._calc_uniformity()
-        assert uni == (300-120 + 300-180) / 1500
+        assert uni == (300 - 120 + 300 - 180) / 1500
 
     def test__calc_all_basics(self, metric):
         metric._calc_all_basics()
 
     def test_calc_goal_fcn(self, metric):
         gfv = metric.calc_goal_fcn()
-        sum_ = 13/100 * GOAL_FUNCTION_WEIGHTS[DU]
+        sum_ = 13 / 100 * GOAL_FUNCTION_WEIGHTS[DU]
         sum_ += (3 * 60 - 0) / (60 * 60) * GOAL_FUNCTION_WEIGHTS[BTW]
         sum_ += 2 / 7 * GOAL_FUNCTION_WEIGHTS[WA]
-        sum_ += (300-120 + 300-180) / 1500 * GOAL_FUNCTION_WEIGHTS[UNI]
+        sum_ += (300 - 120 + 300 - 180) / 1500 * GOAL_FUNCTION_WEIGHTS[UNI]
         assert round(gfv, 5) == round(sum_, 5)
 
     def test_time(self, metric):
@@ -94,5 +94,4 @@ class TestMetric:
         for i in range(1000):
             gfv = metric.calc_goal_fcn()
         et = time()
-        print('\nGoal function speed: ', (et-st), "/ 1000")
-
+        print('\nGoal function speed: ', (et - st), "/ 1000")

@@ -18,18 +18,21 @@ def room() -> Room:
 
 @pytest.fixture(scope='function')
 def classes() -> Classes:
-    cl = Classes(1,"sss", TimeDelta(1,20), ClassesType.LECTURE, [Room(1,1,1)],
-                   Lecturer(1,"dd"), [Group(1,"dd", 30), Group(2,"dd", 30)],
-                   day=1)
-    cl.start_time = Time(10,20)
+    cl = Classes(1, "sss", TimeDelta(1, 20), ClassesType.LECTURE,
+                 [Room(1, 1, 1)],
+                 Lecturer(1, "dd"), [Group(1, "dd", 30), Group(2, "dd", 30)],
+                 day=1, room=Room(1,1,1))
+    cl.start_time = Time(10, 20)
     return cl
+
 
 @pytest.fixture(scope='function')
 def classes_2() -> Classes:
-    cl = Classes(2,"sss", TimeDelta(0,40), ClassesType.LECTURE, [Room(1,1,1)],
-                   Lecturer(1,"dd"), [Group(1,"dd", 30), Group(2,"dd", 30)],
-                   day=1)
-    cl.start_time = Time(12,20)
+    cl = Classes(2, "sss", TimeDelta(0, 40), ClassesType.LECTURE,
+                 [Room(1, 1, 1)],
+                 Lecturer(1, "dd"), [Group(1, "dd", 30), Group(2, "dd", 30)],
+                 day=1, room=Room(1,1,1))
+    cl.start_time = Time(12, 20)
     return cl
 
 
@@ -94,11 +97,6 @@ class TestRoom:
         room._set_probab_of_classes(classes.id_, 0.2)
         assert room._classes_occup_probab[1] == 0.2
 
-    def test__set_probability_of_classes_incorrect_id(self, room, classes):
-        room.add_potential_classes(classes, 0.1)
-        with pytest.raises(RuntimeError):
-            room._set_probab_of_classes(2, 0.3)
-
     def test__reset_probability_of_classes(self, classes, room):
         room.add_potential_classes(classes, 0.1)
         room._set_probab_of_classes(classes.id_, 0.2)
@@ -154,5 +152,3 @@ class TestRoom:
         assert room._classes_occup_probab[1] == 0.2
         priority_after = room.occup_priority
         assert priority_after != priority_before
-
-

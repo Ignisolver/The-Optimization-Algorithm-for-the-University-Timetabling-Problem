@@ -1,7 +1,6 @@
-from sqlalchemy.orm import declarative_base, sessionmaker
 from sqlalchemy import (create_engine, Column, Integer,
                         String, ForeignKey, Time)
-
+from sqlalchemy.orm import declarative_base, sessionmaker
 
 engine = create_engine("sqlite:///:memory:", echo=True)
 Base = declarative_base()
@@ -82,5 +81,3 @@ class DistancesTab(Base):
     building_1 = Column(Integer, ForeignKey(BuildingTab.id))
     building_2 = Column(Integer, ForeignKey(BuildingTab.id))
     distance = Column(Integer)
-
-

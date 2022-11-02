@@ -1,27 +1,27 @@
 import pytest
 
 from time_ import TimeRange, Time, TimeDelta
-from utils.types_ import Day, Week, FRIDAY
+from utils.types_ import Day, FRIDAY
 
 
 class TestTimeRange:
     def test___init__ok(self):
-        tr = TimeRange(Time(10,20), Time(10,40), TimeDelta(0,20), FRIDAY)
-        assert tr.start == Time(10,20)
-        assert tr.end == Time(10,40)
-        assert tr.dur == TimeDelta(0,20)
+        tr = TimeRange(Time(10, 20), Time(10, 40), TimeDelta(0, 20), FRIDAY)
+        assert tr.start == Time(10, 20)
+        assert tr.end == Time(10, 40)
+        assert tr.dur == TimeDelta(0, 20)
         assert tr.day == FRIDAY
 
     def test___init__incorrect(self):
         with pytest.raises(ValueError):
-            _ = TimeRange(Time(10,20))
+            _ = TimeRange(Time(10, 20))
 
     def test_increase_end_ok(self):
-        tr = TimeRange(Time(10,20), Time(10,40))
+        tr = TimeRange(Time(10, 20), Time(10, 40))
         tr.increase_end(TimeDelta(2, 10))
-        assert tr.start == Time(10,20)
-        assert tr.end == Time(12,50)
-        assert tr.dur == TimeDelta(2,30)
+        assert tr.start == Time(10, 20)
+        assert tr.end == Time(12, 50)
+        assert tr.dur == TimeDelta(2, 30)
 
         tr = TimeRange(Time(10, 20), Time(11, 50))
         tr.increase_end(TimeDelta(-1, -10))

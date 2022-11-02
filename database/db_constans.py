@@ -7,7 +7,6 @@ SAT = 5
 SUN = 6
 DAYS = [MON, THU, WEN, THU, FRI, SAT, SUN]
 
-
 LECTURE = "Lecture"
 LABORATORY = "Laboratory"
 

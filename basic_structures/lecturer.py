@@ -15,5 +15,3 @@ class Lecturer(WithSchedule):
 class UnavailableLecturer():
     def __new__(cls, *args, **kwargs):
         return Lecturer(-1, "UNAVAILABLE")
-
-

@@ -1,7 +1,9 @@
-from typing import Iterable, Type, List
+from typing import Iterable, Type, List, TYPE_CHECKING
 
-from time_ import TimeDelta as TD, Time, TimeRange as TR
 from data import MIN_HOUR, MAX_HOUR
+
+if TYPE_CHECKING:
+    from time_ import TimeDelta as TD, Time, TimeRange as TR
 
 
 def check_type_all(iterable: Iterable, type_: Type):
@@ -15,5 +17,3 @@ def check_if_time_is_available(times: Iterable["Time"]):
 
 def filter_times_grater_or_equal_than(times: List["TR"], time_delta: "TD"):
     return tuple(filter(lambda time: time.dur >= time_delta, times))
-
-

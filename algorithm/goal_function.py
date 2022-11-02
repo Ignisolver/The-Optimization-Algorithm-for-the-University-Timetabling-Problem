@@ -22,7 +22,7 @@ from utils.constans import BTW, WA, UNI, DU
 
 
 def iterator_over_day():
-    period_mins = int(int(MAX_HOUR-MIN_HOUR) / len(DAY_TIME_WEIGHTS))
+    period_mins = int(int(MAX_HOUR - MIN_HOUR) / len(DAY_TIME_WEIGHTS))
     period = TimeDelta(0, period_mins)
     start = MIN_HOUR
     end = MIN_HOUR + period
@@ -81,14 +81,14 @@ class Metric:
                 if cl_am > 0:
                     points += weight
         return ((points - self._best_days_unfolding) /
-                 self._worst_days_unfolding)
+                self._worst_days_unfolding)
 
     def _calc_brake_time_value(self):
         total_break_time = TimeDelta(0)
         for day in self.ws:
             total_break_time += day.get_brake_time(move_time_enable=False)
         return ((int(total_break_time) - self._best_brake_time) /
-                 self._worst_brake_time)
+                self._worst_brake_time)
 
     def _calc_week_arrangement(self):
         n = 0
@@ -117,24 +117,3 @@ class Metric:
         du = self._calc_days_unfolding() * GFW[DU]
         total_sum = btw + wa + uni + du
         return total_sum
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

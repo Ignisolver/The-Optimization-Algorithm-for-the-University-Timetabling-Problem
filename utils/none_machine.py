@@ -1,4 +1,3 @@
-
 class NoneMachine:
     @staticmethod
     def both_nones(a, b):

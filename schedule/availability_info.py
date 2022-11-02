@@ -10,7 +10,6 @@ class Availability:
     start: Time
     end: Time
     dur = None
+
     def __post_init__(self):
         self.dur = self.end - self.start
-
-

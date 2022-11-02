@@ -1,1 +1,1 @@
-from test_config import *
+from data_generation.generation_configs.basic_config import *

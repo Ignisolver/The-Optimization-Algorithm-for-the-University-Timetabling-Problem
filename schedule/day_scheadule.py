@@ -2,9 +2,9 @@ from dataclasses import dataclass, field
 from typing import Iterator, List, TYPE_CHECKING, Union
 
 from data import MIN_HOUR, MAX_HOUR
-from utils.distanses_manager import DISTANCES, Distances
-from utils.types_ import ClassesType as CT, Day
 from time_ import TimeDelta, TimeRange, Time
+from utils.distanses_manager import Distances
+from utils.types_ import ClassesType as CT, Day
 
 if TYPE_CHECKING:
     from basic_structures import Classes
@@ -15,9 +15,7 @@ class DaySchedule:
     day: Day
     _classes: List["Classes"] = field(default_factory=list)
     _temp_cl_nr: int | None = None
-    _distances: Distances = DISTANCES
-
-    # todo not to much...
+    _distances: Distances = Distances()
 
     def __len__(self) -> int:
         """
@@ -102,8 +100,9 @@ class DaySchedule:
 
     def pretty_represent(self):
         s = " "
-        print(f"{3*s}ID | start ->{2*s}end{2*s}| {'TYPE':^11}| NAME")
-        print(2*s + 4 *"-"+"|"+16*'-'+'|'+12*'-'+"|"+10*'-')
+        print(f"{3 * s}ID | start ->{2 * s}end{2 * s}| {'TYPE':^11}| NAME")
+        print(
+            2 * s + 4 * "-" + "|" + 16 * '-' + '|' + 12 * '-' + "|" + 10 * '-')
         for cl in self._classes:
             print(cl.pretty_represent())
 
@@ -145,6 +144,7 @@ class DaySchedule:
             return TimeDelta()
         total_t = later.start_time - earlier.end_time
         if move_time_enable:
+            print(earlier, later)
             mov_t = self._distances[earlier.room, later.room]
         else:
             mov_t = TimeDelta()
@@ -194,8 +194,3 @@ class DaySchedule:
     def _assert_assignment_available(self, new_cl: "Classes"):
         self._assert_not_intersect(new_cl)
         self._assert_distance_is_not_to_long(new_cl)
-
-
-
-
-
