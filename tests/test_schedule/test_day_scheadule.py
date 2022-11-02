@@ -271,25 +271,25 @@ class TestDayScheadule:
         day_schedule_1._classes = [cl1, cl2]
 
         cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(8, 0))
-        day_schedule_1._assert_distance_is_not_to_long(cl3)
+        day_schedule_1._assert_distance_is_not_to_short(cl3)
 
         cl3 = ClassesM(TimeDelta(0, 40), None, RoomM(2, 66), Time(9, 0))
-        day_schedule_1._assert_distance_is_not_to_long(cl3)
+        day_schedule_1._assert_distance_is_not_to_short(cl3)
 
         cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(11, 20))
-        day_schedule_1._assert_distance_is_not_to_long(cl3)
+        day_schedule_1._assert_distance_is_not_to_short(cl3)
 
         cl3 = ClassesM(TimeDelta(0, 50), None, RoomM(2, 66), Time(11, 30))
-        day_schedule_1._assert_distance_is_not_to_long(cl3)
+        day_schedule_1._assert_distance_is_not_to_short(cl3)
 
         cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(11, 30))
-        day_schedule_1._assert_distance_is_not_to_long(cl3)
+        day_schedule_1._assert_distance_is_not_to_short(cl3)
 
         cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(14, 30))
-        day_schedule_1._assert_distance_is_not_to_long(cl3)
+        day_schedule_1._assert_distance_is_not_to_short(cl3)
 
         cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(15, 0))
-        day_schedule_1._assert_distance_is_not_to_long(cl3)
+        day_schedule_1._assert_distance_is_not_to_short(cl3)
 
     def test__assert_distance_is_not_to_long__incorrect(self, day_schedule_1):
         cl1 = ClassesM(TimeDelta(1, 0), None, RoomM(0, 44), Time(10, 0))
@@ -299,27 +299,27 @@ class TestDayScheadule:
 
         cl3 = ClassesM(TimeDelta(0, 50), None, RoomM(2, 66), Time(9, 0))
         with pytest.raises(AssertionError):
-            day_schedule_1._assert_distance_is_not_to_long(cl3)
+            day_schedule_1._assert_distance_is_not_to_short(cl3)
 
         cl3 = ClassesM(TimeDelta(0, 5), None, RoomM(2, 66), Time(9, 50))
         with pytest.raises(AssertionError):
-            day_schedule_1._assert_distance_is_not_to_long(cl3)
+            day_schedule_1._assert_distance_is_not_to_short(cl3)
 
         cl3 = ClassesM(TimeDelta(0, 40), None, RoomM(2, 66), Time(11, 0))
         with pytest.raises(AssertionError):
-            day_schedule_1._assert_distance_is_not_to_long(cl3)
+            day_schedule_1._assert_distance_is_not_to_short(cl3)
 
         cl3 = ClassesM(TimeDelta(0, 4), None, RoomM(2, 66), Time(11, 10))
         with pytest.raises(AssertionError):
-            day_schedule_1._assert_distance_is_not_to_long(cl3)
+            day_schedule_1._assert_distance_is_not_to_short(cl3)
 
         cl3 = ClassesM(TimeDelta(0, 40), None, RoomM(2, 66), Time(11, 10))
         with pytest.raises(AssertionError):
-            day_schedule_1._assert_distance_is_not_to_long(cl3)
+            day_schedule_1._assert_distance_is_not_to_short(cl3)
 
         cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(14, 20))
         with pytest.raises(AssertionError):
-            day_schedule_1._assert_distance_is_not_to_long(cl3)
+            day_schedule_1._assert_distance_is_not_to_short(cl3)
 
     def test__assert_assignment_available__ok(self, day_schedule_1,
                                               classes_list):

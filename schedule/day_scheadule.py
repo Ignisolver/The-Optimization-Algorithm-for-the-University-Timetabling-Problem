@@ -181,7 +181,7 @@ class DaySchedule:
             cl_tr = TimeRange(cl.start_time, cl.end_time)
             assert not cl_tr.intersect(new_cl_tr)
 
-    def _assert_distance_is_not_to_long(self, new_cl: "Classes"):
+    def _assert_distance_is_not_to_short(self, new_cl: "Classes"):
         for cl in self._classes:
             td = None
             if new_cl.end_time <= cl.start_time:
@@ -193,4 +193,4 @@ class DaySchedule:
 
     def _assert_assignment_available(self, new_cl: "Classes"):
         self._assert_not_intersect(new_cl)
-        self._assert_distance_is_not_to_long(new_cl)
+        self._assert_distance_is_not_to_short(new_cl)

@@ -37,11 +37,11 @@ def _sort_classes_list(classes, key, separated_list):
 
 def _split_classes(classes_nested: List[List[Classes]],
                   key: Callable[[Classes], int]) -> List[List[Classes]]:
-    lol = []
+    splited_list = []
     for classes in classes_nested:
         separated_list = _get_sorted_list(classes, key)
-        lol.extend(separated_list)
-    return lol
+        splited_list.extend(separated_list)
+    return splited_list
 
 
 def _calc_am_of_people(classes: Classes):
@@ -51,9 +51,12 @@ def _calc_am_of_people(classes: Classes):
 def sort_classes(classes: List[Classes]) -> Iterator[Classes]:
     sorted_1 = _split_classes([classes], lambda cl: len(cl.groups))
     sorted_2 = _split_classes(sorted_1, lambda cl: len(cl.avail_rooms))
+    del sorted_1
     sorted_3 = _split_classes(sorted_2, lambda cl: cl.dur)
+    del sorted_2
     sorted_4 = _split_classes(sorted_3, lambda cl: _calc_am_of_people(cl))
     return chain(*reversed(sorted_4))
+
 
 
 
