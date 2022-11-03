@@ -11,6 +11,11 @@ def assign_occupacity(classes: List[Classes]):
         cl.assign_occupacity()
 
 
+def add_info_to_week_schedule(classes: List[Classes]):
+    for cl in classes:
+        cl.add_info_to_week_schedule()
+
+
 def _create_container(classes, key) -> List:
     max_am_item = max(classes, key=key)
     max_amount = key(max_am_item)
@@ -48,11 +53,11 @@ def _calc_am_of_people(classes: Classes):
     return sum([gr.amount_of_students for gr in classes.groups])
 
 
-def sort_classes(classes: List[Classes]) -> Iterator[Classes]:
+def get_sorted_classes(classes: List[Classes]) -> Iterator[Classes]:
     sorted_1 = _split_classes([classes], lambda cl: len(cl.groups))
     sorted_2 = _split_classes(sorted_1, lambda cl: len(cl.avail_rooms))
     del sorted_1
-    sorted_3 = _split_classes(sorted_2, lambda cl: cl.dur)
+    sorted_3 = _split_classes(sorted_2, lambda cl: int(cl.dur))
     del sorted_2
     sorted_4 = _split_classes(sorted_3, lambda cl: _calc_am_of_people(cl))
     return chain(*reversed(sorted_4))

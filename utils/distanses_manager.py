@@ -36,6 +36,8 @@ class Distances(metaclass=SingletonMeta):
 
     def __getitem__(self, b1_b2: Tuple["Room", "Room"]) -> "TD":
         p1, p2 = b1_b2
+        if p1.id_ == p2.id_:
+            return TimeDelta()
         if p1.build_id == p2.build_id:
             return self._room_time
         try:

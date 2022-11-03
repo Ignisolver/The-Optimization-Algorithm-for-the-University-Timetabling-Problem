@@ -5,6 +5,7 @@ from basic_structures.with_schedule import WithSchedule
 from utils.types_ import RoomId, ClassesId, UNAVAILABLE_ID
 
 if TYPE_CHECKING:
+    from algorithm.best_times_finder import Start
     from classes import Classes
 
 
@@ -84,6 +85,9 @@ class Room(WithSchedule):
     def _update(self):
         self._calc_predicted_occup()
         self._calc_priority()
+
+    def is_assignment_available(self, start: "Start", classes: "Classes"):
+        self.week_schedule.days[start.day].is_space_not_busy(start, classes)
 
     def _is_classes_available(self, classes_id) -> bool:
         return classes_id in self._classes_occup_probab.keys()

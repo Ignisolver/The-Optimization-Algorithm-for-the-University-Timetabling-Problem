@@ -42,7 +42,7 @@ def get_random_name():
 def get_random_start_time(dur):
     max_t = MAX_HOUR - dur - TimeDelta(1)
     h = randint(MIN_HOUR.hour, max_t.hour)
-    m = randint(0, 59) // TIME_GRANULATION * TIME_GRANULATION
+    m = randint(0, 59) // int(TIME_GRANULATION) * int(TIME_GRANULATION)
     return Time(h, m)
 
 
@@ -63,6 +63,7 @@ def id_generator():
 
 
 ig_rooms = id_generator()
+idg_classes = id_generator()
 
 
 def generate_buildings():
@@ -140,12 +141,11 @@ def generate_lecturers():
 def assign_unavailability(objects, amounts, durations):
     amounts_of_unav = cycle(amounts)
     random.shuffle(durations)
-    ig = id_generator()
     durations = cycle(durations)
     for obj, unav_amount in zip(objects, amounts_of_unav):
         for len_ in range(unav_amount):
             dur = TimeDelta(0, next(durations))
-            _try_to_assign_unavaileble_classes(next(ig), obj, dur)
+            _try_to_assign_unavaileble_classes(next(idg_classes), obj, dur)
 
 
 def get_availeble_rooms(rooms, n):
@@ -153,14 +153,14 @@ def get_availeble_rooms(rooms, n):
 
 
 def generate_classes(lecturers, lab_rooms, lect_rooms, groups):
-    ids = id_generator()
+    ids = idg_classes
     names = names_generator()
     lecturers_gen = cycle(lecturers)
     available_rooms_amounts = cycle(AVAILABLE_ROOMS_AMOUNT)
     subjects_amount = cycle(SUBJECTS_PER_FIELD)
     groups_amount = cycle(AMOUNT_OF_GROUPS_IN_FIELD)
     random.shuffle(DURATIONS_OF_CLASSES)
-    durations = cycle(DURATIONS_OF_CLASSES)
+    durations = cycle([TimeDelta(0, dur) for dur in DURATIONS_OF_CLASSES])
     groups_gen = iter(groups)
     max_people_in_group = max(AMOUNT_OF_STUDENTS_PER_GROUP)
     classes = []

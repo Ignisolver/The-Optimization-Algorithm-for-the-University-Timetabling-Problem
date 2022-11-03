@@ -15,8 +15,8 @@ class WeekSchedule:
                                              for day_tag in DAYS}
         self._set_unavailability(unavailability)
         self.temp_day_tag = None
-        self.classes_time = None
-        self.classes_amount = None
+        self.classes_time: int = 0
+        self.classes_amount: int = 0
 
     def __iter__(self) -> Iterator[DaySchedule]:
         return iter(self.days.values())

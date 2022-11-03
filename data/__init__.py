@@ -5,7 +5,7 @@ from utils.constans import BTW, WA, UNI, DU
 MIN_HOUR = Time(8, 0)
 MAX_HOUR = Time(21, 0)
 
-TIME_GRANULATION = 10  # (1, 2, 5, 10, 15, 20, 30, 60)
+TIME_GRANULATION = TimeDelta(0, 10)  # (1, 2, 5, 10, 15, 20, 30, 60)
 
 WEEK_LENGTH_MIN = 5 * int(MAX_HOUR - MIN_HOUR)
 

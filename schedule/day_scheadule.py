@@ -7,6 +7,7 @@ from utils.distanses_manager import Distances
 from utils.types_ import ClassesType as CT, Day
 
 if TYPE_CHECKING:
+    from algorithm.best_times_finder import Start
     from basic_structures import Classes
 
 
@@ -43,10 +44,9 @@ class DaySchedule:
         if len(self._classes) == 0:
             return None
         last_cl = None
-        for cl in self._classes:
+        for cl in reversed(self._classes):
             if cl.start_time < time:
                 last_cl = cl
-            else:
                 break
         return last_cl
 
@@ -122,10 +122,11 @@ class DaySchedule:
         for cls_ in self._classes:
             end_h = cls_.start_time
             dur = end_h - start_h
-            tr = TimeRange(start_h, dur=dur)
+            tr = TimeRange(start_h, dur=dur, day=self.day)
             times.append(tr)
             start_h = cls_.end_time
-        times.append(TimeRange(start_h, dur=max_h - start_h))
+        times.append(TimeRange(start_h, dur=max_h - start_h, day=self.day))
+        times = list(filter(lambda tr: tr.dur != TimeDelta(), times))
         return times
 
     def get_unavailable_len(self):
@@ -144,7 +145,6 @@ class DaySchedule:
             return TimeDelta()
         total_t = later.start_time - earlier.end_time
         if move_time_enable:
-            print(earlier, later)
             mov_t = self._distances[earlier.room, later.room]
         else:
             mov_t = TimeDelta()
@@ -175,11 +175,23 @@ class DaySchedule:
                     n += 1
         return n
 
-    def _assert_not_intersect(self, new_cl: "Classes"):
-        new_cl_tr = TimeRange(new_cl.start_time, new_cl.end_time)
+    def is_space_not_busy(self, start: "Start", classes: "Classes"):
+        tr = TimeRange(start=start.time, dur=classes.dur)
+        if self._is_time_range_intersect_any_classes(tr):
+            return False
+        return True
+
+    def _is_time_range_intersect_any_classes(self, tr):
         for cl in self._classes:
             cl_tr = TimeRange(cl.start_time, cl.end_time)
-            assert not cl_tr.intersect(new_cl_tr)
+            if cl_tr.intersect(tr):
+                return True
+        return False
+
+    def _assert_not_intersect(self, new_cl: "Classes"):
+        new_cl_tr = TimeRange(new_cl.start_time, new_cl.end_time)
+        if self._is_time_range_intersect_any_classes(new_cl_tr):
+            raise AssertionError
 
     def _assert_distance_is_not_to_short(self, new_cl: "Classes"):
         for cl in self._classes:

@@ -13,7 +13,9 @@ Funkcja celu - mierzy rozwiązanie:
 - najlepiej = 0 różnic
 - najgorzej = śrenia * 5
 """
+from typing import List, Tuple, Type
 
+from basic_structures.with_schedule import WithSchedule
 from data import (MIN_HOUR, MAX_HOUR, DAY_TIME_WEIGHTS,
                   GOAL_FUNCTION_WEIGHTS as GFW, WEEK_LENGTH_MIN)
 from schedule.week_scheadule import WeekSchedule
@@ -117,3 +119,13 @@ class Metric:
         du = self._calc_days_unfolding() * GFW[DU]
         total_sum = btw + wa + uni + du
         return total_sum
+
+
+# testme
+def evaluate(items: Tuple[WithSchedule]):
+    val = 0
+    for item in items:
+        m = Metric(item.week_schedule)
+        val += m.calc_goal_fcn()
+    return val
+

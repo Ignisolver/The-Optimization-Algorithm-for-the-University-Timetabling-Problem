@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Tuple, Union, TYPE_CHECKING
+from typing import Tuple, Union, TYPE_CHECKING, Iterator, List
 
 from utils.types_ import ClassesType, ClassesId, Day, DAY_LETTER, get_color
 from basic_structures.lecturer import Lecturer, UnavailableLecturer
@@ -32,11 +32,43 @@ class Classes:
         self.day = day
         self._assign_to_room_groups_lecturer()
 
+    def add_info_to_week_schedule(self):
+        for item in self.get_with_schedules():
+            item.week_schedule.classes_amount += 1
+            item.week_schedule.classes_time += int(self.dur)
+
     def _assign_to_room_groups_lecturer(self):
         self.lecturer.assign(self)
+        for day in self.room.week_schedule.days.values():
+            day.pretty_represent()
+        for room in self.avail_rooms:
+            print(id(room.week_schedule))
         self.room.assign(self)
-        for i in range(len(self.groups)):
-            self.groups[i].assign(self)
+        for gr in self.groups:
+            gr.assign(self)
+
+    def temp_assign(self, time, day):
+        self.start_time = time
+        self.day = day
+        self.lecturer.temp_assign(self)
+        for gr in self.groups:
+            gr.temp_assign(self)
+
+    # testme
+    def get_sorted_rooms(self) -> List[Room]:
+        return sorted(self.avail_rooms,
+                      key=lambda r: r.occup_priority,
+                      reverse=True)
+
+    def unassign_temp(self):
+        self._start_time = None
+        self._end_time = None
+        self.lecturer.unassign_temp()
+        for gr in self.groups:
+            gr.unassign_temp()
+
+    def get_with_schedules(self):
+        return self.groups + (self.lecturer,)
 
     @property
     def start_time(self):

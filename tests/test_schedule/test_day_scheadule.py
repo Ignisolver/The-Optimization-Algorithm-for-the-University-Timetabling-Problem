@@ -188,12 +188,12 @@ class TestDayScheadule:
         cl3.start_time = Time(15, 10)
         day_schedule._classes = [cl1, cl2, cl3]
         times = day_schedule.get_free_times()
-        assert times == [TimeRange(MIN_HOUR, dur=Time(10, 10) - MIN_HOUR),
+        assert times == [TimeRange(MIN_HOUR, dur=Time(10, 10) - MIN_HOUR, day=1),
                          TimeRange(Time(11, 30),
-                                   dur=Time(12, 10) - Time(11, 30)),
+                                   dur=Time(12, 10) - Time(11, 30), day=1),
                          TimeRange(Time(14, 30),
-                                   dur=Time(15, 10) - Time(14, 30)),
-                         TimeRange(Time(16, 10), dur=MAX_HOUR - Time(16, 10))]
+                                   dur=Time(15, 10) - Time(14, 30), day=1),
+                         TimeRange(Time(16, 10), dur=MAX_HOUR - Time(16, 10), day=1)]
 
     def test_get_amount_of_labs(self, day_schedule, classes_list):
         day_schedule._classes = classes_list
