@@ -59,4 +59,5 @@ class Time(TimeType):
         return self.hour * 60 + self.minute
 
     def __repr__(self):
-        return str(self.hour) + ':' + str(self.minute)
+        txt = f'{self.hour}:{self.minute:<02}'
+        return txt

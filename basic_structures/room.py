@@ -87,7 +87,7 @@ class Room(WithSchedule):
         self._calc_priority()
 
     def is_assignment_available(self, start: "Start", classes: "Classes"):
-        self.week_schedule.days[start.day].is_space_not_busy(start, classes)
+        return self.week_schedule.days[start.day].is_space_not_busy(start, classes)
 
     def _is_classes_available(self, classes_id) -> bool:
         return classes_id in self._classes_occup_probab.keys()

@@ -8,3 +8,6 @@ class Group(WithSchedule):
         self.id_: GroupId = id_
         self.name: str = name
         self.amount_of_students: int = amount_fo_students
+
+    def __repr__(self):
+        return self.name

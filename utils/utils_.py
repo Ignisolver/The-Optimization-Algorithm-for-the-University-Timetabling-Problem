@@ -1,7 +1,6 @@
 from typing import Iterable, Type, TYPE_CHECKING
 
-from data import MIN_HOUR, MAX_HOUR
-
+from data_generation.generation_configs import MIN_HOUR, MAX_HOUR
 
 if TYPE_CHECKING:
     from time_ import Time

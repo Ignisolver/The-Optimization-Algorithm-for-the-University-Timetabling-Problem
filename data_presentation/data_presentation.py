@@ -1,14 +1,24 @@
 import os
 from os import system
 from pathlib import Path
+from shutil import rmtree
 from typing import List
 
 from basic_structures.with_schedule import WithSchedule
+from data_presentation.bar import bar
 from utils.constans import ROOT_PATH
+
+
+def _remove_previous(path):
+    try:
+        rmtree(path)
+    except:
+        pass
 
 
 def generate_pdfs(groups, lecturers, rooms, name):
     result_path = ROOT_PATH.joinpath("results").joinpath(name)
+    _remove_previous(result_path)
     os.mkdir(result_path)
     names_items = (("groups", groups),
                    ("lecturers", lecturers),
@@ -20,7 +30,7 @@ def generate_pdfs(groups, lecturers, rooms, name):
 def _generate_pdfs_for_items(path: Path, name, items: List[WithSchedule]):
     folder_path = path.joinpath(name)
     os.mkdir(folder_path)
-    for item in items:
+    for item in bar(items, f"GENERATE PDFs FOR {name}"):
         name = item.name
         file_path = folder_path.joinpath(name)
         yaml_txt = item.week_schedule.to_yaml()

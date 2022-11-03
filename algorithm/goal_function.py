@@ -16,8 +16,8 @@ Funkcja celu - mierzy rozwiązanie:
 from typing import List, Tuple, Type
 
 from basic_structures.with_schedule import WithSchedule
-from data import (MIN_HOUR, MAX_HOUR, DAY_TIME_WEIGHTS,
-                  GOAL_FUNCTION_WEIGHTS as GFW, WEEK_LENGTH_MIN)
+from data_generation.generation_configs import MIN_HOUR, MAX_HOUR, \
+    WEEK_LENGTH_MIN, DAY_TIME_WEIGHTS, GOAL_FUNCTION_WEIGHTS as GFW
 from schedule.week_scheadule import WeekSchedule
 from time_ import TimeDelta, TimeRange
 from utils.constans import BTW, WA, UNI, DU

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Tuple, TYPE_CHECKING
 
-from data import TIME_BETWEEN_ROOMS
+from data_generation.generation_configs import TIME_BETWEEN_ROOMS
 from time_ import TimeDelta as TD, TimeDelta
 from utils.singleton import SingletonMeta
 from utils.types_ import RoomId, BuildingId

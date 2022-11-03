@@ -12,7 +12,8 @@ from typing import List
 from basic_structures import Room, Group, Lecturer, Classes
 from basic_structures.classes import UnavailableClasses
 from basic_structures.room import Building
-from data import MIN_HOUR, MAX_HOUR, TIME_GRANULATION
+from data_generation.generation_configs import MIN_HOUR, MAX_HOUR, \
+    TIME_GRANULATION
 from data_generation.generation_configs import *
 from time_ import TimeDelta, Time
 from utils.constans import DAYS
@@ -30,6 +31,7 @@ class All:
     classes: List[Classes]
     groups: List[Group]
     distances: Distances
+    name: str
 
 
 def get_random_name():
@@ -221,4 +223,4 @@ def generate_all() -> All:
     lab_am = len([cl for cl in classes if cl.classes_type == CT.LABORATORY])
     print(f"Ćwiczenia: {lab_am}")
     print(30 * '_')
-    return All(buildings, rooms, lecturers, classes, groups, Distances())
+    return All(buildings, rooms, lecturers, classes, groups, Distances(), NAME)

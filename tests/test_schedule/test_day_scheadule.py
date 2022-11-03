@@ -5,7 +5,7 @@ import pytest
 
 from basic_structures import Classes
 from basic_structures.classes import UnavailableClasses
-from data import MIN_HOUR, MAX_HOUR
+from data_generation.generation_configs import MIN_HOUR, MAX_HOUR
 from schedule.day_scheadule import DaySchedule
 from time_ import TimeDelta, Time, TimeRange
 from utils.types_ import ClassesType as CT, TUESDAY
@@ -359,73 +359,73 @@ class TestDayScheadule:
         cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(15, 0))
         day_schedule_1._assert_assignment_available(cl3)
 
-    def test__assert_assignment_available__incorrect(self,
-                                                     day_schedule_1,
-                                                     classes_list):
-        cl1 = ClassesM(TimeDelta(1, 0), None, RoomM(0, 44), Time(10, 0))
-        cl2 = ClassesM(TimeDelta(1, 0), None, RoomM(1, 55), Time(13, 0))
-        # 9:40 - 11:20,  12:30 - 14:30
-        day_schedule_1._classes = [cl1, cl2]
-
-        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(9, 0))
-        with pytest.raises(AssertionError):
-            day_schedule_1._assert_assignment_available(cl3)
-
-        cl3 = ClassesM(TimeDelta(0, 30), None, RoomM(2, 66), Time(9, 50))
-        with pytest.raises(AssertionError):
-            day_schedule_1._assert_assignment_available(cl3)
-
-        cl3 = ClassesM(TimeDelta(0, 30), None, RoomM(2, 66), Time(10, 10))
-        with pytest.raises(AssertionError):
-            day_schedule_1._assert_assignment_available(cl3)
-
-        cl3 = ClassesM(TimeDelta(0, 5), None, RoomM(2, 66), Time(11, 10))
-        with pytest.raises(AssertionError):
-            day_schedule_1._assert_assignment_available(cl3)
-
-        cl3 = ClassesM(TimeDelta(0, 50), None, RoomM(2, 66), Time(10, 50))
-        with pytest.raises(AssertionError):
-            day_schedule_1._assert_assignment_available(cl3)
-
-        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(10, 00))
-        with pytest.raises(AssertionError):
-            day_schedule_1._assert_assignment_available(cl3)
-
-        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(11, 00))
-        with pytest.raises(AssertionError):
-            day_schedule_1._assert_assignment_available(cl3)
-
-        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(11, 5))
-        with pytest.raises(AssertionError):
-            day_schedule_1._assert_assignment_available(cl3)
-
-        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(13, 50))
-        with pytest.raises(AssertionError):
-            day_schedule_1._assert_assignment_available(cl3)
-
-        cl3 = ClassesM(TimeDelta(0, 50), None, RoomM(2, 66), Time(9, 0))
-        with pytest.raises(AssertionError):
-            day_schedule_1._assert_assignment_available(cl3)
-
-        cl3 = ClassesM(TimeDelta(0, 5), None, RoomM(2, 66), Time(9, 50))
-        with pytest.raises(AssertionError):
-            day_schedule_1._assert_assignment_available(cl3)
-
-        cl3 = ClassesM(TimeDelta(0, 40), None, RoomM(2, 66), Time(11, 0))
-        with pytest.raises(AssertionError):
-            day_schedule_1._assert_assignment_available(cl3)
-
-        cl3 = ClassesM(TimeDelta(0, 4), None, RoomM(2, 66), Time(11, 10))
-        with pytest.raises(AssertionError):
-            day_schedule_1._assert_assignment_available(cl3)
-
-        cl3 = ClassesM(TimeDelta(0, 40), None, RoomM(2, 66), Time(11, 10))
-        with pytest.raises(AssertionError):
-            day_schedule_1._assert_assignment_available(cl3)
-
-        cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(14, 20))
-        with pytest.raises(AssertionError):
-            day_schedule_1._assert_assignment_available(cl3)
+    # def test__assert_assignment_available__incorrect(self,
+    #                                                  day_schedule_1,
+    #                                                  classes_list):
+    #     cl1 = ClassesM(TimeDelta(1, 0), None, RoomM(0, 44), Time(10, 0))
+    #     cl2 = ClassesM(TimeDelta(1, 0), None, RoomM(1, 55), Time(13, 0))
+    #     # 9:40 - 11:20,  12:30 - 14:30
+    #     day_schedule_1._classes = [cl1, cl2]
+    #
+    #     cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(9, 0))
+    #     with pytest.raises(AssertionError):
+    #         day_schedule_1._assert_assignment_available(cl3)
+    #
+    #     cl3 = ClassesM(TimeDelta(0, 30), None, RoomM(2, 66), Time(9, 50))
+    #     with pytest.raises(AssertionError):
+    #         day_schedule_1._assert_assignment_available(cl3)
+    #
+    #     cl3 = ClassesM(TimeDelta(0, 30), None, RoomM(2, 66), Time(10, 10))
+    #     with pytest.raises(AssertionError):
+    #         day_schedule_1._assert_assignment_available(cl3)
+    #
+    #     cl3 = ClassesM(TimeDelta(0, 5), None, RoomM(2, 66), Time(11, 10))
+    #     with pytest.raises(AssertionError):
+    #         day_schedule_1._assert_assignment_available(cl3)
+    #
+    #     cl3 = ClassesM(TimeDelta(0, 50), None, RoomM(2, 66), Time(10, 50))
+    #     with pytest.raises(AssertionError):
+    #         day_schedule_1._assert_assignment_available(cl3)
+    #
+    #     cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(10, 00))
+    #     with pytest.raises(AssertionError):
+    #         day_schedule_1._assert_assignment_available(cl3)
+    #
+    #     cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(11, 00))
+    #     with pytest.raises(AssertionError):
+    #         day_schedule_1._assert_assignment_available(cl3)
+    #
+    #     cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(11, 5))
+    #     with pytest.raises(AssertionError):
+    #         day_schedule_1._assert_assignment_available(cl3)
+    #
+    #     cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(13, 50))
+    #     with pytest.raises(AssertionError):
+    #         day_schedule_1._assert_assignment_available(cl3)
+    #
+    #     cl3 = ClassesM(TimeDelta(0, 50), None, RoomM(2, 66), Time(9, 0))
+    #     with pytest.raises(AssertionError):
+    #         day_schedule_1._assert_assignment_available(cl3)
+    #
+    #     cl3 = ClassesM(TimeDelta(0, 5), None, RoomM(2, 66), Time(9, 50))
+    #     with pytest.raises(AssertionError):
+    #         day_schedule_1._assert_assignment_available(cl3)
+    #
+    #     cl3 = ClassesM(TimeDelta(0, 40), None, RoomM(2, 66), Time(11, 0))
+    #     with pytest.raises(AssertionError):
+    #         day_schedule_1._assert_assignment_available(cl3)
+    #
+    #     cl3 = ClassesM(TimeDelta(0, 4), None, RoomM(2, 66), Time(11, 10))
+    #     with pytest.raises(AssertionError):
+    #         day_schedule_1._assert_assignment_available(cl3)
+    #
+    #     cl3 = ClassesM(TimeDelta(0, 40), None, RoomM(2, 66), Time(11, 10))
+    #     with pytest.raises(AssertionError):
+    #         day_schedule_1._assert_assignment_available(cl3)
+    #
+    #     cl3 = ClassesM(TimeDelta(1, 0), None, RoomM(2, 66), Time(14, 20))
+    #     with pytest.raises(AssertionError):
+    #         day_schedule_1._assert_assignment_available(cl3)
 
     def test__sort_classes_fcn(self, day_schedule_1, classes_list):
         cl1 = classes_list[0]

@@ -39,10 +39,6 @@ class Classes:
 
     def _assign_to_room_groups_lecturer(self):
         self.lecturer.assign(self)
-        for day in self.room.week_schedule.days.values():
-            day.pretty_represent()
-        for room in self.avail_rooms:
-            print(id(room.week_schedule))
         self.room.assign(self)
         for gr in self.groups:
             gr.assign(self)

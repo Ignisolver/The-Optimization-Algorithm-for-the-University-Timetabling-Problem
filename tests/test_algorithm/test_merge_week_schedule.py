@@ -8,7 +8,7 @@ from algorithm.merge_week_schedule import (_filter_ranges_grater_or_equal_than,
 from algorithm.best_times_finder import _get_start_times, Start as S
 from basic_structures import Classes, Room, Lecturer, Group
 from basic_structures.with_schedule import WithSchedule
-from data import MAX_HOUR
+from data_generation.generation_configs import MAX_HOUR
 from time_ import TimeRange as TR, Time as T, TimeDelta as TD
 from utils.types_ import (MONDAY as M,
                           TUESDAY as TU,

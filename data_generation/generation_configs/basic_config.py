@@ -1,3 +1,7 @@
+from time_ import Time, TimeDelta
+from utils.constans import BTW, WA, UNI, DU
+
+NAME = "TEST"
 AMOUNT_OF_FIELDS = 10
 AMOUNT_OF_GROUPS_IN_FIELD = [6, 8, 4, 2]
 SUBJECTS_PER_FIELD = [8, 8, 7, 6]
@@ -16,3 +20,12 @@ UNAVAILABILITY_DURATION_ROOMS = 4 * [60 * 4] + 2 * [60 * 8]
 UNAVAILABILITY_DURATION_LECTURERS = 4 * [60 * 4] + 2 * [60 * 2]
 DURATIONS_OF_CLASSES = 3 * [90] + [60, 120]
 AVAILABLE_ROOMS_AMOUNT = 10 * [1] + 5 * [2] + 20 * [10]
+# -------------------------------------------------####
+MIN_HOUR = Time(8, 0)
+MAX_HOUR = Time(21, 0)
+TIME_GRANULATION = TimeDelta(0, 10)  # (1, 2, 5, 10, 15, 20, 30, 60)
+WEEK_LENGTH_MIN = 5 * int(MAX_HOUR - MIN_HOUR)
+MAX_TIME_PER_DAY = TimeDelta(8, 0)
+DAY_TIME_WEIGHTS = [0, 1, 1, 2, 2, 3, 4, 5, 6, 7, 9, 12, 20]
+GOAL_FUNCTION_WEIGHTS = {BTW: 1, WA: 1, UNI: 1, DU: 1}
+TIME_BETWEEN_ROOMS = TimeDelta(0, 5)

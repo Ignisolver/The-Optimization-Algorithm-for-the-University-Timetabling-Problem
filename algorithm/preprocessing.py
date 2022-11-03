@@ -60,7 +60,7 @@ def get_sorted_classes(classes: List[Classes]) -> Iterator[Classes]:
     sorted_3 = _split_classes(sorted_2, lambda cl: int(cl.dur))
     del sorted_2
     sorted_4 = _split_classes(sorted_3, lambda cl: _calc_am_of_people(cl))
-    return chain(*reversed(sorted_4))
+    return list(chain(*reversed(sorted_4)))
 
 
 
