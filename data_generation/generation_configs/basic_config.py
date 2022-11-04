@@ -23,7 +23,7 @@ AVAILABLE_ROOMS_AMOUNT = 10 * [1] + 5 * [2] + 20 * [10]
 # -------------------------------------------------####
 MIN_HOUR = Time(8, 0)
 MAX_HOUR = Time(21, 0)
-TIME_GRANULATION = TimeDelta(0, 30)  # (1, 2, 5, 10, 15, 20, 30, 60)
+TIME_GRANULATION = TimeDelta(0, 10)  # (1, 2, 5, 10, 15, 20, 30, 60)
 WEEK_LENGTH_MIN = 5 * int(MAX_HOUR - MIN_HOUR)
 MAX_TIME_PER_DAY = int(TimeDelta(8, 0))
 DAY_TIME_WEIGHTS = [0, 1, 1, 2, 2, 3, 4, 5, 6, 7, 9, 12, 20]

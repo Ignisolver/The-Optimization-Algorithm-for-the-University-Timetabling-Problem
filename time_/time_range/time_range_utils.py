@@ -1,6 +1,9 @@
-from typing import Tuple, TYPE_CHECKING, Union
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Union
+
 
 from utils.none_machine import NM
+from utils.singleton import SingletonMeta
 from utils.types_ import TimeType, TimeRangeType
 
 if TYPE_CHECKING:
@@ -9,7 +12,7 @@ if TYPE_CHECKING:
     from time_.time_delta import TimeDelta
 
 
-class TimeRangeIntersectDetector:
+class TimeRangeIntersectDetector(metaclass=SingletonMeta):
     def is_intersection(self,
                         one: "TimeRange",
                         other: Union["Time", "TimeRange"]) -> bool:
@@ -49,34 +52,26 @@ class TimeRangeIntersectDetector:
             return False
 
 
-class TimeRangeInitializer:
-    def calc_start_dur_end(self,
-                           start=None,
-                           dur=None,
-                           end=None) -> Tuple["Time", "TimeDelta", "Time"]:
-        self._assert_2_of__start_end_dur__not_none(start, dur, end)
-        if dur is None:
-            dur = self._calc_dur(start, end)
-        elif start is None:
-            start = self._calc_start(end, dur)
-        elif end is None:
-            end = self._calc_end(start, dur)
+@dataclass
+class StaDurEnd:
+    start: "Time"
+    dur: "TimeDelta"
+    end: "Time"
 
-        self.assert__start_dur_end__correct(start, end, dur)
 
-        return start, dur, end
+class TimeRangeInitializer(metaclass=SingletonMeta):
+    def calc_start_dur_end(self, sdn: StaDurEnd) -> StaDurEnd:
+        # self._assert_2_of__start_end_dur__not_none(sdn.start, sdn.dur, sdn.end)
+        if sdn.dur is None:
+            sdn.dur = sdn.end - sdn.start
+        elif sdn.start is None:
+            sdn.start = sdn.end - sdn.dur
+        elif sdn.end is None:
+            sdn.end = sdn.start + sdn.dur
 
-    @staticmethod
-    def _calc_dur(start, end):
-        return end - start
+        # self.assert__start_dur_end__correct(sdn.start, sdn.end, sdn.dur)
 
-    @staticmethod
-    def _calc_start(end, dur):
-        return end - dur
-
-    @staticmethod
-    def _calc_end(start, dur):
-        return start + dur
+        return sdn
 
     @staticmethod
     def _assert_2_of__start_end_dur__not_none(start, end, dur):

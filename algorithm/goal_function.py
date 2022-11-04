@@ -13,6 +13,9 @@ Funkcja celu - mierzy rozwiązanie:
 - najlepiej = 0 różnic
 - najgorzej = śrenia * 5
 """
+from copy import copy
+from functools import cache
+from itertools import cycle
 from typing import List, Tuple, Type
 
 from basic_structures.with_schedule import WithSchedule
@@ -23,16 +26,22 @@ from time_ import TimeDelta, TimeRange
 from utils.constans import BTW, WA, UNI, DU
 
 
-def iterator_over_day():
+@cache
+def _calc_all_to_iterator():
     period_mins = int(int(MAX_HOUR - MIN_HOUR) / len(DAY_TIME_WEIGHTS))
     period = TimeDelta(0, period_mins)
-    start = MIN_HOUR
-    end = MIN_HOUR + period
-    weights = iter(DAY_TIME_WEIGHTS)
-    while end <= MAX_HOUR:
+    start = MAX_HOUR - period
+    end = MAX_HOUR
+    weights = cycle(reversed(DAY_TIME_WEIGHTS))
+    return start, end, weights, period
+
+
+def iterator_over_day():
+    start, end, weights, period = _calc_all_to_iterator()
+    while start >= MIN_HOUR:
         yield start, end, next(weights)
-        start += period
-        end += period
+        start -= period
+        end -= period
 
 
 class Metric:
@@ -66,8 +75,8 @@ class Metric:
         day_obl_td = TimeDelta(0, day_obligatory_time)
         counted_time = TimeDelta(0, 0)
         points = 0
-        for start, end, weight in reversed(list(iterator_over_day())):
-            td = TimeRange(start, end).dur
+        for start, end, weight in iterator_over_day():
+            td = end-start
             if counted_time < day_obl_td:
                 points += weight * self._best_week_arrangement
                 counted_time += td
@@ -75,6 +84,7 @@ class Metric:
                 break
         self._worst_days_unfolding = points * 5
 
+    # todo cache
     def _calc_days_unfolding(self):
         points = 0
         for start_h, end_h, weight in iterator_over_day():

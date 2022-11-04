@@ -1,1 +1,1 @@
-from data_generation.generation_configs.one_week import *
+from data_generation.generation_configs.basic_config import *

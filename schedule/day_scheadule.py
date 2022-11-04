@@ -1,5 +1,8 @@
 from dataclasses import dataclass, field
+from functools import cache
 from typing import Iterator, List, TYPE_CHECKING, Union
+
+from numba import jit
 
 from data_generation.generation_configs import MIN_HOUR, MAX_HOUR, \
     MAX_TIME_PER_DAY
@@ -123,10 +126,10 @@ class DaySchedule:
         for cls_ in self._classes:
             end_h = cls_.start_time
             dur = end_h - start_h
-            tr = TimeRange(start_h, dur=dur, day=self.day)
+            tr = TimeRange(start_h, start_h+dur, day=self.day)
             times.append(tr)
             start_h = cls_.end_time
-        times.append(TimeRange(start_h, dur=max_h - start_h, day=self.day))
+        times.append(TimeRange(start_h, start_h + (max_h - start_h), day=self.day))
         times = list(filter(lambda tr: tr.dur != TimeDelta(), times))
         return times
 
@@ -168,16 +171,17 @@ class DaySchedule:
 
     def get_amount_of_classes_between(self, start_h, end_h):
         n = 0
-        tr = TimeRange(start_h, end_h)
         for cls_ in self._classes:
-            if cls_.classes_type != CT.UNAVAILABLE:
-                cls_tr = TimeRange(cls_.start_time, cls_.end_time)
-                if cls_tr.intersect(tr):
-                    n += 1
+            if cls_.start_time < end_h:
+                if cls_.end_time >= start_h:
+                    if cls_.classes_type != CT.UNAVAILABLE:
+                        n += 1
+            else:
+                break
         return n
 
     def is_space_not_busy(self, start: "Start", classes: "Classes"):
-        tr = TimeRange(start=start.time, dur=classes.dur)
+        tr = TimeRange(start.time, start.time+classes.dur)
         if self._is_time_range_intersect_any_classes(tr):
             return False
         return True

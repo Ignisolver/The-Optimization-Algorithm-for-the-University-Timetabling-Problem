@@ -42,7 +42,11 @@ def get_random_name():
 
 
 def get_random_start_time(dur):
-    max_t = MAX_HOUR - dur - TimeDelta(1)
+    try:
+        max_t = MAX_HOUR - dur - TimeDelta(1)
+    except Exception as e:
+        print(MAX_HOUR, type(dur), dur.hours, dur.minutes)
+        raise e
     h = randint(MIN_HOUR.hour, max_t.hour)
     m = randint(0, 59) // int(TIME_GRANULATION) * int(TIME_GRANULATION)
     return Time(h, m)

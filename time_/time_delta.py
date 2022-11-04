@@ -1,23 +1,32 @@
+from numba import uint8, int8, int32
+
+spec = [
+    ("hours", int8),
+    ("minutes", int32),
+    ("type", uint8)
+]
+
+hour_dict = tuple((i*60 for i in range(24)))
+
+
 class TimeDelta:
     def __init__(self, hours=0, minutes=0):
-        # assert isinstance(hours, int)
-        # assert isinstance(minutes, int)
-        minutes = self._calc_total_amount_of_minutes(hours, minutes)
-        self.hours = minutes // 60
-        self.minutes = minutes % 60
+        if minutes > 59:
+            self.hours = hours + minutes // 60
+            self.minutes = minutes % 60
+        else:
+            self.hours = hours
+            self.minutes = minutes
+        self.type = 1
 
-    @staticmethod
-    def _calc_total_amount_of_minutes(hours, minutes) -> int:
-        minutes = hours * 60 + minutes
-        sign = 1 if minutes >= 0 else -1
-        minutes = abs(minutes)
-        return sign * minutes
+    def __hash__(self):
+        return hash((self.hours, self.minutes, self.type))
 
     def __neg__(self):
         return TimeDelta(-self.hours, -self.minutes)
 
     def __int__(self):
-        return self.hours * 60 + self.minutes
+        return hour_dict[self.hours] + self.minutes
 
     def __repr__(self):
         return f"TimeDelta(hours: {self.hours}; minutes: {self.minutes})"

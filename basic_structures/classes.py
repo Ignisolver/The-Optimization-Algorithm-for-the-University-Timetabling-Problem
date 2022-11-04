@@ -46,7 +46,11 @@ class Classes:
     def temp_assign(self, time, day):
         self.start_time = time
         self.day = day
-        self.lecturer.temp_assign(self)
+        try:
+            self.lecturer.temp_assign(self)
+        except:
+            self.lecturer.week_schedule.days[day].pretty_represent()
+            print(time, self.dur)
         for gr in self.groups:
             gr.temp_assign(self)
 
