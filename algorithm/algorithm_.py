@@ -3,8 +3,6 @@ from time import sleep
 from algorithm.best_times_finder import get_best_time
 from algorithm.check_on_time import select_room
 from basic_structures import Classes
-from tqdm import tqdm
-
 from data_presentation.bar import bar
 
 

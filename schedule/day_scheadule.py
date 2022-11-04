@@ -1,7 +1,8 @@
 from dataclasses import dataclass, field
 from typing import Iterator, List, TYPE_CHECKING, Union
 
-from data_generation.generation_configs import MIN_HOUR, MAX_HOUR
+from data_generation.generation_configs import MIN_HOUR, MAX_HOUR, \
+    MAX_TIME_PER_DAY
 from time_ import TimeDelta, TimeRange, Time
 from utils.distanses_manager import Distances
 from utils.types_ import ClassesType as CT, Day
@@ -205,4 +206,6 @@ class DaySchedule:
 
     def _assert_assignment_available(self, new_cl: "Classes"):
         self._assert_not_intersect(new_cl)
-        # self._assert_distance_is_not_to_short(new_cl)
+
+    def is_too_long(self, dur: TimeDelta):
+        return len(self) + int(dur) > MAX_TIME_PER_DAY

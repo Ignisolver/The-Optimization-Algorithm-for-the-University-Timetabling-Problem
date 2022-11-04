@@ -51,6 +51,8 @@ def _merge_touching_available_ranges_in_day(ranges: List["TR"]):
 
 def _get_common_ranges_for_day(time_ranges_list: List[List["TR"]],
                                min_dur: TD) -> List["TR"]:
+    if len(time_ranges_list) == 0:
+        return []
     prev_trs = time_ranges_list[0]
     for trs in time_ranges_list[1:]:
         ranges = _get_common_ranges_from_two_list(prev_trs, trs)
@@ -67,6 +69,9 @@ def get_free_ranges_from_week_schedules(items: Tuple[WithSchedule],
     for day in DAYS:
         day_ranges = []
         for item in items:
+            if item.week_schedule.days[day].is_too_long(min_dur):
+                day_ranges.append([])
+                continue
             ranges = item.week_schedule.days[day].get_free_times()
             day_ranges.append(ranges)
         week_ranges.extend(_get_common_ranges_for_day(day_ranges, min_dur))

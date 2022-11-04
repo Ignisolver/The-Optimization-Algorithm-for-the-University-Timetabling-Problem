@@ -19,7 +19,6 @@ class TimeRange(TimeRangeType):
     _intersect_detector = TimeRangeIntersectDetector()
     _initializer = TimeRangeInitializer()
 
-
     def __post_init__(self):
         self.start, self.dur, self.end = self._initializer. \
             calc_start_dur_end(self.start, self.dur, self.end)

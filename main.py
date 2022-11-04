@@ -1,6 +1,5 @@
 # todo data input - db API
 # todo test db_api
-# TODO OGRNANICZENIE ILOŚCI W DNIU
 
 from algorithm.algorithm_ import algorithm
 from algorithm.preprocessing import assign_occupacity, get_sorted_classes, \

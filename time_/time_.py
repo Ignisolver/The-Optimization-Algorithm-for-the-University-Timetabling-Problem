@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from typing import Union
-
 from time_ import TimeDelta
 from utils.types_ import Day, TimeType
 
@@ -27,10 +26,11 @@ class Time(TimeType):
 
     def __sub__(self, other: TorTD) -> TorTD:
         if isinstance(other, Time):
-            self._assert_days_same(other)
+            # self._assert_days_same(other)
             return TimeDelta(minutes=int(self) - int(other))
 
-        if isinstance(other, TimeDelta):
+        # if isinstance(other, TimeDelta):
+        else:
             minutes = self.minute - other.minutes
             hours = self.hour - other.hours + (minutes // 60)
             minutes = minutes % 60
@@ -43,16 +43,15 @@ class Time(TimeType):
         return Time(hours, minutes, self.day)
 
     def __lt__(self, other: "Time"):
-        self._assert_days_same(other)
+        # self._assert_days_same(other)
         return int(self) < int(other)
 
     def __le__(self, other: "Time"):
-        self._assert_days_same(other)
-
+        # self._assert_days_same(other)
         return int(self) <= int(other)
 
     def __eq__(self, other: "Time"):
-        self._assert_days_same(other)
+        # self._assert_days_same(other)
         return int(self) == int(other)
 
     def __int__(self):
