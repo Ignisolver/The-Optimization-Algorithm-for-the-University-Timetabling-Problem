@@ -15,7 +15,7 @@ def main():
     add_info_to_week_schedule(classes)
     sorted_classes = get_sorted_classes(classes)
     algorithm(sorted_classes)
-    # generate_pdfs(all_.groups, all_.lecturers, all_.rooms, all_.name)
+    generate_pdfs(all_.groups, all_.lecturers, all_.rooms, all_.name)
     print("FINISH!!!")
 
 

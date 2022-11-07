@@ -35,8 +35,8 @@ class All:
 
 
 def get_random_name():
-    size = randint(4, 10)
-    letters = [random.choice(string.ascii_lowercase) for _ in range(size)]
+    size = 6
+    letters = [random.choice(string.ascii_uppercase)] + [random.choice(string.ascii_lowercase) for _ in range(size)]
     name = "".join(letters)
     return name
 

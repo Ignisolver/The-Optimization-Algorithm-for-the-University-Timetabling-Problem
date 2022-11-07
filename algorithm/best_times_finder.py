@@ -10,6 +10,8 @@ from time_ import TimeRange as TR, TimeDelta as TD, Time
 from utils.types_ import Day
 
 # testme all
+# not sort but max
+
 @dataclass
 class Start:
     time: Time
