@@ -1,10 +1,9 @@
-from dataclasses import dataclass
 from typing import TYPE_CHECKING, Union, List
 
-from time_ import TimeDelta
-from time_.time_range.time_range_utils import (TimeRangeIntersectDetector as TRID,
-                                               TimeRangeInitializer, StaDurEnd)
-from utils.types_ import Day, TimeRangeType
+from time_.time_range.time_range_utils import (
+    TimeRangeIntersectDetector as TRID,
+    TimeRangeInitializer)
+from utils.types_ import TimeRangeType
 
 if TYPE_CHECKING:
     from time_.time_ import Time

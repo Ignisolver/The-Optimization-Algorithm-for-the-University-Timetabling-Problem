@@ -1,8 +1,5 @@
 from dataclasses import dataclass, field
-from functools import cache
 from typing import Iterator, List, TYPE_CHECKING, Union
-
-from numba import jit
 
 from data_generation.generation_configs import MIN_HOUR, MAX_HOUR, \
     MAX_TIME_PER_DAY
@@ -143,7 +140,6 @@ class DaySchedule:
     def _calc_time_btw_classes(self, earlier: "Classes",
                                later: "Classes",
                                move_time_enable=True) -> TimeDelta:
-        """without move time"""
         if (earlier.classes_type == CT.UNAVAILABLE or
                 later.classes_type == CT.UNAVAILABLE):
             return TimeDelta()

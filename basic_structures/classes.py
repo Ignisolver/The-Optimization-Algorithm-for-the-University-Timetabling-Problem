@@ -1,10 +1,11 @@
 from dataclasses import dataclass
-from typing import Tuple, Union, TYPE_CHECKING, Iterator, List
+from typing import Tuple, Union, TYPE_CHECKING, List
 
-from utils.types_ import ClassesType, ClassesId, Day, DAY_LETTER, get_color
 from basic_structures.lecturer import Lecturer, UnavailableLecturer
 from basic_structures.room import Room, UnavailabilityRoom
 from time_ import Time, TimeDelta
+from utils.types_ import ClassesType, ClassesId, Day, DAY_LETTER, get_color
+
 if TYPE_CHECKING:
     from basic_structures import Group
 

@@ -3,9 +3,11 @@ from typing import List
 from algorithm.best_times_finder import Start
 from basic_structures import Classes, Room
 from basic_structures.with_schedule import WithSchedule
-from time_ import TimeDelta, Time
+from time_ import Time
 from utils.distanses_manager import Distances
 from utils.types_ import ClassesType
+
+
 # testme all
 
 

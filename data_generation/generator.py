@@ -1,7 +1,3 @@
-# classes for groups
-# rooms for classes
-# lecturers for classes
-
 import random
 import string
 from dataclasses import dataclass
@@ -12,8 +8,6 @@ from typing import List
 from basic_structures import Room, Group, Lecturer, Classes
 from basic_structures.classes import UnavailableClasses
 from basic_structures.room import Building
-from data_generation.generation_configs import MIN_HOUR, MAX_HOUR, \
-    TIME_GRANULATION
 from data_generation.generation_configs import *
 from time_ import TimeDelta, Time
 from utils.constans import DAYS

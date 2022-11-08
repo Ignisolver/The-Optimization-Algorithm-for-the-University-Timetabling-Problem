@@ -1,3 +1,4 @@
+from algorithm.best_times_finder import _get_start_times, Start as S
 from algorithm.merge_week_schedule import (_filter_ranges_grater_or_equal_than,
                                            _get_common_ranges_from_two_list,
                                            _get_common_ranges,
@@ -5,7 +6,6 @@ from algorithm.merge_week_schedule import (_filter_ranges_grater_or_equal_than,
                                            _get_common_ranges_for_day,
                                            get_free_ranges_from_week_schedules,
                                            )
-from algorithm.best_times_finder import _get_start_times, Start as S
 from basic_structures import Classes, Room, Lecturer, Group
 from basic_structures.with_schedule import WithSchedule
 from data_generation.generation_configs import MAX_HOUR

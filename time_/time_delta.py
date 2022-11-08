@@ -1,5 +1,3 @@
-from numba import uint8, int8, int32
-
 hour_dict = tuple((i*60 for i in range(24)))
 
 

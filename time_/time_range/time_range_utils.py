@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Union
 
-
 from utils.none_machine import NM
 from utils.singleton import SingletonMeta
 from utils.types_ import TimeType, TimeRangeType

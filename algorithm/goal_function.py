@@ -13,16 +13,19 @@ Funkcja celu - mierzy rozwiązanie:
 - najlepiej = 0 różnic
 - najgorzej = śrenia * 5
 """
-from copy import copy
 from functools import cache
 from itertools import cycle
-from typing import List, Tuple, Type
+from typing import Tuple
 
 from basic_structures.with_schedule import WithSchedule
-from data_generation.generation_configs import MIN_HOUR, MAX_HOUR, \
-    WEEK_LENGTH_MIN, DAY_TIME_WEIGHTS, GOAL_FUNCTION_WEIGHTS as GFW
+from data_generation.generation_configs import (MIN_HOUR,
+                                                MAX_HOUR,
+                                                WEEK_LENGTH_MIN,
+                                                DAY_TIME_WEIGHTS,
+                                                GOAL_FUNCTION_WEIGHTS as GFW,
+                                                MOVE_TIME_ENABLE as MTE)
 from schedule.week_scheadule import WeekSchedule
-from time_ import TimeDelta, TimeRange
+from time_ import TimeDelta
 from utils.constans import BTW, WA, UNI, DU
 
 
@@ -84,7 +87,7 @@ class Metric:
                 break
         self._worst_days_unfolding = points * 5
 
-    # todo cache
+    # todo cache, change, no division
     def _calc_days_unfolding(self):
         points = 0
         for start_h, end_h, weight in iterator_over_day():
@@ -98,7 +101,7 @@ class Metric:
     def _calc_brake_time_value(self):
         total_break_time = TimeDelta(0)
         for day in self.ws:
-            total_break_time += day.get_brake_time(move_time_enable=False)
+            total_break_time += day.get_brake_time(move_time_enable=MTE)
         return ((int(total_break_time) - self._best_brake_time) /
                 self._worst_brake_time)
 
