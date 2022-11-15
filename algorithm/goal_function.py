@@ -13,38 +13,24 @@ Funkcja celu - mierzy rozwiązanie:
 - najlepiej = 0 różnic
 - najgorzej = śrenia * 5
 """
+from dataclasses import dataclass
 from functools import cache
 from itertools import cycle
-from typing import Tuple
+from typing import Tuple, TYPE_CHECKING
 
-from basic_structures.with_schedule import WithSchedule
+from basic_structures import Classes
 from data_generation.generation_configs import (MIN_HOUR,
                                                 MAX_HOUR,
                                                 WEEK_LENGTH_MIN,
                                                 DAY_TIME_WEIGHTS,
                                                 GOAL_FUNCTION_WEIGHTS as GFW,
-                                                MOVE_TIME_ENABLE as MTE)
+                                                )
 from schedule.week_scheadule import WeekSchedule
-from time_ import TimeDelta
 from utils.constans import BTW, WA, UNI, DU
+from time_ import TimeDelta
 
-
-@cache
-def _calc_all_to_iterator():
-    period_mins = int(int(MAX_HOUR - MIN_HOUR) / len(DAY_TIME_WEIGHTS))
-    period = TimeDelta(0, period_mins)
-    start = MAX_HOUR - period
-    end = MAX_HOUR
-    weights = cycle(reversed(DAY_TIME_WEIGHTS))
-    return start, end, weights, period
-
-
-def iterator_over_day():
-    start, end, weights, period = _calc_all_to_iterator()
-    while start >= MIN_HOUR:
-        yield start, end, next(weights)
-        start -= period
-        end -= period
+if TYPE_CHECKING:
+    from basic_structures.with_schedule import WithSchedule
 
 
 class Metric:
@@ -74,34 +60,25 @@ class Metric:
         self._worst_uniformity = self._medium_unfolding * 5
 
     def _calc_worst_days_unfolding(self):
-        day_obligatory_time = int(self._classes_time / 5)
-        day_obl_td = TimeDelta(0, day_obligatory_time)
-        counted_time = TimeDelta(0, 0)
+
+        day_obligatory_time = int(self._classes_time / 60 / 5) + 1
         points = 0
-        for start, end, weight in iterator_over_day():
-            td = end-start
-            if counted_time < day_obl_td:
-                points += weight * self._best_week_arrangement
-                counted_time += td
-            else:
-                break
+        for hour_n in range(1, day_obligatory_time + 1):
+            points += DAY_TIME_WEIGHTS[-hour_n]
         self._worst_days_unfolding = points * 5
 
-    # todo cache, change, no division
     def _calc_days_unfolding(self):
         points = 0
-        for start_h, end_h, weight in iterator_over_day():
-            for day in self.ws:
-                cl_am = day.get_amount_of_classes_between(start_h, end_h)
-                if cl_am > 0:
-                    points += weight
+        for day in self.ws:
+            for classes in day:
+                points += DAY_TIME_WEIGHTS[classes.start_time.hour - MIN_HOUR.hour] + classes.start_time.minute/60
         return ((points - self._best_days_unfolding) /
                 self._worst_days_unfolding)
 
     def _calc_brake_time_value(self):
         total_break_time = TimeDelta(0)
         for day in self.ws:
-            total_break_time += day.get_brake_time(move_time_enable=MTE)
+            total_break_time += day.get_brake_time(move_time_enable=False)
         return ((int(total_break_time) - self._best_brake_time) /
                 self._worst_brake_time)
 
@@ -109,14 +86,14 @@ class Metric:
         n = 0
         for day in self.ws:
             if len(day.get_classes()) > 0:
-                n += 1
-        return (n - self._best_week_arrangement) / self._worst_week_arrangement
+                n += 0.2
+        return n
 
     def _calc_uniformity(self):
         value = 0
         for day in self.ws:
-            if len(day) > 0:
-                value += abs(len(day) - self._medium_unfolding)
+            value += abs(len(day) - self._medium_unfolding)**2
+        value = value**(1/2)
         return (value - self._best_uniformity) / self._worst_uniformity
 
     def _calc_all_basics(self):
@@ -135,7 +112,7 @@ class Metric:
 
 
 # testme
-def evaluate(items: Tuple[WithSchedule]):
+def evaluate(items: Tuple["WithSchedule"]):
     val = 0
     for item in items:
         m = Metric(item.week_schedule)

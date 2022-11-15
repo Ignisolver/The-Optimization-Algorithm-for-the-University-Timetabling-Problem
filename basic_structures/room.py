@@ -31,6 +31,9 @@ class Room(WithSchedule):
     _occup_priority: float = 0  # the grater, the better
     _temp_cl: Union["Classes", None] = None
 
+    def __repr__(self):
+        return f"Room(id_: {self.id_})"
+
     def __post_init__(self):
         super().__init__()
 

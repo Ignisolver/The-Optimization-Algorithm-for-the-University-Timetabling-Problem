@@ -1,4 +1,4 @@
-hour_dict = tuple((i*60 for i in range(24)))
+hour_dict = tuple((i*60 for i in range(24*5)))
 
 
 class TimeDelta:

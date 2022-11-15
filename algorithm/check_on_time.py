@@ -11,7 +11,7 @@ from utils.types_ import ClassesType
 # testme all
 
 
-def _is_being_on_time_is_certain(classes: Classes):
+def     _is_being_on_time_is_certain(classes: Classes):
     if classes is None or classes.classes_type == ClassesType.UNAVAILABLE:
         return True
 
@@ -47,8 +47,8 @@ def is_after_ok(item, day, start_time, room, dur):
 
 def _check_room_not_too_far_for_schedule(item: WithSchedule, classes: Classes,
                                          room: Room, start: Start):
-    avail_bef = is_before_ok(item, classes.day, start.time, room)
-    avail_aft = is_after_ok(item, classes.day, start.time, room, classes.dur)
+    avail_bef = is_before_ok(item, start.day, start.time, room)
+    avail_aft = is_after_ok(item, start.day, start.time, room, classes.dur)
     return avail_aft and avail_bef
 
 

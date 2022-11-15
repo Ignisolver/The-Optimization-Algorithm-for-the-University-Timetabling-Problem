@@ -18,7 +18,7 @@ class Place:
 
 
 class Distances(metaclass=SingletonMeta):
-    def __init__(self):
+    def     __init__(self):
         self._room_time = TIME_BETWEEN_ROOMS
         self._building_time_matrix = {}
 

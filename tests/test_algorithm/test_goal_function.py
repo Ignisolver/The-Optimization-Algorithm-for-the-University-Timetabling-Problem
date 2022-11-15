@@ -13,13 +13,6 @@ from utils.constans import DU, BTW, WA, UNI
 from utils.types_ import MONDAY, ClassesType as CT, THURSDAY, FRIDAY
 
 
-def test_iterator_over_day():
-    iod = iterator_over_day()
-    l = [i for i in iod]
-    print("", *l, sep='\n')
-    assert len(l) == len(DAY_TIME_WEIGHTS)
-    assert len(l[0]) == 3
-
 
 @pytest.fixture(scope="class")
 def metric():

@@ -59,7 +59,7 @@ class Classes:
     def get_sorted_rooms(self) -> List[Room]:
         return sorted(self.avail_rooms,
                       key=lambda r: r.occup_priority,
-                      reverse=True)
+                      )
 
     def unassign_temp(self):
         self._start_time = None
@@ -103,10 +103,9 @@ class Classes:
     def to_yaml(self):
         s = " "
         txt = f'\n{2 * s}'.join([f"- name: |",
-                                 f"{2 * s}{self.name}",
-                                 f"{2 * s}ID: {self.id_}",
-                                 f"{2 * s}R: {self.room.name}",
-                                 f"{2 * s}L: {self.lecturer.name}",
+                                 f"{2 * s}CLS ID: {self.id_}",
+                                 (f"{2 * s}R: {self.room.id_}" +
+                                  f"{s}|{s}L: {self.lecturer.id_}"),
                                  f"{2 * s}G: {[g for g in self.groups]}",
                                  f"days: {DAY_LETTER[self.day]}",
                                  f"time: {self.start_time} - {self.end_time}",

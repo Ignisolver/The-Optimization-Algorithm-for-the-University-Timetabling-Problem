@@ -1,11 +1,20 @@
+from dataclasses import dataclass
 from typing import Dict, TYPE_CHECKING, List, Iterator
 
+from data_generation.generation_configs import MAX_TIME_PER_DAY
 from schedule.day_scheadule import DaySchedule
 from utils.constans import DAYS
 from utils.types_ import Day
 
 if TYPE_CHECKING:
     from basic_structures import Classes
+
+
+@dataclass
+class FinalInfo:
+    total_classes_len: int
+    assigned_classes_len: int
+    available_time_len: int
 
 
 class WeekSchedule:
@@ -44,3 +53,10 @@ class WeekSchedule:
             for classes in day_sche:
                 txt += classes.to_yaml() + "\n\n"
         return txt
+
+    def get_final_info(self) -> FinalInfo:
+        unav_len = sum(int(day.get_unavailable_len()) for day in self)
+        avail_time_len = 5 * MAX_TIME_PER_DAY - unav_len
+        classes_len = sum(len(day) for day in self)
+        fi = FinalInfo(self.classes_time,classes_len, avail_time_len)
+        return fi

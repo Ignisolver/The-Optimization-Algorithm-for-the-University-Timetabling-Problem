@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from functools import cache
 from typing import Iterator, List, TYPE_CHECKING, Union
 
 from data_generation.generation_configs import MIN_HOUR, MAX_HOUR, \
@@ -18,6 +19,8 @@ class DaySchedule:
     _classes: List["Classes"] = field(default_factory=list)
     _temp_cl_nr: int | None = None
     _distances: Distances = Distances()
+    _changed: bool = True
+    _last_val: int = 0
 
     def __len__(self) -> int:
         """
@@ -42,9 +45,10 @@ class DaySchedule:
         return self._classes[-1]
 
     def get_last_classes_before(self, time: Time) -> Union["Classes", None]:
-        if len(self._classes) == 0:
-            return None
         last_cl = None
+        if len(self._classes) == 0:
+            return last_cl
+
         for cl in reversed(self._classes):
             if cl.start_time < time:
                 last_cl = cl
@@ -98,6 +102,7 @@ class DaySchedule:
         self._assert_assignment_available(classes)
         self._classes.append(classes)
         self._sort_classes()
+        self._changed = True
 
     def pretty_represent(self):
         s = " "
@@ -140,8 +145,10 @@ class DaySchedule:
     def _calc_time_btw_classes(self, earlier: "Classes",
                                later: "Classes",
                                move_time_enable=True) -> TimeDelta:
-        if (earlier.classes_type == CT.UNAVAILABLE or
-                later.classes_type == CT.UNAVAILABLE):
+        if ((earlier.classes_type == CT.UNAVAILABLE or
+                later.classes_type == CT.UNAVAILABLE) or
+                (earlier.room is None) or
+                (later is None)):
             return TimeDelta()
         total_t = later.start_time - earlier.end_time
         if move_time_enable:
@@ -166,15 +173,18 @@ class DaySchedule:
         return total_time - unavail_time
 
     def get_amount_of_classes_between(self, start_h, end_h):
-        n = 0
-        for cls_ in self._classes:
-            if cls_.start_time < end_h:
-                if cls_.end_time >= start_h:
+        if self._changed:
+            n = 0
+            for cls_ in self._classes:
+                if start_h <= cls_.start_time < end_h:  # to wystarczy bo zajęć nie skrócimy
                     if cls_.classes_type != CT.UNAVAILABLE:
                         n += 1
-            else:
-                break
-        return n
+            self._last_val = n
+            self._changed = False
+            return n
+        else:
+            return self._last_val
+
 
     def is_space_not_busy(self, start: "Start", classes: "Classes"):
         tr = TimeRange(start.time, start.time+classes.dur)
