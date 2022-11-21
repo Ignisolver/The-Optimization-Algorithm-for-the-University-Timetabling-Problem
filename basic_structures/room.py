@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from typing import Dict, TYPE_CHECKING, Union
 
 from basic_structures.with_schedule import WithSchedule
+from data_generation.generation_configs import MAX_TIME_PER_DAY
 from utils.types_ import RoomId, ClassesId, UNAVAILABLE_ID
 
 if TYPE_CHECKING:
@@ -28,6 +29,8 @@ class Room(WithSchedule):
         field(default_factory=dict)
     _const_classes_occup_probab: Dict[ClassesId, float] = \
         field(default_factory=dict)
+    _const_classes_occup_len: Dict[ClassesId, float] = \
+        field(default_factory=dict)
     _occup_priority: float = 0  # the grater, the better
     _temp_cl: Union["Classes", None] = None
 
@@ -39,11 +42,7 @@ class Room(WithSchedule):
 
     @property
     def occup_priority(self):
-        if self._occup_priority == 0:
-            raise RuntimeError("An attempt to get access to priority of"
-                               " room for which all classes was assigned")
-        else:
-            return self._occup_priority
+        return self._occup_priority
 
     def add_potential_classes(self, classes, probab=None):
         """
@@ -56,6 +55,7 @@ class Room(WithSchedule):
             probab = 1/len(classes.avail_rooms)
         self._classes_occup_probab[classes.id_] = probab
         self._const_classes_occup_probab[classes.id_] = probab
+        self._const_classes_occup_len[classes.id_] = int(probab * int(classes.dur))
         self._update()
 
     def assign(self, classes: "Classes"):
@@ -107,6 +107,9 @@ class Room(WithSchedule):
     def _reset_probab_of_classes(self, classes_id):
         probability = self._const_classes_occup_probab[classes_id]
         self._set_probab_of_classes(classes_id, probability)
+
+    def sum_occup_probab(self):
+        self.week_schedule.total_classes_time = sum(self._const_classes_occup_len.values())
 
 
 class UnavailabilityRoom:

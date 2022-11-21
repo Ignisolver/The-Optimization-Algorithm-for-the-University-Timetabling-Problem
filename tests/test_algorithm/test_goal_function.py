@@ -33,8 +33,8 @@ def metric():
         classes[i].start_time = next(iod)[0]
         next(iod)
         ws.assign(classes[i])
-    ws.classes_time = 5 * 60
-    ws.classes_amount = 5
+    ws.assigned_classes_time = 5 * 60
+    ws.assigned_classes_amount = 5
     m = Metric(ws)
     return m
 

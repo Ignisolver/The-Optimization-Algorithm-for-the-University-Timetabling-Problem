@@ -1,1 +1,1 @@
-from data_generation.generation_configs.basic_config import *
+from data_generation.generation_configs.goal_func_tests.all import *

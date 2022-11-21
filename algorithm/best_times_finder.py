@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from random import shuffle
 from typing import List, Iterator
 
 from algorithm.goal_function import evaluate
@@ -49,5 +50,8 @@ def get_best_time(classes: Classes) -> Iterator[Start]:
     for start in _available_start_times(classes):
         val = _evaluate_time(classes, start)
         times_values.append((start, val))
-    times_values.sort(key=lambda td_v: td_v[1])
-    return map(lambda td_v: td_v[0], times_values)
+    shuffle(times_values)
+    while len(times_values) != 0:
+        time_val = min(times_values, key=lambda td_v: td_v[1])
+        yield time_val[0]
+        times_values.remove(time_val)

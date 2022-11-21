@@ -14,7 +14,7 @@ from utils.constans import DAYS
 from utils.distanses_manager import Distances
 from utils.types_ import ClassesType as CT
 
-random.seed(1)
+random.seed(2)
 
 
 @dataclass
@@ -36,11 +36,7 @@ def get_random_name():
 
 
 def get_random_start_time(dur):
-    try:
-        max_t = MAX_HOUR - dur - TimeDelta(1)
-    except Exception as e:
-        print(MAX_HOUR, type(dur), dur.hours, dur.minutes)
-        raise e
+    max_t = MAX_HOUR - dur - TimeDelta(1)
     h = randint(MIN_HOUR.hour, max_t.hour)
     m = randint(0, 59) // int(TIME_GRANULATION) * int(TIME_GRANULATION)
     return Time(h, m)
@@ -108,8 +104,7 @@ def _try_to_assign_unavaileble_classes(id_, obj, dur):
             obj.assign(unav_cl)
             break
         except Exception as e:
-            print(e)
-            continue
+            pass
     else:
         raise RuntimeError("Can not assign unavailable to room")
 
@@ -148,14 +143,23 @@ def assign_unavailability(objects, amounts, durations):
             _try_to_assign_unavaileble_classes(next(idg_classes), obj, dur)
 
 
-def get_availeble_rooms(rooms, n):
-    return random.sample(rooms, n)
+def lecturers_generator(lecturers: List[Lecturer]):
+    forbidden_nrs = []
+    max_classes_time = max(DURATIONS_OF_CLASSES)
+    while True:
+        for nr, lect in enumerate(lecturers):
+            if nr not in forbidden_nrs:
+                yield lect
+                if lect.week_schedule.total_classes_time + max_classes_time > 5 * MAX_TIME_PER_DAY:
+                    forbidden_nrs.append(nr)
+        if len(forbidden_nrs) == len(lecturers):
+            raise RuntimeError("To many classes, to less lecturers")
 
 
 def generate_classes(lecturers, lab_rooms, lect_rooms, groups):
     ids = idg_classes
     names = names_generator()
-    lecturers_gen = cycle(lecturers)
+    lecturers_gen = lecturers_generator(lecturers)
     available_rooms_amounts = cycle(AVAILABLE_ROOMS_AMOUNT)
     subjects_amount = cycle(SUBJECTS_PER_FIELD)
     groups_amount = cycle(AMOUNT_OF_GROUPS_IN_FIELD)
@@ -166,35 +170,50 @@ def generate_classes(lecturers, lab_rooms, lect_rooms, groups):
     classes = []
 
     for _ in range(AMOUNT_OF_FIELDS):
+        max_classes_time = max(DURATIONS_OF_CLASSES)
         n_groups = next(groups_amount)
         field_groups = tuple(g for _, g in zip(range(n_groups), groups_gen))
         n_subjects = next(subjects_amount)
         for _ in range(n_subjects):
             n_people = sum([g.amount_of_students for g in field_groups])
             lect_avail_rooms = tuple(
-                filter(lambda r: r.people_capacity >= n_people, lect_rooms))
+                filter(lambda r: r.people_capacity >= n_people and r.week_schedule.total_classes_time + max_classes_time < 5 * MAX_TIME_PER_DAY, lect_rooms))
+            if len(lect_avail_rooms) == 0:
+                raise RuntimeError("Not enough lecture rooms")
             avail_rooms = random.sample(lect_avail_rooms,
                                         min(len(lect_avail_rooms),
                                             next(available_rooms_amounts)))
             lecture = Classes(next(ids), next(names), next(durations),
                               CT.LECTURE, avail_rooms,
                               next(lecturers_gen), field_groups)
+            lecture.add_info_to_week_schedule()
+            lecture.assign_occupacity()
             classes.append(lecture)
+            for room in lecture.avail_rooms:
+                room.sum_occup_probab()
             for group in field_groups:
                 avail_lab_rooms = tuple(filter(lambda r: (
-                            r.people_capacity <= max_people_in_group and r.people_capacity >= group.amount_of_students),
+                            r.people_capacity <= max_people_in_group and r.people_capacity >= group.amount_of_students and r.week_schedule.total_classes_time + max_classes_time < 5 * MAX_TIME_PER_DAY),
                                                lab_rooms))
+                if len(avail_lab_rooms) == 0:
+                    raise RuntimeError("Not enough lab rooms")
                 avail_rooms = random.sample(avail_lab_rooms,
                                             min(len(avail_lab_rooms),
                                                 next(available_rooms_amounts)))
                 lab = Classes(next(ids), next(names), next(durations),
                               CT.LABORATORY, avail_rooms,
                               next(lecturers_gen), (group,))
+                lab.add_info_to_week_schedule()
+                lab.assign_occupacity()
                 classes.append(lab)
+                for room in lab.avail_rooms:
+                    room.sum_occup_probab()
     return classes
 
 
 def generate_all() -> All:
+    print("TEST:", NAME)
+    print(30*'-')
     buildings = generate_buildings()
     generate_distances(buildings)
     lab_rooms = generate_rooms(buildings, AMOUNT_OF_LAB_ROOMS,

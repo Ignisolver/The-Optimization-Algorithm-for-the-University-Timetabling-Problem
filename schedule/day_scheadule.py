@@ -147,7 +147,7 @@ class DaySchedule:
                                move_time_enable=True) -> TimeDelta:
         if ((earlier.classes_type == CT.UNAVAILABLE or
                 later.classes_type == CT.UNAVAILABLE) or
-                (earlier.room is None) or
+                (earlier is None) or
                 (later is None)):
             return TimeDelta()
         total_t = later.start_time - earlier.end_time

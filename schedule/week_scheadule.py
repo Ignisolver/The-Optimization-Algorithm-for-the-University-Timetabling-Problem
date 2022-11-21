@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from typing import Dict, TYPE_CHECKING, List, Iterator
 
 from data_generation.generation_configs import MAX_TIME_PER_DAY
@@ -10,13 +9,6 @@ if TYPE_CHECKING:
     from basic_structures import Classes
 
 
-@dataclass
-class FinalInfo:
-    total_classes_len: int
-    assigned_classes_len: int
-    available_time_len: int
-
-
 class WeekSchedule:
     def __init__(self,
                  unavailability: None | List["Classes"] = None):
@@ -24,8 +16,13 @@ class WeekSchedule:
                                              for day_tag in DAYS}
         self._set_unavailability(unavailability)
         self.temp_day_tag = None
-        self.classes_time: int = 0
-        self.classes_amount: int = 0
+        self._temp_dur = None
+        self.assigned_classes_time: int = 0
+        self.assigned_classes_amount: int = 0
+        self.total_classes_time: int = 0
+        self.total_classes_amount: int = 0
+        self.over_doable: int = 0
+        self.available_time: int = 0
 
     def __iter__(self) -> Iterator[DaySchedule]:
         return iter(self.days.values())
@@ -38,14 +35,21 @@ class WeekSchedule:
     def assign(self, classes: "Classes"):
         day_tag = classes.day
         self.days[day_tag].assign(classes)
+        self.assigned_classes_time += int(classes.dur)
+        self.assigned_classes_amount += 1
 
     def temp_assign(self, classes: "Classes"):
         self.temp_day_tag = classes.day
         self.days[self.temp_day_tag].temp_assign(classes)
+        self.assigned_classes_time += int(classes.dur)
+        self._temp_dur = int(classes.dur)
+        self.assigned_classes_amount += 1
 
     def unassign_temp(self):
         self.days[self.temp_day_tag].unassign_temp()
         self.temp_day_tag = None
+        self.assigned_classes_time -= self._temp_dur
+        self.assigned_classes_amount -= 1
 
     def to_yaml(self):
         txt = ""
@@ -54,9 +58,10 @@ class WeekSchedule:
                 txt += classes.to_yaml() + "\n\n"
         return txt
 
-    def get_final_info(self) -> FinalInfo:
-        unav_len = sum(int(day.get_unavailable_len()) for day in self)
-        avail_time_len = 5 * MAX_TIME_PER_DAY - unav_len
-        classes_len = sum(len(day) for day in self)
-        fi = FinalInfo(self.classes_time,classes_len, avail_time_len)
-        return fi
+    def calc_over_time_avail_time(self):
+        all_avail_time = 5 * MAX_TIME_PER_DAY
+        unav_time = sum(int(day.get_unavailable_len()) for day in self)
+        self.available_time = all_avail_time - unav_time
+        over_time = self.available_time - self.total_classes_time
+        self.over_doable = -over_time
+

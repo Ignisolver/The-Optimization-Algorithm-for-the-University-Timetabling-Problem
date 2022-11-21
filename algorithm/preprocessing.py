@@ -1,9 +1,17 @@
-# todo sort by am_of_people
-
 from itertools import chain
 from typing import List, Iterator, Callable
 
-from basic_structures import Classes
+from basic_structures import Classes, Room
+from data_generation.generator import All
+
+
+def preprocess_all(all_: All):
+    # assign_occupacity(all_.classes)  arleady done in gneration
+    # add_info_to_week_schedule(all_.classes)  arleady done in gneration
+    add_room_info(all_.rooms)
+    sorted_classes = get_sorted_classes(all_.classes)
+    calc_over_time_avail_time(all_)
+    return sorted_classes
 
 
 def assign_occupacity(classes: List[Classes]):
@@ -11,9 +19,19 @@ def assign_occupacity(classes: List[Classes]):
         cl.assign_occupacity()
 
 
+def add_room_info(rooms: List[Room]):
+    for r in rooms:
+        r.sum_occup_probab()
+
+
 def add_info_to_week_schedule(classes: List[Classes]):
     for cl in classes:
         cl.add_info_to_week_schedule()
+
+
+def calc_over_time_avail_time(all_: All):
+    for item in (*all_.rooms, *all_.lecturers, *all_.groups):
+        item.week_schedule.calc_over_time_avail_time()
 
 
 def _create_container(classes, key) -> List:

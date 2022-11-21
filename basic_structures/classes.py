@@ -35,8 +35,8 @@ class Classes:
 
     def add_info_to_week_schedule(self):
         for item in self.get_with_schedules():
-            item.week_schedule.classes_amount += 1
-            item.week_schedule.classes_time += int(self.dur)
+            item.week_schedule.total_classes_amount += 1
+            item.week_schedule.total_classes_time += int(self.dur)
 
     def _assign_to_room_groups_lecturer(self):
         self.lecturer.assign(self)
@@ -103,10 +103,10 @@ class Classes:
     def to_yaml(self):
         s = " "
         txt = f'\n{2 * s}'.join([f"- name: |",
-                                 f"{2 * s}CLS ID: {self.id_}",
-                                 (f"{2 * s}R: {self.room.id_}" +
-                                  f"{s}|{s}L: {self.lecturer.id_}"),
-                                 f"{2 * s}G: {[g for g in self.groups]}",
+                                 f"{2 * s}Classes ID: {self.id_}",
+                                 (f"{2 * s}Room: {self.room.id_}" +
+                                  f"{5*s}Lecturer: {self.lecturer.id_}"),
+                                 f"{2 * s}Groups: {[g for g in self.groups]}",
                                  f"days: {DAY_LETTER[self.day]}",
                                  f"time: {self.start_time} - {self.end_time}",
                                  f"color: '{next(get_color)}'"])

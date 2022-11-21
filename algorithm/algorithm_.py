@@ -14,8 +14,18 @@ class AlgResult:
     failures_time: int = 0
     successes_time: int = 0
 
+    def __repr__(self):
+        return (30 * "-" + "\n" +
+                f"ASSIGNED  : " +
+                f"{self.successes} / {self.successes + self.failures}" +
+                f" CLASSES " +
+                f"({round(100 * self.successes / (self.successes + self.failures), 2 )} %)\n" +
+                f"FAILURES  : {self.failures}\n"+
+                30 * "-")
+
 
 def algorithm(classes_list: Iterator[Classes]):
+    print("ALGORITHM:")
     result = AlgResult()
     for classes in bar(classes_list, "ALGORITHM"):
         rooms = classes.get_sorted_rooms()
@@ -29,9 +39,9 @@ def algorithm(classes_list: Iterator[Classes]):
                 result.successes_time += int(classes.dur)
                 break
         else:
-            # print(classes.id_, classes.groups, classes.lecturer, classes.avail_rooms)
             result.failures += 1
             result.failures_time += int(classes.dur)
-    print(result)
+    return result
+
 
 
