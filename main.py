@@ -2,7 +2,8 @@
 # todo test db_api
 from time import sleep
 
-# todo summariser
+# todo optimize goal function weights
+# todo tests
 
 from algorithm.algorithm_ import algorithm
 from algorithm.preprocessing import preprocess_all

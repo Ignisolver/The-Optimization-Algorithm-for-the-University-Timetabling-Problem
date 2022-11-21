@@ -29,4 +29,4 @@ MAX_TIME_PER_DAY = int(TimeDelta(8, 0))
 DAY_TIME_WEIGHTS = [0, 1, 2, 3,4,5,6,7,8,9,10,11, 12]
 GOAL_FUNCTION_WEIGHTS = {BTW: 10, WA: 40, UNI: 1, DU: 10}
 TIME_BETWEEN_ROOMS = TimeDelta(0, 5)
-GEN = False
+GEN = True

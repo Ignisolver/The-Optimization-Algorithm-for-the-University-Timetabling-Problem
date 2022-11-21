@@ -15,6 +15,7 @@ Funkcja celu - mierzy rozwiązanie:
 """
 from dataclasses import dataclass
 from math import ceil
+from statistics import mean
 from typing import Tuple, TYPE_CHECKING
 
 from data_generation.generation_configs import (MIN_HOUR,
@@ -22,6 +23,7 @@ from data_generation.generation_configs import (MIN_HOUR,
                                                 DAY_TIME_WEIGHTS,
                                                 GOAL_FUNCTION_WEIGHTS as GFW,
                                                 MAX_TIME_PER_DAY,
+                                                DURATIONS_OF_CLASSES,
                                                 )
 from schedule.week_scheadule import WeekSchedule
 from utils.constans import BTW, WA, UNI, DU
@@ -70,12 +72,15 @@ class GFV:
 
 
 class Metric:
+    _mean_day_time_weights = mean(DAY_TIME_WEIGHTS)
+    _longest_classes = max(DURATIONS_OF_CLASSES)
+
     def __init__(self, week_schedule: WeekSchedule):
         self.ws = week_schedule
         self._best_brake_time = 0
         self._worst_brake_time = None
         self._worst_week_arrangement = 7
-        self._classes_time = week_schedule.assigned_classes_time
+        self._classes_time = week_schedule.total_classes_time
         self._best_week_arrangement = 1
         self._medium_unfolding = None
         self._worst_uniformity = None
@@ -89,10 +94,15 @@ class Metric:
         self._worst_brake_time = int(WEEK_LENGTH_MIN) - self._classes_time
 
     def _calc_best_week_arrangement(self):
-        self._best_week_arrangement = ceil(self.ws.assigned_classes_time/MAX_TIME_PER_DAY)
+        div = self._classes_time / MAX_TIME_PER_DAY
+        c_div = ceil(div)
+        if c_div - div <= self._longest_classes:
+            self._best_week_arrangement = c_div + 1
+        else:
+            self._best_week_arrangement = c_div
 
     def _calc_medium_unfolding(self):
-        self._medium_unfolding = int(self.ws.assigned_classes_time /
+        self._medium_unfolding = int(self._classes_time /
                                      self._best_week_arrangement)
 
     def _calc_worst_uniformity(self):
@@ -111,6 +121,7 @@ class Metric:
         for day in self.ws:
             for classes in day:
                 points += DAY_TIME_WEIGHTS[classes.start_time.hour - MIN_HOUR.hour] + classes.start_time.minute/60
+        points = points / self._mean_day_time_weights
         return points
 
     def _calc_brake_time_value(self):
@@ -128,9 +139,15 @@ class Metric:
 
     def _calc_uniformity(self):
         value = 0
-        for day in self.ws:
-            if len(day.get_classes()) > 0:
+        counter_len_0 = -1
+        for day in reversed(list(self.ws)):
+            len_ = len(day.get_classes())
+            if len_ != 0:
                 value += (len(day) - self._medium_unfolding)**2
+            elif len_ == 0:
+                counter_len_0 += 1
+                if counter_len_0 >= 5 - self._best_week_arrangement:
+                    value += (len(day) - self._medium_unfolding) ** 2
         value = value**(1/2)
         return value
 
