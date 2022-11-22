@@ -14,7 +14,7 @@ Funkcja celu - mierzy rozwiązanie:
 - najgorzej = śrenia * 5
 """
 from dataclasses import dataclass
-from math import ceil
+from math import ceil, floor
 from statistics import mean
 from typing import Tuple, TYPE_CHECKING
 
@@ -48,10 +48,10 @@ class GFV:
         return self
 
     def __truediv__(self, other):
-        self.btw = round(self.btw / other,1)
-        self.wa = round(self.wa / other,1)
-        self.uni = round(self.uni / other,2)
-        self.du = round(self.du / other,2)
+        self.btw = round(self.btw / other, 1)
+        self.wa = round(self.wa / other, 1)
+        self.uni = round(self.uni / other, 2)
+        self.du = round(self.du / other, 2)
         return self
 
     def __iter__(self):
@@ -59,9 +59,9 @@ class GFV:
 
     def __repr__(self):
         return (f"MEDIUM BREAK TIME     : {self.btw} hours\n" +
-        f"MEDIUM BUSY DAYS      : {self.wa} \n" +
-        f"MEDIUM UNIFORMITY     : {self.uni}\n" +
-        f"MEDIUM DAYS UNFOLDING : {self.du}\n")
+                f"MEDIUM BUSY DAYS      : {self.wa} \n" +
+                f"MEDIUM UNIFORMITY     : {self.uni}\n" +
+                f"MEDIUM DAYS UNFOLDING : {self.du}\n")
 
     def __mul__(self, gtw):
         self.btw *= gtw[BTW]
@@ -74,6 +74,7 @@ class GFV:
 class Metric:
     _mean_day_time_weights = mean(DAY_TIME_WEIGHTS)
     _longest_classes = max(DURATIONS_OF_CLASSES)
+    _shortest_classes = min(DURATIONS_OF_CLASSES)
 
     def __init__(self, week_schedule: WeekSchedule):
         self.ws = week_schedule
@@ -85,7 +86,7 @@ class Metric:
         self._medium_unfolding = None
         self._worst_uniformity = None
         self._best_uniformity = 0
-        self._classes_amount = week_schedule.assigned_classes_amount
+        self._classes_amount = week_schedule.total_classes_amount
         self._best_days_unfolding = 0
         self._worst_days_unfolding = None
         self._calc_all_basics()
@@ -96,7 +97,10 @@ class Metric:
     def _calc_best_week_arrangement(self):
         div = self._classes_time / MAX_TIME_PER_DAY
         c_div = ceil(div)
-        if c_div - div <= self._longest_classes:
+        tot_max = MAX_TIME_PER_DAY * c_div
+        print(MAX_TIME_PER_DAY//self._longest_classes, c_div)
+        if (tot_max - self._classes_time < self._longest_classes and
+                (self._classes_amount / (MAX_TIME_PER_DAY // self._longest_classes) > c_div)):
             self._best_week_arrangement = c_div + 1
         else:
             self._best_week_arrangement = c_div
@@ -120,7 +124,8 @@ class Metric:
         points = 0
         for day in self.ws:
             for classes in day:
-                points += DAY_TIME_WEIGHTS[classes.start_time.hour - MIN_HOUR.hour] + classes.start_time.minute/60
+                points += DAY_TIME_WEIGHTS[
+                              classes.start_time.hour - MIN_HOUR.hour] + classes.start_time.minute / 60
         points = points / self._mean_day_time_weights
         return points
 
@@ -128,7 +133,7 @@ class Metric:
         total_break_time = TimeDelta(0)
         for day in self.ws:
             total_break_time += day.get_brake_time(move_time_enable=False)
-        return int(total_break_time)/60
+        return int(total_break_time) / 60
 
     def _calc_week_arrangement(self):
         n = 0
@@ -140,15 +145,15 @@ class Metric:
     def _calc_uniformity(self):
         value = 0
         counter_len_0 = -1
-        for day in reversed(list(self.ws)):
+        for day in self.ws:
             len_ = len(day.get_classes())
             if len_ != 0:
-                value += (len(day) - self._medium_unfolding)**2
+                value += (len(day) - self._medium_unfolding) ** 2
             elif len_ == 0:
                 counter_len_0 += 1
                 if counter_len_0 >= 5 - self._best_week_arrangement:
                     value += (len(day) - self._medium_unfolding) ** 2
-        value = value**(1/2)
+        value = value ** (1 / 2)
         return value
 
     def _calc_all_basics(self):
@@ -166,7 +171,7 @@ class Metric:
         return GFV(btw, wa, uni, du)
 
     def calc_goal_fcn(self):
-        total_sum = sum(self.calc_goal_function_elements()*GFW)
+        total_sum = sum(self.calc_goal_function_elements() * GFW)
         return total_sum
 
 
@@ -176,4 +181,3 @@ def evaluate(items: Tuple["WithSchedule"]):
         m = Metric(item.week_schedule)
         val += m.calc_goal_fcn()
     return val
-
