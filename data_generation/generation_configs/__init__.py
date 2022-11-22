@@ -1,1 +1,1 @@
-from data_generation.generation_configs.goal_func_tests.UNI import *
+from data_generation.generation_configs.hardness.hard import *

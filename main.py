@@ -3,7 +3,6 @@
 from time import sleep
 
 # todo optimize goal function weights
-# todo calc best week arrangement
 # todo tests
 
 from algorithm.algorithm_ import algorithm

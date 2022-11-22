@@ -37,6 +37,7 @@ def summarize_before(all_: All):
         over_doable_hours = calc_over_doability_time(items)
         aval_time = calc_av_time_before(items)
         represent_before(name, over_doable_hours, aval_time)
+    print(30*'-')
 
 
 def summarize_after(all_: All, alg_res):

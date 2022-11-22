@@ -98,7 +98,6 @@ class Metric:
         div = self._classes_time / MAX_TIME_PER_DAY
         c_div = ceil(div)
         tot_max = MAX_TIME_PER_DAY * c_div
-        print(MAX_TIME_PER_DAY//self._longest_classes, c_div)
         if (tot_max - self._classes_time < self._longest_classes and
                 (self._classes_amount / (MAX_TIME_PER_DAY // self._longest_classes) > c_div)):
             self._best_week_arrangement = c_div + 1
@@ -153,7 +152,7 @@ class Metric:
                 counter_len_0 += 1
                 if counter_len_0 >= 5 - self._best_week_arrangement:
                     value += (len(day) - self._medium_unfolding) ** 2
-        value = value ** (1 / 2)
+        value = value ** (1 / 2) / 100
         return value
 
     def _calc_all_basics(self):
