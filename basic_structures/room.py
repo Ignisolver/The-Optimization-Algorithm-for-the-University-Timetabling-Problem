@@ -2,7 +2,6 @@ from dataclasses import dataclass, field
 from typing import Dict, TYPE_CHECKING, Union
 
 from basic_structures.with_schedule import WithSchedule
-from data_generation.generation_configs import MAX_TIME_PER_DAY
 from utils.types_ import RoomId, ClassesId, UNAVAILABLE_ID
 
 if TYPE_CHECKING:

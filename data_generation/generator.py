@@ -168,6 +168,7 @@ def generate_classes(lecturers, lab_rooms, lect_rooms, groups):
     groups_gen = iter(groups)
     max_people_in_group = max(AMOUNT_OF_STUDENTS_PER_GROUP)
     classes = []
+    MAX_ROOM_TIME_WEEK = 5 * int(MAX_HOUR - MIN_HOUR)
 
     for _ in range(AMOUNT_OF_FIELDS):
         max_classes_time = max(DURATIONS_OF_CLASSES)
@@ -177,7 +178,7 @@ def generate_classes(lecturers, lab_rooms, lect_rooms, groups):
         for _ in range(n_subjects):
             n_people = sum([g.amount_of_students for g in field_groups])
             lect_avail_rooms = tuple(
-                filter(lambda r: r.people_capacity >= n_people and r.week_schedule.total_classes_time + max_classes_time < 5 * MAX_TIME_PER_DAY, lect_rooms))
+                filter(lambda r: r.people_capacity >= n_people and r.week_schedule.total_classes_time + max_classes_time < MAX_ROOM_TIME_WEEK, lect_rooms))
             if len(lect_avail_rooms) == 0:
                 raise RuntimeError("Not enough lecture rooms")
             avail_rooms = random.sample(lect_avail_rooms,
@@ -193,7 +194,7 @@ def generate_classes(lecturers, lab_rooms, lect_rooms, groups):
                 room.sum_occup_probab()
             for group in field_groups:
                 avail_lab_rooms = tuple(filter(lambda r: (
-                            r.people_capacity <= max_people_in_group and r.people_capacity >= group.amount_of_students and r.week_schedule.total_classes_time + max_classes_time < 5 * MAX_TIME_PER_DAY),
+                            r.people_capacity <= max_people_in_group and r.people_capacity >= group.amount_of_students and r.week_schedule.total_classes_time + max_classes_time < MAX_ROOM_TIME_WEEK),
                                                lab_rooms))
                 if len(avail_lab_rooms) == 0:
                     raise RuntimeError("Not enough lab rooms")

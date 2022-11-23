@@ -30,8 +30,10 @@ def add_info_to_week_schedule(classes: List[Classes]):
 
 
 def calc_over_time_avail_time(all_: All):
-    for item in (*all_.rooms, *all_.lecturers, *all_.groups):
+    for item in (*all_.lecturers, *all_.groups):
         item.week_schedule.calc_over_time_avail_time()
+    for room in all_.rooms:
+        room.week_schedule.calc_over_time_avail_time(room=True)
 
 
 def _create_container(classes, key) -> List:

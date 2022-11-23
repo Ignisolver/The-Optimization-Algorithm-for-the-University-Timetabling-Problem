@@ -151,8 +151,8 @@ class Metric:
             elif len_ == 0:
                 counter_len_0 += 1
                 if counter_len_0 >= 5 - self._best_week_arrangement:
-                    value += (len(day) - self._medium_unfolding) ** 2
-        value = value ** (1 / 2) / 100
+                    value += abs(len(day) - self._medium_unfolding)
+        value = value / 60
         return value
 
     def _calc_all_basics(self):

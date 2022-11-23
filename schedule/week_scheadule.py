@@ -1,6 +1,7 @@
 from typing import Dict, TYPE_CHECKING, List, Iterator
 
-from data_generation.generation_configs import MAX_TIME_PER_DAY
+from data_generation.generation_configs import MAX_TIME_PER_DAY, MAX_HOUR, \
+    MIN_HOUR
 from schedule.day_scheadule import DaySchedule
 from utils.constans import DAYS
 from utils.types_ import Day
@@ -58,8 +59,11 @@ class WeekSchedule:
                 txt += classes.to_yaml() + "\n\n"
         return txt
 
-    def calc_over_time_avail_time(self):
-        all_avail_time = 5 * MAX_TIME_PER_DAY
+    def calc_over_time_avail_time(self, room=False):
+        if room:
+            all_avail_time = 5 * int(MAX_HOUR - MIN_HOUR)
+        else:
+            all_avail_time = 5 * MAX_TIME_PER_DAY
         unav_time = sum(int(day.get_unavailable_len()) for day in self)
         self.available_time = all_avail_time - unav_time
         over_time = self.available_time - self.total_classes_time

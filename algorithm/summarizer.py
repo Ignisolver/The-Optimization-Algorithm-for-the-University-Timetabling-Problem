@@ -31,13 +31,18 @@ class Results:
 
 
 def summarize_before(all_: All):
-    all_items = (all_.groups, all_.lecturers, all_.rooms)
-    names = ("GROUPS    :", "LECTURERS :", "ROOMS     : ")
+    all_items = (all_.groups, all_.lecturers)
+    names = ("GROUPS    :", "LECTURERS :")
     for name, items in zip(names, all_items):
-        over_doable_hours = calc_over_doability_time(items)
-        aval_time = calc_av_time_before(items)
-        represent_before(name, over_doable_hours, aval_time)
+        summarize_one(name, items)
+    summarize_one("ROOMS     : ", all_.rooms, room=True)
     print(30*'-')
+
+
+def summarize_one(name, items, room=False):
+    over_doable_hours = calc_over_doability_time(items, room=room)
+    aval_time = calc_av_time_before(items, room=room)
+    represent_before(name, over_doable_hours, aval_time)
 
 
 def summarize_after(all_: All, alg_res):
@@ -59,16 +64,16 @@ def calc_av_time(items: List[WithSchedule]):
     return sum(it.week_schedule.available_time for it in items)
 
 
-def calc_av_time_before(items: List[WithSchedule]):
+def calc_av_time_before(items: List[WithSchedule], room=False):
     for item in items:
-        item.week_schedule.calc_over_time_avail_time()
+        item.week_schedule.calc_over_time_avail_time(room=room)
     all_free_time = sum(it.week_schedule.available_time for it in items)/60
     return all_free_time
 
 
-def calc_over_doability_time(items: List[WithSchedule]):
+def calc_over_doability_time(items: List[WithSchedule], room=False):
     for item in items:
-        item.week_schedule.calc_over_time_avail_time()
+        item.week_schedule.calc_over_time_avail_time(room=room)
     return floor(sum(it.week_schedule.over_doable for it in items) / 60)
 
 
