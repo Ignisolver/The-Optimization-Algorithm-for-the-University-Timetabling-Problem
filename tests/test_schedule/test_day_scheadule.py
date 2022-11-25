@@ -5,7 +5,7 @@ import pytest
 
 from basic_structures import Classes
 from basic_structures.classes import UnavailableClasses
-from data_generation.generation_configs import MIN_HOUR, MAX_HOUR
+from data_generation.basic_config import MIN_HOUR, MAX_HOUR
 from schedule.day_scheadule import DaySchedule
 from time_ import TimeDelta, Time, TimeRange
 from utils.types_ import ClassesType as CT, TUESDAY

@@ -14,17 +14,18 @@ Funkcja celu - mierzy rozwiązanie:
 - najgorzej = śrenia * 5
 """
 from dataclasses import dataclass
-from math import ceil, floor
+from math import ceil
 from statistics import mean
 from typing import Tuple, TYPE_CHECKING
 
-from data_generation.generation_configs import (MIN_HOUR,
-                                                WEEK_LENGTH_MIN,
-                                                DAY_TIME_WEIGHTS,
-                                                GOAL_FUNCTION_WEIGHTS as GFW,
-                                                MAX_TIME_PER_DAY,
-                                                DURATIONS_OF_CLASSES,
-                                                )
+from data_generation.basic_config import (MIN_HOUR,
+                                          WEEK_LENGTH_MIN,
+                                          DAY_TIME_WEIGHTS,
+                                          GOAL_FUNCTION_WEIGHTS as GFW,
+                                          MAX_TIME_PER_DAY,
+                                          DURATIONS_OF_CLASSES,
+                                          )
+
 from schedule.week_scheadule import WeekSchedule
 from utils.constans import BTW, WA, UNI, DU
 from time_ import TimeDelta
@@ -58,10 +59,10 @@ class GFV:
         return iter([self.btw, self.wa, self.uni, self.du])
 
     def __repr__(self):
-        return (f"MEDIUM BREAK TIME     : {self.btw} hours\n" +
-                f"MEDIUM BUSY DAYS      : {self.wa} \n" +
-                f"MEDIUM UNIFORMITY     : {self.uni}\n" +
-                f"MEDIUM DAYS UNFOLDING : {self.du}\n")
+        return (f"MEDIUM BREAK TIME      : {self.btw} hours\n" +
+                f"MEDIUM BUSY DAYS       : {self.wa} days\n" +
+                f"MEDIUM UNIFORMITY DIFF : {self.uni} hours\n" +
+                f"MEDIUM DAYS UNFOLDING  : {self.du}\n")
 
     def __mul__(self, gtw):
         self.btw *= gtw[BTW]
@@ -125,7 +126,7 @@ class Metric:
             for classes in day:
                 points += DAY_TIME_WEIGHTS[
                               classes.start_time.hour - MIN_HOUR.hour] + classes.start_time.minute / 60
-        points = points / self._mean_day_time_weights
+        points = points / self._mean_day_time_weights / 2
         return points
 
     def _calc_brake_time_value(self):
@@ -141,18 +142,28 @@ class Metric:
                 n += 1
         return n
 
-    def _calc_uniformity(self):
+    def _calc_uniformity(self, end=False):
         value = 0
-        counter_len_0 = -1
+        counter_len_0 = 0
+        max_free_days = 5 - self._best_week_arrangement
         for day in self.ws:
             len_ = len(day.get_classes())
             if len_ != 0:
-                value += (len(day) - self._medium_unfolding) ** 2
-            elif len_ == 0:
-                counter_len_0 += 1
-                if counter_len_0 >= 5 - self._best_week_arrangement:
+                if end:
                     value += abs(len(day) - self._medium_unfolding)
-        value = value / 60
+                else:
+                    value += (len(day) - self._medium_unfolding)**2
+            elif len_ == 0:
+                if counter_len_0 >= max_free_days:
+                    if end:
+                        value += self._medium_unfolding
+                    else:
+                        value += self._medium_unfolding ** 2
+                counter_len_0 += 1
+        if end:
+            value = value/60
+        else:
+            value = value**(1/2) / 60
         return value
 
     def _calc_all_basics(self):
@@ -162,10 +173,10 @@ class Metric:
         self._calc_worst_uniformity()
         self._calc_worst_days_unfolding()
 
-    def calc_goal_function_elements(self):
+    def calc_goal_function_elements(self, end=False):
         btw = self._calc_brake_time_value()
         wa = self._calc_week_arrangement()
-        uni = self._calc_uniformity()
+        uni = self._calc_uniformity(end)
         du = self._calc_days_unfolding()
         return GFV(btw, wa, uni, du)
 

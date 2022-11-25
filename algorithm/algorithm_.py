@@ -1,29 +1,14 @@
-from dataclasses import dataclass
 from typing import Iterator
 
+from algorithm.alg_result import AlgResult
 from algorithm.best_times_finder import get_best_time
 from algorithm.check_on_time import select_room
+from algorithm.time_measurement import measure_time
 from basic_structures import Classes
 from data_presentation.bar import bar
 
 
-@dataclass
-class AlgResult:
-    successes: int = 0
-    failures: int = 0
-    failures_time: int = 0
-    successes_time: int = 0
-
-    def __repr__(self):
-        return (30 * "-" + "\n" +
-                f"ASSIGNED  : " +
-                f"{self.successes} / {self.successes + self.failures}" +
-                f" CLASSES " +
-                f"({round(100 * self.successes / (self.successes + self.failures), 2 )} %)\n" +
-                f"FAILURES  : {self.failures}\n"+
-                30 * "-")
-
-
+@measure_time
 def algorithm(classes_list: Iterator[Classes]):
     print("ALGORITHM:")
     result = AlgResult()

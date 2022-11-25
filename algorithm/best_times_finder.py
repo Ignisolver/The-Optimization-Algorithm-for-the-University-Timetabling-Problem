@@ -5,13 +5,10 @@ from typing import List, Iterator
 from algorithm.goal_function import evaluate
 from algorithm.merge_week_schedule import get_free_ranges_from_week_schedules
 from basic_structures import Classes
-from data_generation.generation_configs import TIME_GRANULATION
+from data_generation.basic_config import TIME_GRANULATION
 from time_ import TimeRange as TR, TimeDelta as TD, Time
 from utils.types_ import Day
 
-
-# testme all
-# not sort but max
 
 @dataclass
 class Start:

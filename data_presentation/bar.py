@@ -7,4 +7,4 @@ def bar(iter: Iterator, name):
     return tqdm(iter,
                 colour="green",
                 bar_format=f'{name}'+': {l_bar}{bar}|||',
-                ncols=150)
+                ncols=70)

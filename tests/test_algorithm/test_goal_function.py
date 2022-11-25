@@ -5,7 +5,7 @@ import pytest
 from algorithm.goal_function import iterator_over_day, Metric
 from basic_structures import Classes, Lecturer as Lect, Room
 from basic_structures.classes import UnavailableClasses
-from data_generation.generation_configs import DAY_TIME_WEIGHTS, \
+from data_generation.basic_config import DAY_TIME_WEIGHTS, \
     GOAL_FUNCTION_WEIGHTS
 from schedule.week_scheadule import WeekSchedule
 from time_ import Time as Tim, TimeDelta as TD

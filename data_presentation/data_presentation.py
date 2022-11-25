@@ -5,7 +5,7 @@ from shutil import rmtree
 from typing import List
 
 from basic_structures.with_schedule import WithSchedule
-from data_generation.generation_configs import GEN
+from data_generation.basic_config import GEN
 from data_presentation.bar import bar
 from utils.constans import ROOT_PATH
 
@@ -22,7 +22,7 @@ def generate_pdfs(groups, lecturers, rooms, name):
         return None
     print(30 * "-")
     print("PDF GENERATION:")
-    result_path = ROOT_PATH.joinpath("results").joinpath(name)
+    result_path = ROOT_PATH.joinpath("results/pdfs").joinpath(name)
     _remove_previous(result_path)
     os.mkdir(result_path)
     names_items = (("groups", groups),

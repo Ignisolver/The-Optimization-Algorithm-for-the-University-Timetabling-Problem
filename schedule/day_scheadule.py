@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from functools import cache
 from typing import Iterator, List, TYPE_CHECKING, Union
 
-from data_generation.generation_configs import MIN_HOUR, MAX_HOUR, \
+from data_generation.basic_config import MIN_HOUR, MAX_HOUR, \
     MAX_TIME_PER_DAY
 from time_ import TimeDelta, TimeRange, Time
 from utils.distanses_manager import Distances

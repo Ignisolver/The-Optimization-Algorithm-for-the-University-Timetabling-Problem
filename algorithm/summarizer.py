@@ -5,7 +5,7 @@ from typing import List
 from algorithm.goal_function import Metric, GFV
 from basic_structures import Group
 from basic_structures.with_schedule import WithSchedule
-from data_generation.generation_configs import MAX_TIME_PER_DAY
+from data_generation.basic_config import MAX_TIME_PER_DAY
 from data_generation.generator import All
 
 
@@ -31,18 +31,22 @@ class Results:
 
 
 def summarize_before(all_: All):
+    res = {}
     all_items = (all_.groups, all_.lecturers)
     names = ("GROUPS    :", "LECTURERS :")
     for name, items in zip(names, all_items):
-        summarize_one(name, items)
-    summarize_one("ROOMS     : ", all_.rooms, room=True)
+        r = summarize_one(name, items)
+        res.update(r)
+    r = summarize_one("ROOMS     :", all_.rooms, room=True)
+    res.update(r)
     print(30*'-')
+    return res
 
 
 def summarize_one(name, items, room=False):
     over_doable_hours = calc_over_doability_time(items, room=room)
     aval_time = calc_av_time_before(items, room=room)
-    represent_before(name, over_doable_hours, aval_time)
+    return represent_before(name, over_doable_hours, aval_time)
 
 
 def summarize_after(all_: All, alg_res):
@@ -50,14 +54,17 @@ def summarize_after(all_: All, alg_res):
     gfv_el, val = calc_goal_function_val(all_.groups)
     print(gfv_el, end='')
     print(30*"-")
-    print(f"MEDIUM GOAL FUNCTION VALUE: {val}")
-    classes_time = sum(int(classes.dur) for classes in all_.classes)
-    all_items = (all_.groups, all_.lecturers, all_.rooms)
-    names = ("GROUPS    :", "LECTURERS :", "ROOMS     : ")
+    print(f"MEDIUM GOAL FUNCTION VALUE: {round(val,2)}")
+    classes_time = sum(int(classes.dur) for classes in all_.classes if classes.start_time is not None)
+    all_items = (all_.lecturers, all_.rooms)
+    names = ("LECTURERS :", "ROOMS     :",)
     print(30 * "-")
+    res = {}
     for name, items in zip(names, all_items):
         available_time = calc_av_time(items)
-        represent_after(classes_time, available_time, name)
+        r = represent_after(classes_time, available_time, name)
+        res.update(r)
+    return res, val, gfv_el
 
 
 def calc_av_time(items: List[WithSchedule]):
@@ -78,22 +85,23 @@ def calc_over_doability_time(items: List[WithSchedule], room=False):
 
 
 def represent_after(classes_time, available_time, name):
-    leave_free_time = round(classes_time/available_time * 100, 1)
+    occupied_time = round(classes_time / available_time * 100, 1)
     print(name,
-          f"{leave_free_time:4>} % time occupied")
+          f"{occupied_time:4>} % time occupied")
+    return {name: occupied_time}
 
 
 def represent_before(name, over_doable_hours, max_time):
+    usage = round((1 + over_doable_hours/max_time) * 100, 1)
     if over_doable_hours >= 0:
-        usage = round((1 + over_doable_hours/max_time) * 100, 2)
         print(name,
               f"RESOURCE USAGE: {usage} | ",
               f"{over_doable_hours} hours unassignable")
     else:
-        usage = round((1 + over_doable_hours / max_time) * 100, 2)
         print(name,
               f"RESOURCE USAGE: {usage} % | ",
-              f"{-over_doable_hours} hours free over needed")
+              f"{-over_doable_hours} hours available beyond necessary")
+    return {name:usage}
 
 
 def calc_goal_function_val(groups: List[Group]):
@@ -101,7 +109,7 @@ def calc_goal_function_val(groups: List[Group]):
     val = 0
     for gr in groups:
         m = Metric(gr.week_schedule)
-        val_el = val_el + m.calc_goal_function_elements()
+        val_el = val_el + m.calc_goal_function_elements(end=True)
         val += m.calc_goal_fcn()
     val_el = val_el / len(groups)
     val /= len(groups)

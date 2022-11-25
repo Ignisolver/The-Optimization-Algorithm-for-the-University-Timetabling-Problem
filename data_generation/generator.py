@@ -8,7 +8,7 @@ from typing import List
 from basic_structures import Room, Group, Lecturer, Classes
 from basic_structures.classes import UnavailableClasses
 from basic_structures.room import Building
-from data_generation.generation_configs import *
+from data_generation.basic_config import *
 from time_ import TimeDelta, Time
 from utils.constans import DAYS
 from utils.distanses_manager import Distances
@@ -231,14 +231,14 @@ def generate_all() -> All:
                           UNAVAILABILITY_DURATION_ROOMS)
     classes = generate_classes(lecturers, lab_rooms, lect_rooms, groups)
     rooms = lab_rooms + lect_rooms
-    print("WYGENEROWANO:")
-    print(f"Budynki: {len(buildings)}")
-    print(f"Sale: {len(lab_rooms + lect_rooms)}")
-    print(f"Grupy: {len(groups)}")
-    print(f"Prowadzący: {len(lecturers)}")
+    print("GENERATED:")
+    print(f"\tBuildings : {len(buildings)}")
+    print(f"\tRooms     : {len(lab_rooms + lect_rooms)}")
+    print(f"\tGroups    : {len(groups)}")
+    print(f"\tLecturers : {len(lecturers)}")
     lect_am = len([cl for cl in classes if cl.classes_type == CT.LECTURE])
-    print(f"Wykłady: {lect_am}")
+    print(f"\tLectures  : {lect_am}")
     lab_am = len([cl for cl in classes if cl.classes_type == CT.LABORATORY])
-    print(f"Ćwiczenia: {lab_am}")
+    print(f"\tClasses   : {lab_am}")
     print(30 * '_')
     return All(buildings, rooms, lecturers, classes, groups, Distances(), NAME)

@@ -1,6 +1,6 @@
 from typing import Dict, TYPE_CHECKING, List, Iterator
 
-from data_generation.generation_configs import MAX_TIME_PER_DAY, MAX_HOUR, \
+from data_generation.basic_config import MAX_TIME_PER_DAY, MAX_HOUR, \
     MIN_HOUR
 from schedule.day_scheadule import DaySchedule
 from utils.constans import DAYS
