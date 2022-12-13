@@ -5,7 +5,6 @@ from typing import List
 from algorithm.goal_function import Metric, GFV
 from basic_structures import Group
 from basic_structures.with_schedule import WithSchedule
-from data_generation.basic_config import MAX_TIME_PER_DAY
 from data_generation.generator import All
 
 

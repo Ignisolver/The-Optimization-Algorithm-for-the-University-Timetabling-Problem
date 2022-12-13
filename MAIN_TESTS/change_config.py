@@ -1,21 +1,23 @@
+import os
 import types
 from os import listdir, remove
 
 from utils.constans import ROOT_PATH
 import pickle
 
-folder_path = ROOT_PATH.joinpath("data_generation/configs")
-from importlib import reload
+from utils.test_result import TestResult
+
+folder_path = ROOT_PATH.joinpath("data_generation/config")
 
 imported = False
 
 
-def load_main():
-    if not imported:
-        import main
-    reload(main)
-    main_f = main.main
-    return main_f
+def run(globals_, ret_code=False):
+    dump_all(globals_)
+    code = os.system("py -3.10 ../main.py")
+    if ret_code:
+        return load_res(), code
+    return load_res()
 
 
 def dump_all(globals_):
@@ -35,7 +37,7 @@ def dump(name, variable):
         pickle.dump(variable, file)
 
 
-def load_res():
+def load_res() -> TestResult:
     with open(ROOT_PATH.joinpath("results/result.bin"), 'rb') as file:
         res = pickle.load(file)
     return res

@@ -14,7 +14,7 @@ from utils.constans import DAYS
 from utils.distanses_manager import Distances
 from utils.types_ import ClassesType as CT
 
-random.seed(2)
+random.seed(3)
 
 
 @dataclass
@@ -123,14 +123,17 @@ def generate_groups():
     return groups
 
 
-def generate_lecturers():
-    lecturers = []
-    ig = id_generator()
-    ng = names_generator()
-    for _ in range(AMOUNT_OF_LECTURERS):
-        lecturer = Lecturer(next(ig), next(ng))
-        lecturers.append(lecturer)
-    return lecturers
+def generate_lecturers(agh=False):
+    if agh:
+        pass
+    else:
+        lecturers = []
+        ig = id_generator()
+        ng = names_generator()
+        for _ in range(AMOUNT_OF_LECTURERS):
+            lecturer = Lecturer(next(ig), next(ng))
+            lecturers.append(lecturer)
+        return lecturers
 
 
 def assign_unavailability(objects, amounts, durations):
@@ -232,13 +235,14 @@ def generate_all() -> All:
     classes = generate_classes(lecturers, lab_rooms, lect_rooms, groups)
     rooms = lab_rooms + lect_rooms
     print("GENERATED:")
-    print(f"\tBuildings : {len(buildings)}")
-    print(f"\tRooms     : {len(lab_rooms + lect_rooms)}")
-    print(f"\tGroups    : {len(groups)}")
-    print(f"\tLecturers : {len(lecturers)}")
+    print(f"\tBuildings  : {len(buildings)}")
+    print(f"\tLab rooms  : {len(lab_rooms)}")
+    print(f"\tLect rooms : {len(lect_rooms)}")
+    print(f"\tGroups     : {len(groups)}")
+    print(f"\tLecturers  : {len(lecturers)}")
     lect_am = len([cl for cl in classes if cl.classes_type == CT.LECTURE])
-    print(f"\tLectures  : {lect_am}")
+    print(f"\tLectures   : {lect_am}")
     lab_am = len([cl for cl in classes if cl.classes_type == CT.LABORATORY])
-    print(f"\tClasses   : {lab_am}")
+    print(f"\tClasses    : {lab_am}")
     print(30 * '_')
     return All(buildings, rooms, lecturers, classes, groups, Distances(), NAME)

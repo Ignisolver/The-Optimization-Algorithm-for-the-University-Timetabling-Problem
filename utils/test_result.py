@@ -26,6 +26,7 @@ class TestResult:
         self.failures = self.alg_res.failures
         self.failures_time = self.alg_res.failures_time
         self.successes_time = self.alg_res.successes_time
+        self.time = self.alg_res.time
 
     def __repr__(self):
         return ("groups_usage_before: " + str(self.groups_usage_before) +"\n" +

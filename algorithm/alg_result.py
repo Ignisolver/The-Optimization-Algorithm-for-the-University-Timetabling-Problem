@@ -7,6 +7,7 @@ class AlgResult:
     failures: int = 0
     failures_time: int = 0
     successes_time: int = 0
+    time: float = 0
 
     def __repr__(self):
         return (30 * "-" + "\n" +

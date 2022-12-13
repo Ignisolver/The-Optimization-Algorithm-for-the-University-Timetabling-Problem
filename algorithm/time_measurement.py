@@ -11,5 +11,6 @@ def measure_time(func):
         sec = elapsed_time % 60
         print(30 * "-")
         print(f"ELAPSED TIME: {mins} min {round(sec, 2)} sec")
+        res.time = elapsed_time
         return res
     return wrapper

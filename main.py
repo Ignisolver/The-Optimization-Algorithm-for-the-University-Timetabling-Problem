@@ -10,6 +10,7 @@ from data_generation.generator import generate_all
 from data_presentation.data_presentation import generate_pdfs
 from utils.res_saver import dump
 from utils.test_result import TestResult
+from utils.utils_ import turn_off_print
 
 
 def main():
@@ -28,4 +29,5 @@ def main():
 
 
 if __name__ == "__main__":
+    # turn_off_print()
     main()

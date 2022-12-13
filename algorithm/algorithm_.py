@@ -1,3 +1,4 @@
+import time
 from typing import Iterator
 
 from algorithm.alg_result import AlgResult
