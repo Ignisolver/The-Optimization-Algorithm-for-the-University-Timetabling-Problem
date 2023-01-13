@@ -38,7 +38,7 @@ Object oriented model of data
 Module for generateing data to test the algorithm
 
 ## data_presentation
-Data presentation module. Represent algorithm results - loading bar and timetables in .pdf
+Data presentation module. Represent algorithm results - progress bar and timetables in .pdf
 
 ## schedule
 Implementation of day and week timetable data structure
@@ -60,8 +60,8 @@ Some usefull tools
 ![obraz](https://user-images.githubusercontent.com/62255841/212315199-b76d3a53-d704-42ef-8471-b039efd25cba.png)
 ### Block diagram
 ![obraz](https://user-images.githubusercontent.com/62255841/212315350-c671b625-3ba0-4370-a796-4df9b032e42f.png)
-### Algorithm during calculating
-![obraz](https://user-images.githubusercontent.com/62255841/212315625-c6e67aba-7aae-4c9c-abf0-82d81207b278.png)
+### Algorithm progress visualisation
+![obraz](https://user-images.githubusercontent.com/62255841/212317385-6eb5f251-ce01-4049-b652-d293a22dd002.png)
 ### Created timetables - examples
 ![obraz](https://user-images.githubusercontent.com/62255841/212315747-fab72069-dddb-4ebc-a13b-7e89fc95fa6f.png)
 ![obraz](https://user-images.githubusercontent.com/62255841/212315780-a85f4152-e865-4398-8ef2-71e823392e33.png)
