@@ -52,7 +52,7 @@ class Time(TimeType):
         minutes = self.minute + other.minutes
         if minutes > 59:
             hours = self.hour + other.hours + 1
-            minutes = self.minute + other.minutes - 60
+            minutes = minutes - 60
         else:
             hours = self.hour + other.hours
         return Time(hours, minutes, self.day)

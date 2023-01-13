@@ -1,13 +1,6 @@
 from dataclasses import dataclass
 from pickle import load, dump
 
-all_elements = []
-for i in range(1, 22):
-    with open(f"all_classes_{i}.bin", "rb") as file:
-        all_elements.extend(load(file))
-
-print(*all_elements, sep="\n")
-
 
 @dataclass
 class ClassesInfo1:
@@ -70,6 +63,13 @@ def extract_span(text: str):
     return ClassesInfo2((s_h, s_m), (e_h, e_m), tag, gr, shortcut)
 
 if __name__ == '__main__':
+    all_elements = []
+    for i in range(1, 22):
+        with open(f"all_classes_{i}.bin", "rb") as file:
+            all_elements.extend(load(file))
+
+    print(*all_elements, sep="\n")
+
     infos = []
 
     for el in all_elements:

@@ -161,7 +161,7 @@ class Metric:
                         value += self._medium_unfolding ** 2
                 counter_len_0 += 1
         if end:
-            value = value/240
+            value = value/60
         else:
             value = value**(1/2) / 600
         return value

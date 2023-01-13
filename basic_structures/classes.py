@@ -105,7 +105,7 @@ class Classes:
         txt = f'\n{2 * s}'.join([f"- name: |",
                                  f"{2 * s}Classes ID: {self.id_}",
                                  (f"{2 * s}Room: {self.room.id_}" +
-                                  f"{5*s}Lecturer: {self.lecturer.id_}"),
+                                  f"{5*s}Lecturer: {self.lecturer.id_}"), #encode('ascii', 'ignore')}"),
                                  f"{2 * s}Groups: {[g for g in self.groups]}",
                                  f"days: {DAY_LETTER[self.day]}",
                                  f"time: {self.start_time} - {self.end_time}",

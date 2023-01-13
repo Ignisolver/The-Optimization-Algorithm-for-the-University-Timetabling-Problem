@@ -1,3 +1,4 @@
+import pickle
 import random
 import string
 from dataclasses import dataclass
@@ -123,17 +124,14 @@ def generate_groups():
     return groups
 
 
-def generate_lecturers(agh=False):
-    if agh:
-        pass
-    else:
-        lecturers = []
-        ig = id_generator()
-        ng = names_generator()
-        for _ in range(AMOUNT_OF_LECTURERS):
-            lecturer = Lecturer(next(ig), next(ng))
-            lecturers.append(lecturer)
-        return lecturers
+def generate_lecturers():
+    lecturers = []
+    ig = id_generator()
+    ng = names_generator()
+    for _ in range(AMOUNT_OF_LECTURERS):
+        lecturer = Lecturer(next(ig), next(ng))
+        lecturers.append(lecturer)
+    return lecturers
 
 
 def assign_unavailability(objects, amounts, durations):
@@ -214,6 +212,84 @@ def generate_classes(lecturers, lab_rooms, lect_rooms, groups):
                     room.sum_occup_probab()
     return classes
 
+def generate_classes_agh(lecturers, lab_rooms, lect_rooms, groups):
+    from usos_scraper.analyzer import ClassesData
+
+    with open(ROOT_PATH.joinpath("usos_scraper/lect_p.bin"), "rb") as file:
+        lecture_persons = pickle.load(file)
+
+
+    with open(ROOT_PATH.joinpath("usos_scraper/lect_d.bin"), "rb") as file:
+        lect_durations = pickle.load(file)
+
+    with open(ROOT_PATH.joinpath("usos_scraper/lab_p.bin"), "rb") as file:
+        lab_persons = pickle.load(file)
+
+    with open(ROOT_PATH.joinpath("usos_scraper/lab_d.bin"), "rb") as file:
+        lab_durations = pickle.load(file)
+
+    ids = idg_classes
+    names = names_generator()
+    available_rooms_amounts = cycle(AVAILABLE_ROOMS_AMOUNT)
+    subjects_amount = cycle(SUBJECTS_PER_FIELD)
+    groups_amount = cycle(AMOUNT_OF_GROUPS_IN_FIELD)
+    random.shuffle(DURATIONS_OF_CLASSES)
+    groups_gen = iter(groups)
+    max_people_in_group = max(AMOUNT_OF_STUDENTS_PER_GROUP)
+    classes = []
+    MAX_ROOM_TIME_WEEK = 5 * int(MAX_HOUR - MIN_HOUR)
+    lecturers = []
+
+    for _ in range(AMOUNT_OF_FIELDS):
+        max_classes_time = max(DURATIONS_OF_CLASSES)
+        n_groups = next(groups_amount)
+        field_groups = tuple(g for _, g in zip(range(n_groups), groups_gen))
+        n_subjects = next(subjects_amount)
+        for _ in range(n_subjects):
+            n_people = sum([g.amount_of_students for g in field_groups])
+            lect_avail_rooms = tuple(
+                filter(lambda
+                           r: r.people_capacity >= n_people and r.week_schedule.total_classes_time + max_classes_time < MAX_ROOM_TIME_WEEK,
+                       lect_rooms))
+            if len(lect_avail_rooms) == 0:
+                raise RuntimeError("Not enough lecture rooms")
+            avail_rooms = random.sample(lect_avail_rooms,
+                                        min(len(lect_avail_rooms),
+                                            next(available_rooms_amounts)))
+            l_name = next(lecture_persons)
+            lecturer = Lecturer(l_name, l_name)
+            lecturers.append(lecturer)
+            lecture = Classes(next(ids), next(names), next(lect_durations),
+                              CT.LECTURE, avail_rooms,
+                              lecturer, field_groups)
+            lecture.add_info_to_week_schedule()
+            lecture.assign_occupacity()
+            classes.append(lecture)
+            for room in lecture.avail_rooms:
+                room.sum_occup_probab()
+            for group in field_groups:
+                avail_lab_rooms = tuple(filter(lambda r: (
+                        r.people_capacity <= max_people_in_group and r.people_capacity >= group.amount_of_students and r.week_schedule.total_classes_time + max_classes_time < MAX_ROOM_TIME_WEEK),
+                                               lab_rooms))
+                if len(avail_lab_rooms) == 0:
+                    raise RuntimeError("Not enough lab rooms")
+                avail_rooms = random.sample(avail_lab_rooms,
+                                            min(len(avail_lab_rooms),
+                                                next(available_rooms_amounts)))
+                l_name = next(lab_persons)
+                lecturer = Lecturer(l_name, l_name)
+                lecturers.append(lecturer)
+                lab = Classes(next(ids), next(names), next(lab_durations),
+                              CT.LABORATORY, avail_rooms,
+                              lecturer, (group,))
+                lab.add_info_to_week_schedule()
+                lab.assign_occupacity()
+                classes.append(lab)
+                for room in lab.avail_rooms:
+                    room.sum_occup_probab()
+    lecturers_set = list(set(lecturers))
+    return classes, lecturers_set
+
 
 def generate_all() -> All:
     print("TEST:", NAME)
@@ -225,14 +301,20 @@ def generate_all() -> All:
     lect_rooms = generate_rooms(buildings, AMOUNT_OF_LECT_ROOMS,
                                 LECTURE_ROOM_CAPACITIES)
     groups = generate_groups()
-    lecturers = generate_lecturers()
+    if NAME == "AGH":
+        lecturers = []
+    else:
+        lecturers = generate_lecturers()
     assign_unavailability(lecturers,
                           AMOUNT_OF_RANDOM_UNAVAILABILITY_FOR_LECTURERS,
                           UNAVAILABILITY_DURATION_LECTURERS)
     assign_unavailability(lab_rooms + lect_rooms,
                           AMOUNT_OF_RANDOM_UNAVAILABILITY_FOR_ROOMS,
                           UNAVAILABILITY_DURATION_ROOMS)
-    classes = generate_classes(lecturers, lab_rooms, lect_rooms, groups)
+    if NAME == "AGH":
+        classes, lecturers = generate_classes_agh(lecturers, lab_rooms, lect_rooms, groups)
+    else:
+        classes = generate_classes(lecturers, lab_rooms, lect_rooms, groups)
     rooms = lab_rooms + lect_rooms
     print("GENERATED:")
     print(f"\tBuildings  : {len(buildings)}")
@@ -245,4 +327,19 @@ def generate_all() -> All:
     lab_am = len([cl for cl in classes if cl.classes_type == CT.LABORATORY])
     print(f"\tClasses    : {lab_am}")
     print(30 * '_')
+
+    with open("instancje.txt", "w", encoding='utf-8') as file:
+        file.write("SALE\n")
+        file.writelines([str(room) + "\n" for room in rooms])
+
+        file.write("PROWADZĄCY\n")
+        file.writelines([str(lecturer) + "\n" for lecturer in lecturers])
+
+        file.write("ZAJĘCIA\n")
+        file.writelines([str(class_) + "\n" for class_ in classes])
+
+        file.write("GRUPY\n")
+        file.writelines([str(group) + "\n" for group in groups])
+
     return All(buildings, rooms, lecturers, classes, groups, Distances(), NAME)
+

@@ -2,7 +2,7 @@ from itertools import cycle
 from math import log
 
 from MAIN_TESTS.change_config import run
-from data_generation.tests_configs.final.hard_agh import *
+from data_generation.tests_configs.final.brut import *
 
 # READY
 
@@ -23,8 +23,8 @@ gfv_s = []
 gfv_components = []
 
 mul = 5
-LAB_STEP = AMOUNT_OF_LAB_ROOMS[0]/10
-LECT_STEP = LAB_STEP * 80/400
+LAB_STEP = sum(AMOUNT_OF_LAB_ROOMS)/10
+LECT_STEP = LAB_STEP * 32/160
 ratio = 0.9
 
 labs_r_min = AMOUNT_OF_LAB_ROOMS[0]
@@ -38,7 +38,7 @@ LECT_VAL = lect_r_min
 LAB_VAl = labs_r_min
 
 end = False
-
+finish = False
 iter_am = int(log(1/mul)/log(ratio))
 print(iter_am)
 
@@ -63,7 +63,7 @@ for i in range(iter_am):
             LAB_VAl -= LAB_STEP
             LECT_VAL -= LECT_STEP
             break
-        if res.rooms_usage_before < 30:
+        if res.rooms_usage_before < 50:
             end = True
             break
         if code != 0:
@@ -83,3 +83,8 @@ for i in range(iter_am):
     AMOUNT_OF_LECTURERS = int(ratio*AMOUNT_OF_LECTURERS)
     print(AMOUNT_OF_LECT_ROOMS, AMOUNT_OF_LAB_ROOMS, first_amount_of_lect_rooms, first_amount_of_labs_rooms)
     print("RES", room_usages, lect_usages, successes, failures, sep="\n")
+
+
+# [64.9, 61.5, 61.5, 61.5, 61.5, 61.5, 61.5, 61.5, 61.5, 61.5, 57.8, 54.5, 54.5, 54.5]
+# [19.2, 21.4, 23.8, 26.5, 29.5, 32.9, 36.5, 40.7, 45.3, 50.3, 56.2, 62.6, 69.9, 78.3]
+
