@@ -2,7 +2,7 @@
 
 Date: 2022
 ## Description
-this repository contains object-oriented implementation of optimization algorithm for creating a timetable for university. Algorithm was developd by myself. Until year 2022 it is my the biggest python project made 100% by myself. An engineering thesis was created on the basis of this project. Prjoect is covered with 145 unittests.
+this repository contains object-oriented implementation of optimization algorithm for creating a timetable for university. This problem is strongly MP-difficult. Algorithm was developd by myself. Until year 2022 it is my the biggest python project made 100% by myself. An engineering thesis was created on the basis of this project. Prjoect is covered with 145 unittests.
 
 Algorithm assigns time and room for the classes. Lecturer and groups are asigned for the classes in advance. Algorithm tries to create timetables for all groups, lecturers and groups. It also optimizes:
 - brake time between classes
